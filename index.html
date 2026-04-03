@@ -602,6 +602,77 @@ a{text-decoration:none;color:inherit}
   cursor:pointer;font-family:var(--font);flex-shrink:0;
 }
 
+/* ===== TRADINGVIEW CHART ===== */
+.chart-toggle-btn{
+  display:flex;align-items:center;gap:12px;
+  width:100%;padding:12px 14px;margin-bottom:4px;
+  border:1px solid var(--orange);background:var(--orange-light);
+  border-radius:var(--radius-sm);cursor:pointer;
+  text-align:left;transition:var(--transition);
+  -webkit-tap-highlight-color:transparent;
+}
+.chart-toggle-btn:hover{background:var(--orange);border-color:var(--orange)}
+.chart-toggle-btn:hover .chapter-btn-title,
+.chart-toggle-btn:hover .chapter-btn-sub,
+.chart-toggle-btn:hover .chart-toggle-arrow{color:#fff}
+.chart-toggle-btn:hover .chart-toggle-icon{background:rgba(255,255,255,.2)}
+.chart-toggle-btn.active{background:var(--orange);border-color:var(--orange)}
+.chart-toggle-btn.active .chapter-btn-title,
+.chart-toggle-btn.active .chapter-btn-sub,
+.chart-toggle-btn.active .chart-toggle-arrow{color:#fff}
+.chart-toggle-btn.active .chart-toggle-icon{background:rgba(255,255,255,.2)}
+.chart-toggle-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--orange);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;transition:var(--transition);
+}
+.chart-toggle-arrow{
+  margin-left:auto;font-size:10px;color:var(--gray-500);
+  transition:transform .3s ease;
+}
+.chart-toggle-btn.active .chart-toggle-arrow{transform:rotate(180deg)}
+.chart-container{
+  max-height:0;overflow:hidden;
+  transition:max-height .4s cubic-bezier(.4,0,.2,1);
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);
+  margin-bottom:4px;
+}
+.chart-container.open{max-height:520px}
+.chart-container .tradingview-widget-container{
+  width:100%;height:500px;
+  border-radius:var(--radius-sm);overflow:hidden;
+}
+
+/* Mobile chart (full width overlay) */
+@media(max-width:900px){
+  .chart-mobile-wrap{
+    position:fixed;inset:0;z-index:250;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+    display:none;align-items:flex-end;justify-content:center;
+  }
+  .chart-mobile-wrap.open{display:flex}
+  .chart-mobile-inner{
+    width:100%;max-height:80vh;
+    background:var(--white);border-radius:20px 20px 0 0;
+    padding:16px 16px 0;
+    animation:slideUp .3s ease;
+  }
+  .chart-mobile-header{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:12px;
+  }
+  .chart-mobile-title{font-size:15px;font-weight:700;color:var(--navy)}
+  .chart-mobile-close{
+    width:32px;height:32px;border:none;border-radius:50%;
+    background:var(--gray-100);cursor:pointer;font-size:16px;
+    display:flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .chart-mobile-chart{width:100%;height:500px;border-radius:12px;overflow:hidden}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+}
+
 /* ===== MOBILE HAMBURGER ===== */
 .mobile-menu-btn{
   display:none;width:40px;height:40px;border:none;background:var(--gray-100);
@@ -859,6 +930,17 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
+<!-- Mobile Chart Overlay -->
+<div class="chart-mobile-wrap" id="chartMobileWrap" onclick="if(event.target===this)closeMobileChart()">
+  <div class="chart-mobile-inner">
+    <div class="chart-mobile-header">
+      <span class="chart-mobile-title">BINANCE · BTCUSDT</span>
+      <button class="chart-mobile-close" onclick="closeMobileChart()">&#10005;</button>
+    </div>
+    <div class="chart-mobile-chart" id="tvWidgetMobile"></div>
+  </div>
+</div>
+
 <!-- SCROLL TO TOP -->
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 
@@ -923,6 +1005,21 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-num">07</div>
     <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
   </button>
+
+  <!-- Chart Toggle Button -->
+  <button class="chart-toggle-btn" id="chartToggleBtn" onclick="toggleChart()">
+    <div class="chart-toggle-icon">&#128200;</div>
+    <div>
+      <span class="chapter-btn-title">차트 보기</span>
+      <span class="chapter-btn-sub">BINANCE · BTCUSDT</span>
+    </div>
+    <span class="chart-toggle-arrow" id="chartArrow">&#9660;</span>
+  </button>
+
+  <!-- TradingView Chart Container -->
+  <div class="chart-container" id="chartContainer">
+    <div class="tradingview-widget-container" id="tvWidget"></div>
+  </div>
 
   <div class="sidebar-footer">
     <div class="trainer-card">
@@ -1585,6 +1682,72 @@ document.addEventListener('touchend', e => {
     else if (diff < 0 && current > 1) goTo(current - 1);
   }
 }, {passive:true});
+
+// ===== TRADINGVIEW CHART =====
+let chartLoaded = false;
+let mobileChartLoaded = false;
+
+function getTvWidgetHtml(containerId) {
+  return `<div class="tradingview-widget-container__widget" id="${containerId}_inner" style="height:100%;width:100%"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+  {
+    "autosize": true,
+    "symbol": "BINANCE:BTCUSDT",
+    "interval": "60",
+    "timezone": "Asia/Seoul",
+    "theme": "dark",
+    "style": "1",
+    "locale": "kr",
+    "allow_symbol_change": true,
+    "support_host": "https://www.tradingview.com",
+    "hide_side_toolbar": false,
+    "details": true,
+    "hotlist": false,
+    "calendar": false,
+    "studies": ["STD;SMA"],
+    "container_id": "${containerId}_inner"
+  }
+  <\/script>`;
+}
+
+function toggleChart() {
+  const isMobile = window.innerWidth <= 900;
+  if (isMobile) {
+    openMobileChart();
+  } else {
+    const container = document.getElementById('chartContainer');
+    const btn = document.getElementById('chartToggleBtn');
+    const isOpen = container.classList.contains('open');
+    if (isOpen) {
+      container.classList.remove('open');
+      btn.classList.remove('active');
+    } else {
+      if (!chartLoaded) {
+        document.getElementById('tvWidget').innerHTML = getTvWidgetHtml('tvWidget');
+        chartLoaded = true;
+      }
+      container.classList.add('open');
+      btn.classList.add('active');
+    }
+  }
+}
+
+function openMobileChart() {
+  const wrap = document.getElementById('chartMobileWrap');
+  wrap.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('chartToggleBtn').classList.add('active');
+  if (!mobileChartLoaded) {
+    document.getElementById('tvWidgetMobile').innerHTML = getTvWidgetHtml('tvWidgetMobile');
+    mobileChartLoaded = true;
+  }
+}
+
+function closeMobileChart() {
+  document.getElementById('chartMobileWrap').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('chartToggleBtn').classList.remove('active');
+}
 
 // ===== SCROLL REVEAL =====
 function initScrollReveal() {
