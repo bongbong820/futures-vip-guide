@@ -1687,10 +1687,19 @@ document.addEventListener('touchend', e => {
 let chartLoaded = false;
 let mobileChartLoaded = false;
 
-function getTvWidgetHtml(containerId) {
-  return `<div class="tradingview-widget-container__widget" id="${containerId}_inner" style="height:100%;width:100%"></div>
-  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
-  {
+function loadTvWidget(targetId) {
+  const container = document.getElementById(targetId);
+  container.innerHTML = '';
+  const inner = document.createElement('div');
+  inner.id = targetId + '_inner';
+  inner.style.cssText = 'height:100%;width:100%';
+  container.appendChild(inner);
+
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.async = true;
+  script.textContent = JSON.stringify({
     "autosize": true,
     "symbol": "BINANCE:BTCUSDT",
     "interval": "60",
@@ -1705,9 +1714,9 @@ function getTvWidgetHtml(containerId) {
     "hotlist": false,
     "calendar": false,
     "studies": ["STD;SMA"],
-    "container_id": "${containerId}_inner"
-  }
-  <\/script>`;
+    "container_id": targetId + "_inner"
+  });
+  container.appendChild(script);
 }
 
 function toggleChart() {
@@ -1723,7 +1732,7 @@ function toggleChart() {
       btn.classList.remove('active');
     } else {
       if (!chartLoaded) {
-        document.getElementById('tvWidget').innerHTML = getTvWidgetHtml('tvWidget');
+        loadTvWidget('tvWidget');
         chartLoaded = true;
       }
       container.classList.add('open');
@@ -1738,7 +1747,7 @@ function openMobileChart() {
   document.body.style.overflow = 'hidden';
   document.getElementById('chartToggleBtn').classList.add('active');
   if (!mobileChartLoaded) {
-    document.getElementById('tvWidgetMobile').innerHTML = getTvWidgetHtml('tvWidgetMobile');
+    loadTvWidget('tvWidgetMobile');
     mobileChartLoaded = true;
   }
 }
