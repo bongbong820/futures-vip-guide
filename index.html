@@ -609,6 +609,58 @@ a{text-decoration:none;color:inherit}
 .chart-btn.active{background:var(--orange-light)}
 .chart-btn.active .chart-num{background:var(--orange)}
 .chart-btn.active .chapter-btn-title{color:var(--orange);font-weight:700}
+/* Chart Controls */
+.chart-controls{margin-bottom:16px}
+.chart-search-wrap{
+  display:flex;gap:8px;margin-bottom:12px;
+}
+.chart-search{
+  flex:1;padding:10px 16px;border:1px solid var(--gray-200);
+  border-radius:10px;font-size:14px;background:var(--white);
+  color:var(--gray-900);outline:none;font-family:var(--font);
+  transition:var(--transition);
+}
+.chart-search:focus{border-color:var(--blue)}
+.chart-search-btn{
+  padding:10px 20px;border:none;border-radius:10px;
+  background:var(--blue);color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--font);white-space:nowrap;
+  transition:var(--transition);
+}
+.chart-search-btn:hover{background:var(--navy)}
+.chart-categories{
+  display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;
+}
+.chart-cat{
+  padding:6px 14px;border:1px solid var(--gray-200);border-radius:20px;
+  background:var(--white);color:var(--gray-600);font-size:13px;font-weight:600;
+  cursor:pointer;transition:var(--transition);font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;
+}
+.chart-cat:hover{border-color:var(--blue);color:var(--blue)}
+.chart-cat.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.chart-symbols{
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+.chart-sym{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border:1px solid var(--gray-200);border-radius:10px;
+  background:var(--white);color:var(--gray-700);font-size:13px;font-weight:500;
+  cursor:pointer;transition:var(--transition);font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;
+}
+.chart-sym:hover{border-color:var(--orange);color:var(--orange)}
+.chart-sym.active{background:var(--orange);color:#fff;border-color:var(--orange)}
+.chart-sym.hidden{display:none}
+.chart-sym-flag{font-size:15px}
+.chart-current-label{
+  font-size:13px;font-weight:700;color:var(--navy);
+  margin-bottom:8px;padding:8px 12px;
+  background:var(--gray-100);border-radius:8px;
+  display:inline-block;
+}
+
+/* Chart Widget */
 .chart-page-widget{
   width:100%;height:500px;
   border-radius:var(--radius);overflow:hidden;
@@ -616,6 +668,9 @@ a{text-decoration:none;color:inherit}
 }
 @media(max-width:640px){
   .chart-page-widget{height:400px}
+  .chart-symbols{gap:4px}
+  .chart-sym{padding:6px 10px;font-size:12px}
+  .chart-cat{padding:5px 10px;font-size:12px}
 }
 
 /* ===== MOBILE HAMBURGER ===== */
@@ -1445,13 +1500,60 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div>
       <div class="chapter-label">Live Chart — TradingView</div>
       <h1 class="chapter-title">실시간 차트</h1>
-      <p class="chapter-desc">TradingView 차트에서 직접 캔들, 이동평균선, 볼륨을 확인하세요. 심볼을 자유롭게 변경할 수 있습니다.</p>
+      <p class="chapter-desc">해외선물, 암호화폐, 주요 지수 차트를 실시간으로 확인하세요.</p>
     </div>
   </div>
 
   <div class="section">
+    <!-- Symbol Selector -->
+    <div class="chart-controls">
+      <div class="chart-search-wrap">
+        <input class="chart-search" id="chartSearch" type="text" placeholder="심볼 검색 (예: AAPL, EURUSD)" onkeydown="if(event.key==='Enter')searchSymbol()">
+        <button class="chart-search-btn" onclick="searchSymbol()">검색</button>
+      </div>
+      <div class="chart-categories">
+        <button class="chart-cat active" onclick="filterCat(this,'all')">전체</button>
+        <button class="chart-cat" onclick="filterCat(this,'futures')">해외선물</button>
+        <button class="chart-cat" onclick="filterCat(this,'crypto')">암호화폐</button>
+        <button class="chart-cat" onclick="filterCat(this,'index')">지수</button>
+        <button class="chart-cat" onclick="filterCat(this,'forex')">외환</button>
+        <button class="chart-cat" onclick="filterCat(this,'stock')">주식</button>
+      </div>
+      <div class="chart-symbols" id="chartSymbols">
+        <!-- Futures -->
+        <button class="chart-sym active" data-cat="futures" data-symbol="CME_MINI:ES1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>E-mini S&P 500</button>
+        <button class="chart-sym" data-cat="futures" data-symbol="CME_MINI:NQ1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>E-mini Nasdaq</button>
+        <button class="chart-sym" data-cat="futures" data-symbol="COMEX:GC1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#129351;</span>Gold (GC)</button>
+        <button class="chart-sym" data-cat="futures" data-symbol="NYMEX:CL1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#128738;</span>Crude Oil (CL)</button>
+        <button class="chart-sym" data-cat="futures" data-symbol="CME:6E1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127466;&#127482;</span>Euro FX</button>
+        <button class="chart-sym" data-cat="futures" data-symbol="CME:6J1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127471;&#127477;</span>Japanese Yen</button>
+        <!-- Crypto -->
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:BTCUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#8383;</span>BTC/USDT</button>
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:ETHUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#9830;</span>ETH/USDT</button>
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:SOLUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#9788;</span>SOL/USDT</button>
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:XRPUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#10005;</span>XRP/USDT</button>
+        <!-- Index -->
+        <button class="chart-sym" data-cat="index" data-symbol="TVC:SPX" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>S&P 500</button>
+        <button class="chart-sym" data-cat="index" data-symbol="TVC:IXIC" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>Nasdaq</button>
+        <button class="chart-sym" data-cat="index" data-symbol="TVC:DJI" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>Dow Jones</button>
+        <button class="chart-sym" data-cat="index" data-symbol="KRX:KOSPI" onclick="changeChart(this)"><span class="chart-sym-flag">&#127472;&#127479;</span>KOSPI</button>
+        <!-- Forex -->
+        <button class="chart-sym" data-cat="forex" data-symbol="FX:EURUSD" onclick="changeChart(this)"><span class="chart-sym-flag">&#127466;&#127482;</span>EUR/USD</button>
+        <button class="chart-sym" data-cat="forex" data-symbol="FX:USDJPY" onclick="changeChart(this)"><span class="chart-sym-flag">&#127471;&#127477;</span>USD/JPY</button>
+        <button class="chart-sym" data-cat="forex" data-symbol="FX:GBPUSD" onclick="changeChart(this)"><span class="chart-sym-flag">&#127468;&#127463;</span>GBP/USD</button>
+        <button class="chart-sym" data-cat="forex" data-symbol="FX:USDKRW" onclick="changeChart(this)"><span class="chart-sym-flag">&#127472;&#127479;</span>USD/KRW</button>
+        <!-- Stock -->
+        <button class="chart-sym" data-cat="stock" data-symbol="NASDAQ:AAPL" onclick="changeChart(this)"><span class="chart-sym-flag">&#127823;</span>Apple</button>
+        <button class="chart-sym" data-cat="stock" data-symbol="NASDAQ:TSLA" onclick="changeChart(this)"><span class="chart-sym-flag">&#9889;</span>Tesla</button>
+        <button class="chart-sym" data-cat="stock" data-symbol="NASDAQ:NVDA" onclick="changeChart(this)"><span class="chart-sym-flag">&#128377;</span>Nvidia</button>
+        <button class="chart-sym" data-cat="stock" data-symbol="NYSE:005930" onclick="changeChart(this)"><span class="chart-sym-flag">&#127472;&#127479;</span>삼성전자</button>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-current-label" id="chartLabel">CME_MINI:ES1! · E-mini S&P 500</div>
     <div class="chart-page-widget">
-      <iframe src="https://s.tradingview.com/widgetembed/?hideideas=1&overrides=&preventMouseHoverFromDisplayingLabels=0&symbol=BINANCE%3ABTCUSDT&interval=60&theme=dark&style=1&locale=kr&toolbarbg=f1f3f6&studies=%5B%5D&timezone=Asia%2FSeoul&studies_overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&utm_source=&utm_medium=widget_new&utm_campaign=chart" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
+      <iframe id="tvIframe" src="https://s.tradingview.com/widgetembed/?symbol=CME_MINI%3AES1!&interval=60&theme=dark&style=1&locale=kr&timezone=Asia%2FSeoul&hideideas=1" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -1659,7 +1761,7 @@ function goToChart() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   closeSidebar();
 
-  // Chart is already embedded via iframe in HTML
+  // Chart is embedded via iframe in HTML
 
   // Update mobile nav
   const mobPrev = document.getElementById('mobPrev');
@@ -1675,6 +1777,38 @@ function goToChart() {
       mobDots.appendChild(d);
     }
   }
+}
+
+// ===== CHART CONTROLS =====
+function changeChart(btn) {
+  const symbol = btn.dataset.symbol;
+  const name = btn.textContent.trim();
+  const encoded = encodeURIComponent(symbol);
+  document.getElementById('tvIframe').src =
+    'https://s.tradingview.com/widgetembed/?symbol=' + encoded + '&interval=60&theme=dark&style=1&locale=kr&timezone=Asia%2FSeoul&hideideas=1';
+  document.getElementById('chartLabel').textContent = symbol + ' · ' + name;
+  document.querySelectorAll('.chart-sym').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function searchSymbol() {
+  const val = document.getElementById('chartSearch').value.trim().toUpperCase();
+  if (!val) return;
+  const encoded = encodeURIComponent(val);
+  document.getElementById('tvIframe').src =
+    'https://s.tradingview.com/widgetembed/?symbol=' + encoded + '&interval=60&theme=dark&style=1&locale=kr&timezone=Asia%2FSeoul&hideideas=1';
+  document.getElementById('chartLabel').textContent = val;
+  document.querySelectorAll('.chart-sym').forEach(s => s.classList.remove('active'));
+  document.getElementById('chartSearch').value = '';
+}
+
+function filterCat(btn, cat) {
+  document.querySelectorAll('.chart-cat').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.chart-sym').forEach(s => {
+    if (cat === 'all') s.classList.remove('hidden');
+    else s.classList.toggle('hidden', s.dataset.cat !== cat);
+  });
 }
 
 // ===== SCROLL REVEAL =====
