@@ -80,6 +80,7 @@ a{text-decoration:none;color:inherit}
 .header-right{
   margin-left:auto;font-size:13px;color:var(--gray-500);
 }
+.dark-toggle{margin-left:8px}
 
 /* ===== PROGRESS ===== */
 .progress-wrap{
@@ -439,18 +440,205 @@ a{text-decoration:none;color:inherit}
 }
 .nav-dot.active{background:var(--orange);width:28px;border-radius:5px}
 
+/* ===== MOBILE HAMBURGER ===== */
+.mobile-menu-btn{
+  display:none;width:40px;height:40px;border:none;background:var(--gray-100);
+  cursor:pointer;position:relative;z-index:201;padding:0;
+  -webkit-tap-highlight-color:transparent;border-radius:10px;
+  flex-direction:column;align-items:center;justify-content:center;gap:0;
+  flex-shrink:0;
+}
+.mobile-menu-btn span{
+  display:block;width:18px;height:2px;background:var(--navy);
+  margin:2.5px 0;border-radius:2px;transition:var(--transition);
+}
+.mobile-menu-btn.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.mobile-menu-btn.active span:nth-child(2){opacity:0}
+.mobile-menu-btn.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:150;backdrop-filter:blur(4px);
+  opacity:0;transition:opacity .3s ease;
+}
+.sidebar-overlay.active{display:block;opacity:1}
+
+/* Mobile bottom nav */
+.mobile-bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);border-top:1px solid var(--gray-200);
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+  z-index:100;
+  box-shadow:0 -2px 12px rgba(0,0,0,.06);
+}
+.mobile-bottom-inner{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mobile-nav-btn{
+  flex:1;padding:10px 8px;border:none;border-radius:12px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  transition:var(--transition);
+  -webkit-tap-highlight-color:transparent;
+}
+.mobile-nav-prev{background:var(--gray-100);color:var(--gray-700)}
+.mobile-nav-prev:active{background:var(--gray-200)}
+.mobile-nav-indicator{
+  flex:0;display:flex;align-items:center;gap:4px;padding:0 4px;
+}
+.mobile-nav-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--gray-300);
+  transition:var(--transition);
+}
+.mobile-nav-dot.active{width:18px;border-radius:3px;background:var(--orange)}
+.mobile-nav-next{background:var(--blue);color:#fff}
+.mobile-nav-next:active{background:var(--navy)}
+.mobile-nav-btn:disabled{opacity:.3}
+
+/* Dark mode */
+.dark-toggle{
+  width:36px;height:36px;border:1px solid var(--gray-200);
+  border-radius:10px;background:var(--white);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:var(--transition);
+  -webkit-tap-highlight-color:transparent;
+}
+.dark-toggle:active{background:var(--gray-100)}
+
+body.dark{
+  --white:#1A1A2E;--gray-50:#16162A;--gray-100:#1E1E36;
+  --gray-200:#2A2A42;--gray-300:#3A3A52;--gray-400:#5A5A72;
+  --gray-500:#8A8AA2;--gray-600:#AAAAC2;--gray-700:#CCCCE2;
+  --gray-800:#E0E0F0;--gray-900:#F0F0FF;
+  --navy:#A0B4E0;--navy-light:#8098CC;
+  --blue-light:#1E2A44;--blue-bg:#1A2238;
+  --orange-light:#2A1E16;--red-light:#2A1A1A;--green-light:#1A2A22;
+  background:var(--gray-50);color:var(--gray-900);
+}
+body.dark .header{background:rgba(26,26,46,0.9);border-color:var(--gray-200)}
+body.dark .sidebar{background:var(--white);border-color:var(--gray-200)}
+body.dark .mobile-bottom-nav{background:var(--white);border-color:var(--gray-200)}
+body.dark .trainer-card{background:linear-gradient(135deg,#0D1B2A,#1B2838)}
+body.dark .data-table th{background:var(--navy-light)}
+body.dark .mta-box{background:#0D1B2A}
+body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8DEF)}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
-  .sidebar{display:none}
-  .main{padding:24px 20px 40px}
-  .risk-grid,.candle-grid,.triple-grid{grid-template-columns:1fr}
-  .compare-grid,.trap-grid,.two-col,.principle-cards{grid-template-columns:1fr}
-  .chapter-hero-num{font-size:40px}
+  /* Header mobile */
+  .mobile-menu-btn{display:flex !important}
+  .header-inner{height:52px;gap:8px}
+  .header-logo{flex:1;min-width:0}
+  .header-logo span{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .header-right{display:none}
+  .header-badge{font-size:10px;padding:2px 8px;flex-shrink:0}
+  .dark-toggle{width:32px;height:32px;font-size:14px;flex-shrink:0;margin-left:4px}
+
+  /* Sidebar as drawer */
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    width:300px;max-width:80vw;z-index:200;
+    transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    border-right:none;box-shadow:var(--shadow-lg);
+    padding-top:20px;
+  }
+  .sidebar.open{transform:translateX(0)}
+
+  /* Progress */
+  .progress-wrap{top:52px}
+
+  /* Main */
+  .main{padding:20px 16px 100px}
+
+  /* Hero */
+  .chapter-hero{flex-direction:column;gap:12px}
+  .chapter-hero-num{font-size:42px}
   .chapter-title{font-size:22px}
-  .flow{flex-direction:column;align-items:flex-start}
-  .flow-arrow{transform:rotate(90deg)}
-  .mta-row{flex-direction:column}
+  .chapter-label{font-size:12px}
+  .chapter-desc{font-size:14px}
+
+  /* Sections */
+  .section{margin-bottom:28px}
+  .section-title{font-size:17px;padding-left:10px}
+  .prose{font-size:14px;line-height:1.75}
+  .quote{padding:16px 18px;font-size:14px}
+
+  /* Grids to single column */
+  .risk-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .candle-grid,.triple-grid{grid-template-columns:1fr}
+  .compare-grid,.trap-grid,.two-col,.principle-cards{grid-template-columns:1fr}
+  .ma-grid{grid-template-columns:1fr 1fr;gap:8px}
+
+  /* Flow horizontal scroll */
+  .flow{
+    flex-direction:row !important;flex-wrap:nowrap !important;overflow-x:auto;
+    -webkit-overflow-scrolling:touch;padding-bottom:8px;
+    scrollbar-width:none;align-items:center !important;
+  }
+  .flow::-webkit-scrollbar{display:none}
+  .flow-item{padding:6px 12px;font-size:11px;flex-shrink:0}
+  .flow-arrow{flex-shrink:0;font-size:11px;transform:none !important}
+
+  /* MTA */
+  .mta-box{padding:18px}
+  .mta-row{flex-direction:column;gap:10px}
   .mta-arrow{transform:rotate(90deg)}
+  .mta-item{padding:12px 18px}
+
+  /* Cards */
+  .risk-item{padding:14px}
+  .risk-title{font-size:14px}
+  .risk-desc{font-size:12px}
+  .callout{padding:16px 18px}
+  .callout p{font-size:13px}
+
+  /* Checklist */
+  .checklist li{padding:11px 14px;font-size:13px}
+  .num-list li{padding:11px 14px;font-size:13px}
+
+  /* Entry checks */
+  .entry-check{padding:11px 14px;font-size:13px}
+
+  /* Trap */
+  .trap-title{padding:12px 16px 4px;font-size:14px}
+  .trap-desc{padding:0 16px;font-size:12px}
+  .trap-signal{padding:10px 16px 14px;font-size:12px}
+
+  /* Data table */
+  .data-table th,.data-table td{padding:10px 14px;font-size:13px}
+
+  /* Principle cards */
+  .principle-card{padding:14px}
+  .principle-num{width:32px;height:32px;font-size:11px}
+  .principle-title{font-size:13px}
+  .principle-desc{font-size:12px}
+
+  /* Triple */
+  .triple-card{padding:18px}
+  .triple-icon{font-size:28px}
+  .triple-title{font-size:15px}
+  .triple-desc{font-size:12px}
+
+  /* Hide desktop nav, show mobile */
+  .chapter-nav-bottom{display:none}
+  .mobile-bottom-nav{display:block}
+
+  /* Info card checklist */
+  .info-card{padding:16px}
+  .info-card .checklist li{font-size:13px}
+
+  /* Compare */
+  .compare-card-header{padding:12px 16px;font-size:14px}
+  .compare-card-body{padding:12px 16px}
+  .compare-item{font-size:13px;padding:6px 0}
+}
+
+/* Small phones */
+@media(max-width:380px){
+  .main{padding:16px 12px 100px}
+  .chapter-hero-num{font-size:36px}
+  .chapter-title{font-size:20px}
+  .section-title{font-size:16px}
+  .risk-grid{grid-template-columns:1fr}
+  .ma-grid{grid-template-columns:1fr}
+  .header-logo span{font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
 </style>
 </head>
@@ -459,14 +647,19 @@ a{text-decoration:none;color:inherit}
 <!-- HEADER -->
 <header class="header">
   <div class="header-inner">
+    <button class="mobile-menu-btn" id="menuBtn" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
     <div class="header-logo">
       <div class="header-logo-icon">VIP</div>
       <span>해외선물 핵심 키워드 마스터 가이드</span>
     </div>
     <div class="header-badge">VIP MEMBER</div>
     <div class="header-right">선물로 500억 번 트레이더 · 7 챕터 완성</div>
+    <button class="dark-toggle" onclick="toggleDark()" title="다크모드">🌙</button>
   </div>
 </header>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
 
 <div class="progress-wrap">
   <div class="progress-fill" id="progressFill" style="width:14.28%"></div>
@@ -1006,6 +1199,15 @@ a{text-decoration:none;color:inherit}
 </main>
 </div>
 
+<!-- Mobile Bottom Nav -->
+<div class="mobile-bottom-nav" id="mobileNav">
+  <div class="mobile-bottom-inner">
+    <button class="mobile-nav-btn mobile-nav-prev" id="mobPrev" onclick="goTo(current-1)" disabled>← 이전</button>
+    <div class="mobile-nav-indicator" id="mobDots"></div>
+    <button class="mobile-nav-btn mobile-nav-next" id="mobNext" onclick="goTo(current+1)">다음 →</button>
+  </div>
+</div>
+
 <script>
 let current = 1;
 const total = 7;
@@ -1026,7 +1228,81 @@ function goTo(n) {
 
   current = n;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Update mobile bottom nav
+  const mobPrev = document.getElementById('mobPrev');
+  const mobNext = document.getElementById('mobNext');
+  if (mobPrev) { mobPrev.disabled = n <= 1; }
+  if (mobNext) {
+    if (n >= total) { mobNext.textContent = '완료 ✓'; mobNext.disabled = true; }
+    else { mobNext.textContent = '다음 →'; mobNext.disabled = false; }
+  }
+  // Mobile dots
+  const mobDots = document.getElementById('mobDots');
+  if (mobDots) {
+    mobDots.innerHTML = '';
+    for (let i = 1; i <= total; i++) {
+      const d = document.createElement('div');
+      d.className = 'mobile-nav-dot' + (i === n ? ' active' : '');
+      mobDots.appendChild(d);
+    }
+  }
+
+  // Close sidebar if open
+  closeSidebar();
 }
+
+// Sidebar toggle
+function toggleMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const btn = document.getElementById('menuBtn');
+  const isOpen = sidebar.classList.contains('open');
+  if (isOpen) { closeSidebar(); } else {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+    btn.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+}
+function closeSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const btn = document.getElementById('menuBtn');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('active');
+  btn.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Dark mode
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  const btn = document.querySelector('.dark-toggle');
+  btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+}
+// Restore dark mode
+if (localStorage.getItem('darkMode') === 'true') {
+  document.body.classList.add('dark');
+  document.querySelector('.dark-toggle').textContent = '☀️';
+}
+
+// Swipe support
+let touchStartX = 0;
+let touchEndX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  const diff = touchStartX - touchEndX;
+  if (Math.abs(diff) > 80) {
+    if (diff > 0 && current < total) goTo(current + 1);
+    else if (diff < 0 && current > 1) goTo(current - 1);
+  }
+}, {passive:true});
+
+// Init mobile dots
+goTo(1);
 </script>
 </body>
 </html>
