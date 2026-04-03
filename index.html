@@ -1450,7 +1450,9 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 
   <div class="section">
-    <div class="chart-page-widget" id="tvChartPage"></div>
+    <div class="chart-page-widget">
+      <iframe src="https://s.tradingview.com/widgetembed/?hideideas=1&overrides=&preventMouseHoverFromDisplayingLabels=0&symbol=BINANCE%3ABTCUSDT&interval=60&theme=dark&style=1&locale=kr&toolbarbg=f1f3f6&studies=%5B%5D&timezone=Asia%2FSeoul&studies_overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&utm_source=&utm_medium=widget_new&utm_campaign=chart" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
+    </div>
   </div>
 
   <div class="chapter-nav-bottom">
@@ -1657,11 +1659,7 @@ function goToChart() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   closeSidebar();
 
-  // Load TradingView widget once
-  if (!chartLoaded) {
-    loadTvChart('tvChartPage');
-    chartLoaded = true;
-  }
+  // Chart is already embedded via iframe in HTML
 
   // Update mobile nav
   const mobPrev = document.getElementById('mobPrev');
