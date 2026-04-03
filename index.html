@@ -1631,38 +1631,16 @@ document.addEventListener('touchend', e => {
 
 // ===== TRADINGVIEW CHART =====
 let chartLoaded = false;
-let mobileChartLoaded = false;
 
-function loadTvWidget(targetId) {
+function loadTvChart(targetId) {
   const container = document.getElementById(targetId);
+  const iframe = document.createElement('iframe');
+  iframe.src = 'https://s.tradingview.com/widgetembed/?hideideas=1&overrides=&preventMouseHoverFromDisplayingLabels=0&symbol=BINANCE%3ABTCUSDT&interval=60&theme=dark&style=1&locale=kr&toolbarbg=f1f3f6&studies=%5B%5D&timezone=Asia%2FSeoul&studies_overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&utm_source=&utm_medium=widget_new&utm_campaign=chart';
+  iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;border-radius:inherit;';
+  iframe.allowFullscreen = true;
+  iframe.allow = 'autoplay; encrypted-media';
   container.innerHTML = '';
-  const inner = document.createElement('div');
-  inner.id = targetId + '_inner';
-  inner.style.cssText = 'height:100%;width:100%';
-  container.appendChild(inner);
-
-  const script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-  script.async = true;
-  script.textContent = JSON.stringify({
-    "autosize": true,
-    "symbol": "BINANCE:BTCUSDT",
-    "interval": "60",
-    "timezone": "Asia/Seoul",
-    "theme": "dark",
-    "style": "1",
-    "locale": "kr",
-    "allow_symbol_change": true,
-    "support_host": "https://www.tradingview.com",
-    "hide_side_toolbar": false,
-    "details": true,
-    "hotlist": false,
-    "calendar": false,
-    "studies": ["STD;SMA"],
-    "container_id": targetId + "_inner"
-  });
-  container.appendChild(script);
+  container.appendChild(iframe);
 }
 
 function goToChart() {
@@ -1681,7 +1659,7 @@ function goToChart() {
 
   // Load TradingView widget once
   if (!chartLoaded) {
-    loadTvWidget('tvChartPage');
+    loadTvChart('tvChartPage');
     chartLoaded = true;
   }
 
