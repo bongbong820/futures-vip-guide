@@ -602,75 +602,20 @@ a{text-decoration:none;color:inherit}
   cursor:pointer;font-family:var(--font);flex-shrink:0;
 }
 
-/* ===== TRADINGVIEW CHART ===== */
-.chart-toggle-btn{
-  display:flex;align-items:center;gap:12px;
-  width:100%;padding:12px 14px;margin-bottom:4px;
-  border:1px solid var(--orange);background:var(--orange-light);
-  border-radius:var(--radius-sm);cursor:pointer;
-  text-align:left;transition:var(--transition);
-  -webkit-tap-highlight-color:transparent;
+/* ===== TRADINGVIEW CHART PAGE ===== */
+.chart-btn .chart-num{
+  background:var(--orange);color:#fff;font-size:13px;
 }
-.chart-toggle-btn:hover{background:var(--orange);border-color:var(--orange)}
-.chart-toggle-btn:hover .chapter-btn-title,
-.chart-toggle-btn:hover .chapter-btn-sub,
-.chart-toggle-btn:hover .chart-toggle-arrow{color:#fff}
-.chart-toggle-btn:hover .chart-toggle-icon{background:rgba(255,255,255,.2)}
-.chart-toggle-btn.active{background:var(--orange);border-color:var(--orange)}
-.chart-toggle-btn.active .chapter-btn-title,
-.chart-toggle-btn.active .chapter-btn-sub,
-.chart-toggle-btn.active .chart-toggle-arrow{color:#fff}
-.chart-toggle-btn.active .chart-toggle-icon{background:rgba(255,255,255,.2)}
-.chart-toggle-icon{
-  width:28px;height:28px;border-radius:8px;
-  background:var(--orange);color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;transition:var(--transition);
-}
-.chart-toggle-arrow{
-  margin-left:auto;font-size:10px;color:var(--gray-500);
-  transition:transform .3s ease;
-}
-.chart-toggle-btn.active .chart-toggle-arrow{transform:rotate(180deg)}
-.chart-container{
-  max-height:0;overflow:hidden;
-  transition:max-height .4s cubic-bezier(.4,0,.2,1);
-  border-radius:0 0 var(--radius-sm) var(--radius-sm);
-  margin-bottom:4px;
-}
-.chart-container.open{max-height:520px}
-.chart-container .tradingview-widget-container{
+.chart-btn.active{background:var(--orange-light)}
+.chart-btn.active .chart-num{background:var(--orange)}
+.chart-btn.active .chapter-btn-title{color:var(--orange);font-weight:700}
+.chart-page-widget{
   width:100%;height:500px;
-  border-radius:var(--radius-sm);overflow:hidden;
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--gray-200);
 }
-
-/* Mobile chart (full width overlay) */
-@media(max-width:900px){
-  .chart-mobile-wrap{
-    position:fixed;inset:0;z-index:250;
-    background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
-    display:none;align-items:flex-end;justify-content:center;
-  }
-  .chart-mobile-wrap.open{display:flex}
-  .chart-mobile-inner{
-    width:100%;max-height:80vh;
-    background:var(--white);border-radius:20px 20px 0 0;
-    padding:16px 16px 0;
-    animation:slideUp .3s ease;
-  }
-  .chart-mobile-header{
-    display:flex;align-items:center;justify-content:space-between;
-    margin-bottom:12px;
-  }
-  .chart-mobile-title{font-size:15px;font-weight:700;color:var(--navy)}
-  .chart-mobile-close{
-    width:32px;height:32px;border:none;border-radius:50%;
-    background:var(--gray-100);cursor:pointer;font-size:16px;
-    display:flex;align-items:center;justify-content:center;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .chart-mobile-chart{width:100%;height:500px;border-radius:12px;overflow:hidden}
-  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@media(max-width:640px){
+  .chart-page-widget{height:400px}
 }
 
 /* ===== MOBILE HAMBURGER ===== */
@@ -930,17 +875,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
-<!-- Mobile Chart Overlay -->
-<div class="chart-mobile-wrap" id="chartMobileWrap" onclick="if(event.target===this)closeMobileChart()">
-  <div class="chart-mobile-inner">
-    <div class="chart-mobile-header">
-      <span class="chart-mobile-title">BINANCE · BTCUSDT</span>
-      <button class="chart-mobile-close" onclick="closeMobileChart()">&#10005;</button>
-    </div>
-    <div class="chart-mobile-chart" id="tvWidgetMobile"></div>
-  </div>
-</div>
-
 <!-- SCROLL TO TOP -->
 <button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 
@@ -1006,20 +940,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
   </button>
 
-  <!-- Chart Toggle Button -->
-  <button class="chart-toggle-btn" id="chartToggleBtn" onclick="toggleChart()">
-    <div class="chart-toggle-icon">&#128200;</div>
-    <div>
-      <span class="chapter-btn-title">차트 보기</span>
-      <span class="chapter-btn-sub">BINANCE · BTCUSDT</span>
-    </div>
-    <span class="chart-toggle-arrow" id="chartArrow">&#9660;</span>
+  <button class="chapter-btn chart-btn" onclick="goToChart()">
+    <div class="chapter-num chart-num">&#128200;</div>
+    <div><span class="chapter-btn-title">차트 보기</span><span class="chapter-btn-sub">BINANCE · BTCUSDT · 실시간</span></div>
   </button>
-
-  <!-- TradingView Chart Container -->
-  <div class="chart-container" id="chartContainer">
-    <div class="tradingview-widget-container" id="tvWidget"></div>
-  </div>
 
   <div class="sidebar-footer">
     <div class="trainer-card">
@@ -1510,7 +1434,29 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="chapter-nav-bottom">
     <button class="nav-btn" onclick="goTo(6)">← 이전 챕터</button>
     <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot active" onclick="goTo(7)"></button></div>
-    <button class="nav-btn" disabled>완료 ✓</button>
+    <button class="nav-btn" onclick="goToChart()">차트 보기 →</button>
+  </div>
+</div>
+
+<!-- CHART PAGE -->
+<div class="chapter-page" id="chChart">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128200;</div>
+    <div>
+      <div class="chapter-label">Live Chart — TradingView</div>
+      <h1 class="chapter-title">실시간 차트</h1>
+      <p class="chapter-desc">TradingView 차트에서 직접 캔들, 이동평균선, 볼륨을 확인하세요. 심볼을 자유롭게 변경할 수 있습니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="chart-page-widget" id="tvChartPage"></div>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(7)">← Chapter 7</button>
+    <div></div>
+    <button class="nav-btn" disabled>차트 페이지</button>
   </div>
 </div>
 
@@ -1615,8 +1561,8 @@ function goTo(n) {
   const mobNext = document.getElementById('mobNext');
   if (mobPrev) mobPrev.disabled = n <= 1;
   if (mobNext) {
-    if (n >= total) { mobNext.textContent = '완료 ✓'; mobNext.disabled = true; }
-    else { mobNext.textContent = '다음 →'; mobNext.disabled = false; }
+    if (n >= total) { mobNext.textContent = '차트 →'; mobNext.disabled = false; mobNext.onclick = () => goToChart(); }
+    else { mobNext.textContent = '다음 →'; mobNext.disabled = false; mobNext.onclick = () => goTo(current + 1); }
   }
   const mobDots = document.getElementById('mobDots');
   if (mobDots) {
@@ -1719,43 +1665,40 @@ function loadTvWidget(targetId) {
   container.appendChild(script);
 }
 
-function toggleChart() {
-  const isMobile = window.innerWidth <= 900;
-  if (isMobile) {
-    openMobileChart();
-  } else {
-    const container = document.getElementById('chartContainer');
-    const btn = document.getElementById('chartToggleBtn');
-    const isOpen = container.classList.contains('open');
-    if (isOpen) {
-      container.classList.remove('open');
-      btn.classList.remove('active');
-    } else {
-      if (!chartLoaded) {
-        loadTvWidget('tvWidget');
-        chartLoaded = true;
-      }
-      container.classList.add('open');
-      btn.classList.add('active');
+function goToChart() {
+  // Hide all chapter pages
+  document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+  // Show chart page
+  document.getElementById('chChart').classList.add('active');
+  // Highlight chart button
+  document.querySelector('.chart-btn').classList.add('active');
+  // Update progress bar to full
+  document.getElementById('progressFill').style.width = '100%';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  closeSidebar();
+
+  // Load TradingView widget once
+  if (!chartLoaded) {
+    loadTvWidget('tvChartPage');
+    chartLoaded = true;
+  }
+
+  // Update mobile nav
+  const mobPrev = document.getElementById('mobPrev');
+  const mobNext = document.getElementById('mobNext');
+  if (mobPrev) { mobPrev.disabled = false; mobPrev.onclick = () => goTo(7); }
+  if (mobNext) { mobNext.textContent = '차트 ✓'; mobNext.disabled = true; }
+  const mobDots = document.getElementById('mobDots');
+  if (mobDots) {
+    mobDots.innerHTML = '';
+    for (let i = 1; i <= total + 1; i++) {
+      const d = document.createElement('div');
+      d.className = 'mobile-nav-dot' + (i === total + 1 ? ' active' : '');
+      mobDots.appendChild(d);
     }
   }
-}
-
-function openMobileChart() {
-  const wrap = document.getElementById('chartMobileWrap');
-  wrap.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  document.getElementById('chartToggleBtn').classList.add('active');
-  if (!mobileChartLoaded) {
-    loadTvWidget('tvWidgetMobile');
-    mobileChartLoaded = true;
-  }
-}
-
-function closeMobileChart() {
-  document.getElementById('chartMobileWrap').classList.remove('open');
-  document.body.style.overflow = '';
-  document.getElementById('chartToggleBtn').classList.remove('active');
 }
 
 // ===== SCROLL REVEAL =====
