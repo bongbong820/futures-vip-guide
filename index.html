@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>해외선물 핵심 키워드 마스터 가이드 — VIP Edition</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;
+  --navy-light:#2D4A7A;
+  --blue:#3182F6;
+  --blue-light:#E8F1FE;
+  --blue-bg:#F5F8FF;
+  --orange:#FF6B35;
+  --orange-light:#FFF3ED;
+  --orange-dark:#E85A24;
+  --white:#FFFFFF;
+  --gray-50:#F8F9FA;
+  --gray-100:#F1F3F5;
+  --gray-200:#E9ECEF;
+  --gray-300:#DEE2E6;
+  --gray-400:#CED4DA;
+  --gray-500:#ADB5BD;
+  --gray-600:#868E96;
+  --gray-700:#495057;
+  --gray-800:#343A40;
+  --gray-900:#212529;
+  --green:#20C997;
+  --green-light:#E6FCF5;
+  --red:#FF6B6B;
+  --red-light:#FFF0F0;
+  --radius:16px;
+  --radius-sm:10px;
+  --radius-xs:6px;
+  --shadow:0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md:0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 40px rgba(0,0,0,0.1);
+  --transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;
+  background:var(--gray-50);
+  color:var(--gray-900);
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit}
+
+/* ===== HEADER ===== */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--gray-200);
+  padding:0 24px;
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;
+  height:60px;gap:12px;
+}
+.header-logo{
+  display:flex;align-items:center;gap:8px;
+  font-weight:800;font-size:16px;color:var(--navy);
+}
+.header-logo-icon{
+  width:32px;height:32px;
+  background:linear-gradient(135deg,var(--orange),var(--blue));
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:14px;font-weight:900;
+}
+.header-badge{
+  background:var(--orange);color:#fff;
+  font-size:11px;font-weight:700;padding:3px 10px;
+  border-radius:20px;letter-spacing:.5px;
+}
+.header-right{
+  margin-left:auto;font-size:13px;color:var(--gray-500);
+}
+
+/* ===== PROGRESS ===== */
+.progress-wrap{
+  position:sticky;top:60px;z-index:99;
+  background:var(--white);height:3px;
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--orange),var(--blue));
+  transition:width .4s ease;border-radius:0 3px 3px 0;
+}
+
+/* ===== LAYOUT ===== */
+.layout{
+  max-width:1200px;margin:0 auto;
+  display:flex;gap:0;min-height:calc(100vh - 63px);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:280px;flex-shrink:0;
+  position:sticky;top:63px;height:calc(100vh - 63px);
+  overflow-y:auto;padding:28px 20px;
+  background:var(--white);
+  border-right:1px solid var(--gray-200);
+}
+.sidebar-greeting{font-size:12px;color:var(--gray-500);font-weight:500;margin-bottom:4px}
+.sidebar-heading{font-size:18px;font-weight:800;color:var(--navy);line-height:1.4;margin-bottom:20px}
+.sidebar-label{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+
+.chapter-btn{
+  display:flex;align-items:center;gap:12px;
+  width:100%;padding:12px 14px;margin-bottom:4px;
+  border:none;background:transparent;
+  border-radius:var(--radius-sm);cursor:pointer;
+  text-align:left;transition:var(--transition);
+}
+.chapter-btn:hover{background:var(--gray-100)}
+.chapter-btn.active{background:var(--blue-light)}
+.chapter-btn.active .chapter-num{background:var(--blue);color:#fff}
+.chapter-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
+.chapter-num{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--gray-200);color:var(--gray-600);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;flex-shrink:0;
+  transition:var(--transition);
+}
+.chapter-btn-title{font-size:14px;font-weight:600;color:var(--gray-800);display:block;transition:var(--transition)}
+.chapter-btn-sub{font-size:11px;color:var(--gray-500);display:block;margin-top:1px}
+
+.sidebar-footer{margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-200)}
+.trainer-card{
+  background:linear-gradient(135deg,var(--navy),var(--navy-light));
+  border-radius:var(--radius);padding:20px;color:#fff;
+}
+.trainer-tag{font-size:10px;font-weight:700;letter-spacing:1px;color:var(--orange);margin-bottom:8px}
+.trainer-name{font-size:15px;font-weight:700;margin-bottom:8px}
+.trainer-desc{font-size:12px;line-height:1.6;color:rgba(255,255,255,.7)}
+
+/* ===== MAIN ===== */
+.main{flex:1;min-width:0;padding:32px 40px 60px}
+
+.chapter-page{display:none;animation:fadeUp .4s ease}
+.chapter-page.active{display:block}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Hero */
+.chapter-hero{
+  display:flex;align-items:flex-start;gap:20px;
+  margin-bottom:36px;padding-bottom:28px;
+  border-bottom:1px solid var(--gray-200);
+}
+.chapter-hero-num{
+  font-size:56px;font-weight:900;
+  background:linear-gradient(135deg,var(--orange),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1;
+}
+.chapter-label{font-size:13px;font-weight:600;color:var(--blue);letter-spacing:.5px;margin-bottom:4px}
+.chapter-title{font-size:28px;font-weight:800;color:var(--navy);line-height:1.3;margin-bottom:8px}
+.chapter-desc{font-size:15px;color:var(--gray-600);line-height:1.6}
+
+/* Sections */
+.section{margin-bottom:40px}
+.section-title{
+  font-size:20px;font-weight:800;color:var(--navy);
+  margin-bottom:16px;padding-left:12px;
+  border-left:3px solid var(--orange);
+}
+.prose{font-size:15px;line-height:1.8;color:var(--gray-700);margin-bottom:16px}
+.prose strong{color:var(--navy);font-weight:700}
+
+/* Quote */
+.quote{
+  background:var(--blue-bg);border-left:4px solid var(--blue);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  padding:20px 24px;margin:16px 0;
+  font-size:15px;font-style:italic;color:var(--navy);line-height:1.8;
+}
+
+/* Callout */
+.callout{
+  background:var(--blue-light);
+  border-radius:var(--radius);padding:20px 24px;margin:16px 0;
+}
+.callout-label{
+  font-size:12px;font-weight:800;color:var(--blue);
+  margin-bottom:8px;letter-spacing:.5px;
+}
+.callout p{font-size:14px;line-height:1.7;color:var(--gray-700)}
+.callout.danger{background:var(--red-light)}
+.callout.danger .callout-label{color:var(--red)}
+.callout.success{background:var(--green-light)}
+.callout.success .callout-label{color:var(--green)}
+
+/* Flow */
+.flow-label{font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:10px}
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.flow-item{
+  padding:8px 16px;border-radius:24px;font-size:13px;font-weight:600;
+  white-space:nowrap;
+}
+.flow-item.bad{background:var(--red-light);color:var(--red)}
+.flow-item.good{background:var(--green-light);color:var(--green)}
+.flow-arrow{color:var(--gray-400);font-size:14px}
+
+/* Checklist */
+.checklist{list-style:none;padding:0}
+.checklist li{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 16px;margin-bottom:6px;
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius-sm);font-size:14px;color:var(--gray-700);
+  transition:var(--transition);
+}
+.checklist li:hover{border-color:var(--blue);background:var(--blue-light)}
+.checklist li::before{
+  content:'';width:20px;height:20px;flex-shrink:0;margin-top:1px;
+  border:2px solid var(--blue);border-radius:50%;
+  background:var(--white);
+}
+.checklist.danger li::before{border-color:var(--red)}
+.checklist.danger li:hover{border-color:var(--red);background:var(--red-light)}
+
+/* Numbered list */
+.num-list{list-style:none;padding:0;counter-reset:nl}
+.num-list li{
+  counter-increment:nl;display:flex;align-items:flex-start;gap:12px;
+  padding:14px 16px;margin-bottom:6px;
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius-sm);font-size:14px;color:var(--gray-700);
+}
+.num-list li::before{
+  content:counter(nl);width:24px;height:24px;flex-shrink:0;
+  background:var(--orange);color:#fff;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;
+}
+
+/* Two Column */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.info-card{
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius);padding:24px;
+}
+.info-card.blue{border-top:3px solid var(--blue)}
+.info-card.gold{border-top:3px solid var(--orange)}
+.info-card-label{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:12px}
+.info-card .checklist li{border:none;padding:8px 0;margin:0;background:transparent}
+.info-card .checklist li:hover{background:transparent}
+
+/* Risk Grid */
+.risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.risk-item{
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius);padding:20px;
+  transition:var(--transition);
+}
+.risk-item:hover{box-shadow:var(--shadow-md);border-color:var(--blue);transform:translateY(-2px)}
+.risk-num{
+  font-size:12px;font-weight:800;color:var(--blue);
+  background:var(--blue-light);padding:4px 10px;
+  border-radius:20px;display:inline-block;margin-bottom:10px;
+}
+.risk-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.risk-desc{font-size:13px;color:var(--gray-600);line-height:1.5}
+
+/* Compare */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.compare-card{
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--gray-200);background:var(--white);
+}
+.compare-card-header{
+  padding:16px 20px;font-size:15px;font-weight:700;
+  display:flex;align-items:center;gap:8px;
+}
+.compare-card.pro .compare-card-header{background:var(--blue-light);color:var(--blue)}
+.compare-card.beginner .compare-card-header{background:var(--red-light);color:var(--red)}
+.compare-card-body{padding:16px 20px}
+.compare-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:8px 0;font-size:14px;color:var(--gray-700);
+}
+.compare-dot{
+  width:6px;height:6px;border-radius:50%;margin-top:7px;flex-shrink:0;
+}
+.compare-card.pro .compare-dot{background:var(--blue)}
+.compare-card.beginner .compare-dot{background:var(--red)}
+
+/* MA Grid */
+.ma-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:16px 0}
+.ma-item{
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius);padding:18px;
+  transition:var(--transition);
+}
+.ma-item:hover{border-color:var(--orange);box-shadow:var(--shadow)}
+.ma-num{font-size:11px;font-weight:800;color:var(--orange);letter-spacing:.5px}
+.ma-title{font-size:15px;font-weight:700;color:var(--navy);margin:6px 0}
+.ma-desc{font-size:13px;color:var(--gray-600);line-height:1.5}
+
+/* Candle */
+.candle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.candle-card{
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius);padding:20px;
+}
+.candle-factor-tag{font-size:11px;font-weight:700;color:var(--orange);margin-bottom:6px}
+.candle-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:12px}
+.candle-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-100)}
+.candle-row:last-child{border:0}
+.candle-key{font-size:12px;color:var(--gray-500);font-weight:600}
+.c-strong{font-size:13px;color:var(--green);font-weight:600}
+.c-weak{font-size:13px;color:var(--red);font-weight:600}
+
+/* MTA */
+.mta-box{
+  background:var(--navy);border-radius:var(--radius);
+  padding:24px;margin:16px 0;
+}
+.mta-label{font-size:13px;font-weight:700;color:var(--orange);margin-bottom:16px}
+.mta-row{display:flex;align-items:center;justify-content:center;gap:16px}
+.mta-item{
+  background:rgba(255,255,255,0.1);border-radius:var(--radius-sm);
+  padding:16px 24px;text-align:center;flex:1;
+}
+.mta-sub{font-size:11px;color:var(--gray-400);margin-bottom:4px}
+.mta-title{font-size:15px;font-weight:700;color:#fff}
+.mta-arrow{color:var(--orange);font-size:18px;font-weight:700}
+
+/* Entry Checks */
+.entry-checks{margin:16px 0}
+.entry-check{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;margin-bottom:6px;
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius-sm);font-size:14px;color:var(--gray-700);
+  transition:var(--transition);
+}
+.entry-check:hover{border-color:var(--green);background:var(--green-light)}
+.entry-check-icon{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--green);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;flex-shrink:0;
+}
+
+/* Trap */
+.trap-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.trap-card{
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--gray-200);background:var(--white);
+}
+.trap-card .trap-type{
+  padding:14px 20px;font-size:14px;font-weight:800;letter-spacing:.5px;
+}
+.trap-card.bull .trap-type{background:var(--red-light);color:var(--red)}
+.trap-card.bear .trap-type{background:var(--green-light);color:var(--green)}
+.trap-title{padding:16px 20px 4px;font-size:15px;font-weight:700;color:var(--navy)}
+.trap-desc{padding:0 20px;font-size:13px;color:var(--gray-600);line-height:1.6}
+.trap-signal{
+  padding:12px 20px 16px;font-size:13px;font-weight:700;
+  color:var(--blue);
+}
+
+/* Data Table */
+.data-table{
+  width:100%;border-collapse:collapse;margin:16px 0;
+  border-radius:var(--radius);overflow:hidden;
+  border:1px solid var(--gray-200);
+}
+.data-table th{
+  background:var(--navy);color:#fff;
+  padding:12px 18px;font-size:13px;font-weight:700;text-align:left;
+}
+.data-table td{
+  padding:12px 18px;font-size:14px;color:var(--gray-700);
+  border-bottom:1px solid var(--gray-100);background:var(--white);
+}
+.td-good{color:var(--green);font-weight:600}
+
+/* Principle Cards */
+.principle-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.principle-card{
+  display:flex;align-items:flex-start;gap:14px;
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius);padding:18px;
+  transition:var(--transition);
+}
+.principle-card:hover{box-shadow:var(--shadow);border-color:var(--blue)}
+.principle-num{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--orange),var(--blue));
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;flex-shrink:0;
+}
+.principle-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.principle-desc{font-size:13px;color:var(--gray-600);line-height:1.5}
+
+/* Triple Grid */
+.triple-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.triple-card{
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:var(--radius);padding:24px;text-align:center;
+  transition:var(--transition);
+}
+.triple-card:hover{box-shadow:var(--shadow-md);transform:translateY(-3px)}
+.triple-icon{font-size:32px;margin-bottom:10px}
+.triple-title{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.triple-desc{font-size:13px;color:var(--gray-600);line-height:1.6}
+
+/* Navigation */
+.chapter-nav-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:28px;margin-top:40px;border-top:1px solid var(--gray-200);
+}
+.nav-btn{
+  padding:10px 24px;border-radius:24px;
+  font-size:14px;font-weight:600;cursor:pointer;
+  border:1px solid var(--gray-300);background:var(--white);
+  color:var(--gray-700);transition:var(--transition);
+}
+.nav-btn:hover:not(:disabled){
+  background:var(--blue);color:#fff;border-color:var(--blue);
+}
+.nav-btn:disabled{opacity:.3;cursor:default}
+.nav-dots{display:flex;gap:8px}
+.nav-dot{
+  width:10px;height:10px;border-radius:50%;border:none;
+  background:var(--gray-300);cursor:pointer;padding:0;
+  transition:var(--transition);
+}
+.nav-dot.active{background:var(--orange);width:28px;border-radius:5px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{padding:24px 20px 40px}
+  .risk-grid,.candle-grid,.triple-grid{grid-template-columns:1fr}
+  .compare-grid,.trap-grid,.two-col,.principle-cards{grid-template-columns:1fr}
+  .chapter-hero-num{font-size:40px}
+  .chapter-title{font-size:22px}
+  .flow{flex-direction:column;align-items:flex-start}
+  .flow-arrow{transform:rotate(90deg)}
+  .mta-row{flex-direction:column}
+  .mta-arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="header-logo-icon">VIP</div>
+      <span>해외선물 핵심 키워드 마스터 가이드</span>
+    </div>
+    <div class="header-badge">VIP MEMBER</div>
+    <div class="header-right">선물로 500억 번 트레이더 · 7 챕터 완성</div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-fill" id="progressFill" style="width:14.28%"></div>
+</div>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-greeting">VIP 회원 전용 가이드</div>
+  <div class="sidebar-heading">500억의 실전 경험이 담긴<br>실전 매매의 모든 것</div>
+
+  <div class="sidebar-label">목차</div>
+
+  <button class="chapter-btn active" onclick="goTo(1)">
+    <div class="chapter-num">01</div>
+    <div><span class="chapter-btn-title">트레이딩 마인드셋</span><span class="chapter-btn-sub">심리 · 두려움 · 기본원칙</span></div>
+  </button>
+  <button class="chapter-btn" onclick="goTo(2)">
+    <div class="chapter-num">02</div>
+    <div><span class="chapter-btn-title">손절 & 리스크 관리</span><span class="chapter-btn-sub">Stop-Loss · 포지션 사이즈</span></div>
+  </button>
+  <button class="chapter-btn" onclick="goTo(3)">
+    <div class="chapter-num">03</div>
+    <div><span class="chapter-btn-title">고수 vs 초보의 차이</span><span class="chapter-btn-sub">비교표 · 핵심 차이점</span></div>
+  </button>
+  <button class="chapter-btn" onclick="goTo(4)">
+    <div class="chapter-num">04</div>
+    <div><span class="chapter-btn-title">기술적 분석 기초</span><span class="chapter-btn-sub">MA · 캔들 · 볼륨</span></div>
+  </button>
+  <button class="chapter-btn" onclick="goTo(5)">
+    <div class="chapter-num">05</div>
+    <div><span class="chapter-btn-title">추세 & 진입 전략</span><span class="chapter-btn-sub">Trend Following · 타점</span></div>
+  </button>
+  <button class="chapter-btn" onclick="goTo(6)">
+    <div class="chapter-num">06</div>
+    <div><span class="chapter-btn-title">패턴 & 트랩</span><span class="chapter-btn-sub">Trap · Fakeout · 패턴</span></div>
+  </button>
+  <button class="chapter-btn" onclick="goTo(7)">
+    <div class="chapter-num">07</div>
+    <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
+  </button>
+
+  <div class="sidebar-footer">
+    <div class="trainer-card">
+      <div class="trainer-tag">EXPERT GUIDE</div>
+      <div class="trainer-name">선물로 500억 번 트레이더</div>
+      <div class="trainer-desc">선물 시장에서 직접 500억을 벌며 실전으로 검증한 원칙들만 담았습니다. VIP 회원 여러분께만 공유드리는 내용입니다.</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- CHAPTER 1 -->
+<div class="chapter-page active" id="ch1">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">01</div>
+    <div>
+      <div class="chapter-label">Chapter 1 — Mindset</div>
+      <h1 class="chapter-title">트레이딩 마인드셋 기초</h1>
+      <p class="chapter-desc">선물 시장에서 500억을 벌기까지, 기술보다 마인드에서 갈리는 경우가 훨씬 많았어요. 이 챕터는 그 경험에서 나온 이야기입니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">왜 매매가 두려울까요?</h2>
+    <p class="prose">버튼을 누를 때 손이 떨린다면, 그건 실력이 없어서가 아닙니다. <strong>과거의 손실이 몸에 남은 것</strong>입니다. 이걸 먼저 인정해야 앞으로 나아갈 수 있어요.</p>
+    <div style="margin:18px 0 10px">
+      <div class="flow-label">❌ 악순환 구조</div>
+      <div class="flow">
+        <div class="flow-item bad">손실 경험</div><div class="flow-arrow">→</div>
+        <div class="flow-item bad">두려움</div><div class="flow-arrow">→</div>
+        <div class="flow-item bad">트라우마</div><div class="flow-arrow">→</div>
+        <div class="flow-item bad">조급한 익절</div><div class="flow-arrow">→</div>
+        <div class="flow-item bad">홀딩 불가</div>
+      </div>
+    </div>
+    <div style="margin:10px 0 18px">
+      <div class="flow-label">✅ 극복하는 방법</div>
+      <div class="flow">
+        <div class="flow-item good">공부 (차트/패턴)</div><div class="flow-arrow">→</div>
+        <div class="flow-item good">기준 수립</div><div class="flow-arrow">→</div>
+        <div class="flow-item good">진입 확신</div><div class="flow-arrow">→</div>
+        <div class="flow-item good">성공 경험</div><div class="flow-arrow">→</div>
+        <div class="flow-item good">자신감</div>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="callout-label">핵심 포인트</div>
+      <p>두려움은 정보 부족의 신호입니다. 공부와 경험이 쌓일수록 자연스럽게 사라져요. 지름길은 없지만, 올바른 방향만 있으면 반드시 극복할 수 있습니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">진정한 수익이란?</h2>
+    <div class="quote">"진정한 수익은 내 실력과 경험에 비례해서 이뤄지는 수익입니다. 운이나 감에 기댄 수익은 언젠가 반드시 돌아옵니다. 제가 보장합니다."</div>
+    <p class="prose">우연히 큰 수익이 났다고 좋아하지 마세요. 제 경험상 그런 수익이 더 위험합니다. 근거 없는 자신감이 생기거든요. <strong>내 판단의 근거가 명확할 때만 진짜 실력이 쌓이는 겁니다.</strong></p>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">감/촉 매매 (Gut Trading)는 하지 마세요 ❌</h2>
+    <p class="prose">제가 가장 안타까운 순간이 "왠지 오를 것 같아서 들어갔다"는 말을 들을 때예요. 아래 중 하나라도 해당된다면, 지금 당장 멈추세요.</p>
+    <ul class="checklist danger">
+      <li>손절가(Stop-Loss)를 설정하지 않고 진입했다</li>
+      <li>지금 추세가 어떤지 확신이 없다</li>
+      <li>내 매매의 기준(Rules)이 없다</li>
+      <li>"왠지 오를 것 같다"는 느낌만으로 진입하려 한다</li>
+    </ul>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" disabled>← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot active" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goTo(2)">다음 챕터 →</button>
+  </div>
+</div>
+
+<!-- CHAPTER 2 -->
+<div class="chapter-page" id="ch2">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">02</div>
+    <div>
+      <div class="chapter-label">Chapter 2 — Risk Management</div>
+      <h1 class="chapter-title">손절 & 리스크 관리</h1>
+      <p class="chapter-desc">500억을 버는 과정에서 계좌를 날린 사람들을 가장 많이 본 챕터이기도 합니다. 이 내용만큼은 꼭 몸에 익혀두세요. 기술보다 이게 먼저입니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">손절은 손실이 아닙니다</h2>
+    <div class="quote">"손절(Stop-Loss)은 더 좋은 수익을 만들기 위한 기회입니다. 이걸 진심으로 믿게 되는 날이, 여러분이 성장하는 날입니다."</div>
+    <p class="prose">손절하기 싫은 마음, 저도 압니다. 하지만 손절을 못 하는 것은 단순한 심리 문제가 아닙니다. <strong>진입 기준이 없기 때문</strong>입니다. 기준이 있으면 손절이 자연스러워져요.</p>
+    <div class="callout">
+      <div class="callout-label">손절 설정 원칙</div>
+      <p>감이 아닌 기준으로 설정하세요. 전고점(Resistance) / 전저점(Support) 기반으로, 진입 전에 반드시 설정하고, 한 번 정했으면 반드시 지켜야 합니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">마진콜(Margin Call) 방지하는 법</h2>
+    <div class="two-col">
+      <div class="info-card blue">
+        <div class="info-card-label">기술적 요인</div>
+        <ul class="checklist">
+          <li>추세 추종 매매(Trend Following) 위주로 진행하기</li>
+          <li>진입 전 시나리오 작성 (A 플랜, B 플랜)</li>
+          <li>손절가 명확히 설정하고 반드시 이행</li>
+          <li>과욕(Over-trading) 금지</li>
+          <li>실수 반복 금지 → 매매 일지 필수</li>
+        </ul>
+      </div>
+      <div class="info-card gold">
+        <div class="info-card-label">심리적 요인</div>
+        <ul class="checklist">
+          <li>매매는 의지가 아닌 경험의 영역임을 기억하기</li>
+          <li>손실의 고통 > 수익의 기쁨 (손실 회피 편향)</li>
+          <li>교만과 과욕은 절대 금물</li>
+          <li>나만의 심리 안정 루틴 만들기</li>
+          <li>운에 기대지 않기</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">리스크 관리 6원칙 (Position Sizing)</h2>
+    <p class="prose">이 6가지는 단순한 조언이 아닙니다. 500억을 벌어본 트레이더로서 확신하는 공통점입니다.</p>
+    <div class="risk-grid">
+      <div class="risk-item"><div class="risk-num">01</div><div class="risk-title">계약 수 조절</div><div class="risk-desc">시장 변동성에 따라 포지션 사이즈를 조절하세요</div></div>
+      <div class="risk-item"><div class="risk-num">02</div><div class="risk-title">시드 관리</div><div class="risk-desc">증거금은 여유 자금으로만, 무리한 투자는 금물입니다</div></div>
+      <div class="risk-item"><div class="risk-num">03</div><div class="risk-title">수익금 출금</div><div class="risk-desc">수익이 나면 정기적으로 출금하는 습관을 들이세요</div></div>
+      <div class="risk-item"><div class="risk-num">04</div><div class="risk-title">원금 보호</div><div class="risk-desc">원금을 지키는 것이 수익을 내는 것보다 우선입니다</div></div>
+      <div class="risk-item"><div class="risk-num">05</div><div class="risk-title">일일 손실 한도</div><div class="risk-desc">하루 최대 손실 한도를 정하고 넘으면 즉시 중단하세요</div></div>
+      <div class="risk-item"><div class="risk-num">06</div><div class="risk-title">레버리지 관리</div><div class="risk-desc">과도한 레버리지는 수익도 키우지만 손실도 키웁니다</div></div>
+    </div>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(1)">← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot active" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goTo(3)">다음 챕터 →</button>
+  </div>
+</div>
+
+<!-- CHAPTER 3 -->
+<div class="chapter-page" id="ch3">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">03</div>
+    <div>
+      <div class="chapter-label">Chapter 3 — Pro vs Beginner</div>
+      <h1 class="chapter-title">고수 vs 초보의 차이</h1>
+      <p class="chapter-desc">차이는 생각보다 단순합니다. 저도 처음엔 초보였고, 이 차이를 직접 경험하며 넘어왔습니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">무엇이 다를까요?</h2>
+    <div class="compare-grid">
+      <div class="compare-card pro">
+        <div class="compare-card-header"><span>✓</span> 고수 (Pro Trader)</div>
+        <div class="compare-card-body">
+          <div class="compare-item"><div class="compare-dot"></div>손절을 자연스럽게 합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>실수 빈도가 현저히 낮습니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>손절 후 냉정하게 다음 매매를 준비합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>진입 후 시나리오대로 대응합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>실패를 인정하고 복기합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>손실 평균화(물타기)를 절대 하지 않습니다</div>
+        </div>
+      </div>
+      <div class="compare-card beginner">
+        <div class="compare-card-header"><span>✗</span> 초보 (Beginner)</div>
+        <div class="compare-card-body">
+          <div class="compare-item"><div class="compare-dot"></div>손절을 못 하거나 계속 미룹니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>같은 실수를 반복합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>손절 후 FOMO로 충동매매를 합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>희망 홀딩(Hope Trade)을 합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>시장 탓, 운 탓을 합니다</div>
+          <div class="compare-item"><div class="compare-dot"></div>손실 평균화(Averaging Down)를 남발합니다</div>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="callout-label">핵심 포인트</div>
+      <p>초보에서 고수로 가는 첫 번째 단계는 손절 습관입니다. 다른 기술은 그 다음입니다. 손절이 자연스러워지는 날부터 실력이 빠르게 늘어요.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">손실 평균화(Averaging Down)는 왜 위험한가요?</h2>
+    <p class="prose">"물타기"라고 부르는 이 행동, 얼핏 합리적으로 보입니다. 평균 단가를 낮추니까요. 하지만 이건 <strong style="color:var(--red)">이미 틀린 판단에 더 많은 돈을 거는 행동</strong>입니다.</p>
+    <div class="callout danger">
+      <div class="callout-label">경고</div>
+      <p>손실이 날 때 추가 매수하는 것은 "내 판단이 맞다"는 고집입니다. 시장은 고집을 꺾어버립니다. 틀렸다면 빠르게 인정하고 다음 기회를 노리세요.</p>
+    </div>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(2)">← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot active" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goTo(4)">다음 챕터 →</button>
+  </div>
+</div>
+
+<!-- CHAPTER 4 -->
+<div class="chapter-page" id="ch4">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">04</div>
+    <div>
+      <div class="chapter-label">Chapter 4 — Technical Analysis</div>
+      <h1 class="chapter-title">기술적 분석 기초</h1>
+      <p class="chapter-desc">복잡한 지표가 많지만, 500억을 벌면서 실전에서 사용해온 건 생각보다 간단합니다. 먼저 기초를 완벽하게 이해하는 게 중요해요.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">이동평균선(MA) 필수 체크사항</h2>
+    <p class="prose">이동평균선(Moving Average)은 일정 기간 가격의 평균입니다. 이것만 제대로 읽어도 시장의 큰 흐름이 보입니다.</p>
+    <div class="ma-grid">
+      <div class="ma-item"><span class="ma-num">CHECK 01</span><div class="ma-title">정배열 / 역배열</div><div class="ma-desc">단기선이 장기선 위 → 정배열(강세) 아래 → 역배열(약세)</div></div>
+      <div class="ma-item"><span class="ma-num">CHECK 02</span><div class="ma-title">골든 / 데드크로스</div><div class="ma-desc">단기선이 장기선을 위로 교차 / 아래로 교차</div></div>
+      <div class="ma-item"><span class="ma-num">CHECK 03</span><div class="ma-title">수렴 / 발산</div><div class="ma-desc">이평선 수렴(좁아짐) 후 큰 움직임을 예고합니다</div></div>
+      <div class="ma-item"><span class="ma-num">CHECK 04</span><div class="ma-title">시세 위치</div><div class="ma-desc">이평선 위 = 강세 이평선 아래 = 약세 신호</div></div>
+      <div class="ma-item"><span class="ma-num">CHECK 05</span><div class="ma-title">시장 타입</div><div class="ma-desc">횡보장(Range) vs 추세장(Trending) 파악하기</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">캔들(Candle)의 강도를 결정하는 3가지</h2>
+    <p class="prose">캔들 하나에도 많은 정보가 담겨 있어요. 강한 캔들과 약한 캔들을 구분할 수 있어야 진입 확신이 생깁니다.</p>
+    <div class="candle-grid">
+      <div class="candle-card"><div class="candle-factor-tag">Factor 01</div><div class="candle-title">볼륨 (Volume)</div><div class="candle-row"><span class="candle-key">강한 캔들</span><span class="c-strong">높은 볼륨 (Volume Spike)</span></div><div class="candle-row"><span class="candle-key">약한 캔들</span><span class="c-weak">낮은 볼륨</span></div></div>
+      <div class="candle-card"><div class="candle-factor-tag">Factor 02</div><div class="candle-title">기울기 (속도)</div><div class="candle-row"><span class="candle-key">강한 캔들</span><span class="c-strong">빠른 가격 이동</span></div><div class="candle-row"><span class="candle-key">약한 캔들</span><span class="c-weak">느린 가격 이동</span></div></div>
+      <div class="candle-card"><div class="candle-factor-tag">Factor 03</div><div class="candle-title">심리 (꼬리)</div><div class="candle-row"><span class="candle-key">강한 캔들</span><span class="c-strong">짧은 윗/아랫꼬리</span></div><div class="candle-row"><span class="candle-key">약한 캔들</span><span class="c-weak">긴 꼬리 (흔들기)</span></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">기준캔들 (Signal Candle)이란?</h2>
+    <p class="prose">기준캔들은 추세 전환이나 강한 방향성을 알리는 캔들입니다. 아래 조건에 맞을수록 신뢰도가 높아요.</p>
+    <ul class="checklist">
+      <li>장대봉 (Large Body Candle) — 몸통이 길수록 강합니다</li>
+      <li>직전 대비 볼륨 급증 — 거래량이 반드시 뒷받침되어야 합니다</li>
+      <li>이동평균선 우상향 상태 — 추세와 방향이 일치해야 합니다</li>
+      <li>저항선(Resistance) 돌파 위치 — 중요 가격대를 돌파해야 합니다</li>
+    </ul>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(3)">← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot active" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goTo(5)">다음 챕터 →</button>
+  </div>
+</div>
+
+<!-- CHAPTER 5 -->
+<div class="chapter-page" id="ch5">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">05</div>
+    <div>
+      <div class="chapter-label">Chapter 5 — Trend & Entry</div>
+      <h1 class="chapter-title">추세 & 진입 전략</h1>
+      <p class="chapter-desc">어디서 들어가느냐가 수익의 90%를 결정합니다. 진입 타점을 찾는 원칙, 500억을 벌면서 직접 쓴 방법을 그대로 알려드릴게요.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">추세(Trend) 설정 방법</h2>
+    <p class="prose">추세는 방향을 정하는 것입니다. 이걸 먼저 파악하지 않고 진입하는 건 나침반 없이 항해하는 것과 같아요.</p>
+    <ol class="num-list">
+      <li>기준마디(Key Level) 찾기 — 지지와 저항을 가장 많이 받은 가격대(허리)를 찾으세요</li>
+      <li>추세가 꺾여도 기준가 근처를 유지하면 → 추세가 살아있다고 판단합니다</li>
+      <li>기준가 근처에서 패턴이 생성되면 → 추세 방향으로 진입하세요</li>
+    </ol>
+    <div class="mta-box">
+      <div class="mta-label">다중 시간대 분석 (Multi-Timeframe)</div>
+      <div class="mta-row">
+        <div class="mta-item"><div class="mta-sub">대추세</div><div class="mta-title">일봉 (Daily)</div></div>
+        <div class="mta-arrow">→</div>
+        <div class="mta-item"><div class="mta-sub">중추세</div><div class="mta-title">1시간봉 (1H)</div></div>
+        <div class="mta-arrow">→</div>
+        <div class="mta-item"><div class="mta-sub">소추세</div><div class="mta-title">5분봉 / 1분봉</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">최적의 롱(매수) 진입 타점 체크리스트</h2>
+    <div class="callout">
+      <div class="callout-label">핵심 포인트</div>
+      <p>아래 조건이 많이 충족될수록 성공 확률이 높아집니다. 3개 이상 충족되면 진입을 충분히 고려해볼 만합니다.</p>
+    </div>
+    <div class="entry-checks">
+      <div class="entry-check"><div class="entry-check-icon">✓</div>이평선 수렴 후 발산(확장) 구간</div>
+      <div class="entry-check"><div class="entry-check-icon">✓</div>이평선 정배열 상태</div>
+      <div class="entry-check"><div class="entry-check-icon">✓</div>골든크로스 발생</div>
+      <div class="entry-check"><div class="entry-check-icon">✓</div>장대 양봉(Signal Candle) 등장</div>
+      <div class="entry-check"><div class="entry-check-icon">✓</div>볼륨 스파이크(Volume Spike) 발생</div>
+      <div class="entry-check"><div class="entry-check-icon">✓</div>상승 모멘텀(Bullish Momentum) 확인</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">추세 추종 매매(Trend Following)를 권하는 이유</h2>
+    <p class="prose">특히 처음 시작하시는 분들께 이걸 먼저 익히라고 합니다. 이유가 있어요.</p>
+    <ul class="checklist">
+      <li>초보자에게 가장 안전한 매매 스타일입니다</li>
+      <li>큰 손실 가능성이 현저히 낮습니다</li>
+      <li>한 번에 큰 수익이 날 확률이 높습니다</li>
+      <li>심리적으로 가장 편안하게 매매할 수 있습니다</li>
+    </ul>
+    <div class="callout danger">
+      <div class="callout-label">주의</div>
+      <p>역매매(Counter-Trend Trading) 절대 금지. 추세에 반하는 진입은 손실을 극대화시킵니다. 추세가 꺾이는 확실한 신호가 오기 전까지는 추세 방향으로만 매매하세요.</p>
+    </div>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(4)">← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot active" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goTo(6)">다음 챕터 →</button>
+  </div>
+</div>
+
+<!-- CHAPTER 6 -->
+<div class="chapter-page" id="ch6">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">06</div>
+    <div>
+      <div class="chapter-label">Chapter 6 — Pattern & Trap</div>
+      <h1 class="chapter-title">패턴 & 트랩</h1>
+      <p class="chapter-desc">이 챕터를 이해하고 나면, 속임수가 두려움이 아니라 기회로 보이기 시작합니다. 시장을 읽는 눈이 달라질 거예요.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Trap / Fakeout — 속임수는 기회입니다</h2>
+    <p class="prose">기관과 마켓메이커(Market Maker)는 개인 투자자의 물량을 뺏기 위해 가짜 돌파를 만듭니다. 처음엔 당하지만, 원리를 알면 오히려 이걸 역으로 이용할 수 있어요.</p>
+    <div class="trap-grid">
+      <div class="trap-card bull">
+        <div class="trap-type">Bull Trap</div>
+        <div class="trap-title">전고점 돌파처럼 보이지만...</div>
+        <div class="trap-desc">빠르게 하락 반전합니다. 매수 포지션을 들고 있던 개인들이 강제 손절당하는 구간이에요.</div>
+        <div class="trap-signal">→ 하락 반전 확인 시 매도(Short) 기회</div>
+      </div>
+      <div class="trap-card bear">
+        <div class="trap-type">Bear Trap</div>
+        <div class="trap-title">전저점 이탈처럼 보이지만...</div>
+        <div class="trap-desc">빠르게 상승 반전합니다. 매도 포지션을 들고 있던 개인들이 강제 손절당하는 구간이에요.</div>
+        <div class="trap-signal">→ 상승 반전 확인 시 매수(Long) 기회</div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <p class="prose" style="margin-bottom:8px;font-size:13px;color:var(--gray-500)">Trap 인식 3가지 조건</p>
+      <ol class="num-list">
+        <li>볼륨 스파이크(Volume Spike)와 함께 전고점 돌파 / 전저점 이탈이 발생한다</li>
+        <li>돌파 / 이탈 후 유지 시간이 매우 짧다 (빠르게 되돌아온다)</li>
+        <li>빠른 방향 전환이 일어난다</li>
+      </ol>
+    </div>
+    <div class="callout success">
+      <div class="callout-label">매매 급소</div>
+      <p>Fakeout 확인 후, 첫 번째 되돌림(Pullback) 지점에서 진입하세요. 이 자리가 리스크 대비 수익 비율(R:R)이 가장 좋은 진입 포인트입니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">패턴 기반 매매 (Pattern Trading)</h2>
+    <ul class="checklist">
+      <li>이전 차트의 매매 패턴을 먼저 파악하세요. 시장은 반복됩니다</li>
+      <li>같은 패턴이 반복될 확률이 높습니다</li>
+      <li>손절가는 감이 아닌 전고점 / 전저점 기준으로 설정하세요</li>
+      <li>진입 전 반드시 Stop-Loss를 설정하고 들어가세요</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">3회 테스트 후 반전 법칙</h2>
+    <div class="callout">
+      <div class="callout-label">핵심 원리</div>
+      <p>지지선 또는 저항선을 3회에 걸쳐 테스트한다면, 반대 세력이 강하다는 신호입니다. 세 번째 테스트에서 돌파하지 못하면 반대 방향으로 준비하세요.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">고점에서 볼륨 스파이크의 의미</h2>
+    <p class="prose">고점에서 갑자기 거래량이 폭증하면 세 가지 중 하나입니다. 세 번째는 특히 조심하세요.</p>
+    <ol class="num-list">
+      <li><strong>매물 소화:</strong> 단기 트레이더 물량을 털기 위한 흔들기입니다</li>
+      <li><strong>추가 매집:</strong> 더 낮은 가격에 물량을 쌓기 위한 테스트입니다</li>
+      <li style="color:var(--red)"><strong>물량 넘기기:</strong> 하락 전환 신호 → 이 구간에서는 절대 매수하지 마세요</li>
+    </ol>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(5)">← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot active" onclick="goTo(6)"></button><button class="nav-dot" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goTo(7)">다음 챕터 →</button>
+  </div>
+</div>
+
+<!-- CHAPTER 7 -->
+<div class="chapter-page" id="ch7">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num">07</div>
+    <div>
+      <div class="chapter-label">Chapter 7 — Trading Rules</div>
+      <h1 class="chapter-title">실전 매매 원칙</h1>
+      <p class="chapter-desc">매일 시장에 나가기 전, 이 챕터를 한 번씩 훑어보세요. 체크리스트 하나하나가 제 오랜 경험에서 나온 원칙들입니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">매매 금지 상황 ❌</h2>
+    <p class="prose">아래 상황에서는 아무리 좋은 자리가 보여도 쉬어야 합니다. 실패를 인정하고 쉬는 것도 실력입니다.</p>
+    <ul class="checklist danger">
+      <li>심리가 불안한 상태 (FOMO, 복수심 매매, 감정 격앙)</li>
+      <li>차트 패턴이 불명확하거나 애매할 때</li>
+      <li>컨디션이 좋지 않을 때 (피로, 집중력 저하)</li>
+      <li>매매 가능 시간이 충분하지 않을 때</li>
+      <li>개장 직후 (시장 방향이 아직 잡히지 않은 상태)</li>
+      <li>주요 경제지표 발표 직전 (CPI, NFP, FOMC 등)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">개장 전 필수 체크리스트</h2>
+    <p class="prose">매매를 시작하기 전, 아래 6가지를 확인하는 습관을 들이세요. 준비된 트레이더와 그렇지 않은 트레이더의 차이가 여기서 납니다.</p>
+    <ol class="num-list">
+      <li>대/중/소 추세 방향성 확인 (일봉 → 1시간봉 → 5분봉)</li>
+      <li>주요 매매시간 확인 (유럽 개장, 미국 개장, 주요 볼륨 타임)</li>
+      <li>경제지표 발표 일정 확인 (CPI, 고용지표, FOMC 등)</li>
+      <li>당일 포지션 사이즈 및 최대 손실 한도 결정</li>
+      <li>전일 / 당일 반복 패턴 파악</li>
+      <li>내 컨디션 및 매매 가능 시간 점검</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">익절(Take Profit) 전략</h2>
+    <table class="data-table">
+      <thead><tr><th>상황</th><th>추천 익절 전략</th></tr></thead>
+      <tbody>
+        <tr><td>수렴 구간이 짧은 경우</td><td class="td-good">빠른 익절 (TP 짧게)</td></tr>
+        <tr><td>이평선 밀집 구간</td><td class="td-good">빠른 익절</td></tr>
+        <tr><td>강한 추세 구간</td><td>여유 있는 홀딩 (추세가 살아있는 동안)</td></tr>
+        <tr><td>본인 매매 스타일에 따라</td><td>스타일에 맞게 유연하게</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">손실 후 대응 방법</h2>
+    <p class="prose">손절 당하고 나서 어떻게 하느냐가 실력의 차이입니다.</p>
+    <ol class="num-list">
+      <li>손실을 즉시 인정하세요. 부정하거나 회피하면 더 큰 손실로 이어집니다</li>
+      <li>심리 안정 시간을 확보하세요. FOMO 충동매매는 두 번째 손실을 만듭니다</li>
+      <li>"기회는 항상 온다"는 마음으로 다음 자리를 기다리세요</li>
+      <li>이평선 확장 중 추격매매는 절대 하지 마세요</li>
+      <li>재진입 시 반드시 Stop-Loss를 먼저 정하세요</li>
+      <li>나무 말고 숲을 보세요. 큰 추세가 어떤지 먼저 확인하세요</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">진입 시 리스크 퍼스트 사고법</h2>
+    <div class="quote">"진입을 고려할 때, 수익보다 손절을 먼저 생각하세요. 리스크가 관리된 진입만이 좋은 진입입니다."</div>
+    <div class="principle-cards">
+      <div class="principle-card"><div class="principle-num">Q1</div><div><div class="principle-title">지금 진입하면 안전한가?</div><div class="principle-desc">자리가 좋은지, 타이밍이 맞는지 먼저 확인하세요</div></div></div>
+      <div class="principle-card"><div class="principle-num">Q2</div><div><div class="principle-title">손절가(Stop-Loss)는 어디에?</div><div class="principle-desc">진입 전에 반드시 결정하세요. 진입 후엔 늦습니다</div></div></div>
+      <div class="principle-card"><div class="principle-num">Q3</div><div><div class="principle-title">R:R 비율은 적정한가?</div><div class="principle-desc">최소 1:2 이상이어야 의미 있는 진입입니다</div></div></div>
+      <div class="principle-card"><div class="principle-num">Q4</div><div><div class="principle-title">어디서 들어가야 안전한가?</div><div class="principle-desc">보수적인 관점에서 최선의 진입 자리를 찾으세요</div></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">절대 원칙 3가지</h2>
+    <div class="triple-grid">
+      <div class="triple-card"><div class="triple-icon">&#9203;</div><div class="triple-title">기다려라</div><div class="triple-desc">추격매매 금지. 길목을 지키며 기회가 오기를 기다리세요. 시장은 반드시 다시 옵니다</div></div>
+      <div class="triple-card"><div class="triple-icon">&#128200;</div><div class="triple-title">추세를 따라라</div><div class="triple-desc">역매매는 손실 극대화입니다. 추세가 내 편인 방향으로만 진입하세요</div></div>
+      <div class="triple-card"><div class="triple-icon">&#128221;</div><div class="triple-title">복기하라</div><div class="triple-desc">손절 당하면 무조건 복기 먼저. 복기 없는 재매매는 같은 실수의 반복입니다</div></div>
+    </div>
+    <div class="callout" style="margin-top:20px">
+      <div class="callout-label">마지막으로</div>
+      <p>500억을 버는 비결은 특별한 기술이 아니었습니다. 이 원칙들을 지키는 것이었어요. 여러분도 할 수 있습니다. 천천히, 꾸준히, 원칙대로.</p>
+    </div>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(6)">← 이전 챕터</button>
+    <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot active" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" disabled>완료 ✓</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+let current = 1;
+const total = 7;
+
+function goTo(n) {
+  document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ch' + n).classList.add('active');
+  document.querySelectorAll('.chapter-btn')[n - 1].classList.add('active');
+  document.getElementById('progressFill').style.width = ((n / total) * 100) + '%';
+
+  // Update nav dots
+  document.querySelectorAll('.nav-dots').forEach(wrap => {
+    wrap.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === n - 1);
+    });
+  });
+
+  current = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
