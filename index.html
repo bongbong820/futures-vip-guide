@@ -521,33 +521,65 @@ body.dark .mta-box{background:#0D1B2A}
 body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8DEF)}
 
 /* ===== RESPONSIVE ===== */
-@media(max-width:900px){
-  /* Header mobile */
-  .mobile-menu-btn{display:flex !important}
-  .header-inner{height:52px;gap:8px}
-  .header-logo{flex:1;min-width:0}
-  .header-logo span{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .header-right{display:none}
-  .header-badge{font-size:10px;padding:2px 8px;flex-shrink:0}
-  .dark-toggle{width:32px;height:32px;font-size:14px;flex-shrink:0;margin-left:4px}
 
-  /* Sidebar as drawer */
+/* --- 1: Small Desktop / Wide Tablet (max 1100px) --- */
+@media(max-width:1100px){
+  .sidebar{width:240px;padding:24px 16px}
+  .chapter-btn{padding:10px 12px}
+  .chapter-btn-title{font-size:13px}
+  .main{padding:28px 28px 50px}
+}
+
+/* --- 2: Tablet (max 900px) — sidebar → drawer, still 2-col grids --- */
+@media(max-width:900px){
+  /* Hamburger visible */
+  .mobile-menu-btn{display:flex !important}
+  .header-inner{gap:8px}
+  .header-right{display:none}
+  .dark-toggle{flex-shrink:0}
+
+  /* Sidebar → slide drawer */
   .sidebar{
     position:fixed;left:0;top:0;bottom:0;
     width:300px;max-width:80vw;z-index:200;
     transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
     border-right:none;box-shadow:var(--shadow-lg);
-    padding-top:20px;
+    padding:24px 20px;
   }
   .sidebar.open{transform:translateX(0)}
+
+  /* Main */
+  .main{padding:28px 32px 50px}
+
+  /* Hero */
+  .chapter-hero{gap:16px}
+  .chapter-hero-num{font-size:48px}
+
+  /* Grids stay 2-col on tablet */
+  .risk-grid{grid-template-columns:repeat(2,1fr)}
+  .candle-grid{grid-template-columns:repeat(3,1fr)}
+  .triple-grid{grid-template-columns:repeat(3,1fr)}
+  .compare-grid,.trap-grid,.two-col{grid-template-columns:1fr 1fr}
+  .principle-cards{grid-template-columns:1fr 1fr}
+  .ma-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* --- 3: Mobile (max 640px) — single col, bottom nav, compact UI --- */
+@media(max-width:640px){
+  /* Header compact */
+  .header-inner{height:52px;gap:6px}
+  .header-logo{flex:1;min-width:0}
+  .header-logo span{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .header-badge{font-size:10px;padding:2px 8px;flex-shrink:0}
+  .dark-toggle{width:32px;height:32px;font-size:14px;margin-left:2px}
 
   /* Progress */
   .progress-wrap{top:52px}
 
-  /* Main */
+  /* Main compact */
   .main{padding:20px 16px 100px}
 
-  /* Hero */
+  /* Hero stacked */
   .chapter-hero{flex-direction:column;gap:12px}
   .chapter-hero-num{font-size:42px}
   .chapter-title{font-size:22px}
@@ -560,23 +592,25 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   .prose{font-size:14px;line-height:1.75}
   .quote{padding:16px 18px;font-size:14px}
 
-  /* Grids to single column */
+  /* Grids → 2-col or 1-col */
   .risk-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .candle-grid,.triple-grid{grid-template-columns:1fr}
-  .compare-grid,.trap-grid,.two-col,.principle-cards{grid-template-columns:1fr}
+  .candle-grid{grid-template-columns:1fr}
+  .triple-grid{grid-template-columns:1fr}
+  .compare-grid,.trap-grid,.two-col{grid-template-columns:1fr}
+  .principle-cards{grid-template-columns:1fr}
   .ma-grid{grid-template-columns:1fr 1fr;gap:8px}
 
-  /* Flow horizontal scroll */
+  /* Flow → horizontal scroll */
   .flow{
     flex-direction:row !important;flex-wrap:nowrap !important;overflow-x:auto;
     -webkit-overflow-scrolling:touch;padding-bottom:8px;
     scrollbar-width:none;align-items:center !important;
   }
   .flow::-webkit-scrollbar{display:none}
-  .flow-item{padding:6px 12px;font-size:11px;flex-shrink:0}
-  .flow-arrow{flex-shrink:0;font-size:11px;transform:none !important}
+  .flow-item{padding:6px 12px;font-size:12px;flex-shrink:0}
+  .flow-arrow{flex-shrink:0;font-size:12px;transform:none !important}
 
-  /* MTA */
+  /* MTA → vertical */
   .mta-box{padding:18px}
   .mta-row{flex-direction:column;gap:10px}
   .mta-arrow{transform:rotate(90deg)}
@@ -588,49 +622,33 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   .risk-desc{font-size:12px}
   .callout{padding:16px 18px}
   .callout p{font-size:13px}
-
-  /* Checklist */
   .checklist li{padding:11px 14px;font-size:13px}
   .num-list li{padding:11px 14px;font-size:13px}
-
-  /* Entry checks */
   .entry-check{padding:11px 14px;font-size:13px}
-
-  /* Trap */
   .trap-title{padding:12px 16px 4px;font-size:14px}
   .trap-desc{padding:0 16px;font-size:12px}
   .trap-signal{padding:10px 16px 14px;font-size:12px}
-
-  /* Data table */
   .data-table th,.data-table td{padding:10px 14px;font-size:13px}
-
-  /* Principle cards */
   .principle-card{padding:14px}
   .principle-num{width:32px;height:32px;font-size:11px}
   .principle-title{font-size:13px}
   .principle-desc{font-size:12px}
-
-  /* Triple */
   .triple-card{padding:18px}
   .triple-icon{font-size:28px}
   .triple-title{font-size:15px}
   .triple-desc{font-size:12px}
-
-  /* Hide desktop nav, show mobile */
-  .chapter-nav-bottom{display:none}
-  .mobile-bottom-nav{display:block}
-
-  /* Info card checklist */
   .info-card{padding:16px}
   .info-card .checklist li{font-size:13px}
-
-  /* Compare */
   .compare-card-header{padding:12px 16px;font-size:14px}
   .compare-card-body{padding:12px 16px}
   .compare-item{font-size:13px;padding:6px 0}
+
+  /* Show mobile bottom nav, hide desktop nav */
+  .chapter-nav-bottom{display:none}
+  .mobile-bottom-nav{display:block}
 }
 
-/* Small phones */
+/* --- 4: Small Phone (max 380px) --- */
 @media(max-width:380px){
   .main{padding:16px 12px 100px}
   .chapter-hero-num{font-size:36px}
@@ -638,7 +656,8 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   .section-title{font-size:16px}
   .risk-grid{grid-template-columns:1fr}
   .ma-grid{grid-template-columns:1fr}
-  .header-logo span{font-size:12px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .header-logo span{font-size:12px;max-width:140px}
+  .flow-item{padding:5px 10px;font-size:11px}
 }
 </style>
 </head>
