@@ -1512,12 +1512,12 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
         <button class="chart-search-btn" onclick="searchSymbol()">검색</button>
       </div>
       <div class="chart-categories">
-        <button class="chart-cat active" onclick="filterCat(this,'all')">전체</button>
-        <button class="chart-cat" onclick="filterCat(this,'futures')">해외선물</button>
+        <button class="chart-cat active" onclick="filterCat(this,'futures')">해외선물</button>
         <button class="chart-cat" onclick="filterCat(this,'crypto')">암호화폐</button>
         <button class="chart-cat" onclick="filterCat(this,'index')">지수</button>
         <button class="chart-cat" onclick="filterCat(this,'forex')">외환</button>
         <button class="chart-cat" onclick="filterCat(this,'stock')">주식</button>
+        <button class="chart-cat" onclick="filterCat(this,'all')">전체</button>
       </div>
       <div class="chart-symbols" id="chartSymbols">
         <!-- Futures -->
@@ -1780,6 +1780,10 @@ function goToChart() {
 }
 
 // ===== CHART CONTROLS =====
+// Default filter: futures only
+document.querySelectorAll('.chart-sym').forEach(s => {
+  if (s.dataset.cat !== 'futures') s.classList.add('hidden');
+});
 function changeChart(btn) {
   const symbol = btn.dataset.symbol;
   const name = btn.textContent.trim();
