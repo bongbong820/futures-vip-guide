@@ -3,8 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B2A4A">
 <title>해외선물 핵심 키워드 마스터 가이드 — VIP Edition</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
 <style>
+/* ===== FONT ===== */
+@supports (font-variation-settings: normal) {
+  :root { --font: 'Pretendard Variable', -apple-system, 'Noto Sans KR', sans-serif; }
+}
+@supports not (font-variation-settings: normal) {
+  :root { --font: 'Pretendard', -apple-system, 'Noto Sans KR', sans-serif; }
+}
 /* ===== RESET & BASE ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -41,7 +51,7 @@
 }
 html{scroll-behavior:smooth}
 body{
-  font-family:-apple-system,'Pretendard','Noto Sans KR',sans-serif;
+  font-family:var(--font, -apple-system,'Noto Sans KR',sans-serif);
   background:var(--gray-50);
   color:var(--gray-900);
   line-height:1.7;
@@ -440,6 +450,158 @@ a{text-decoration:none;color:inherit}
 }
 .nav-dot.active{background:var(--orange);width:28px;border-radius:5px}
 
+/* ===== PASSWORD GATE ===== */
+.pw-gate{
+  position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(135deg,var(--navy) 0%,#0D1B2A 100%);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .5s ease,visibility .5s ease;
+}
+.pw-gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.pw-box{
+  text-align:center;padding:40px;max-width:400px;width:90%;
+}
+.pw-logo{
+  width:64px;height:64px;margin:0 auto 24px;
+  background:linear-gradient(135deg,var(--orange),var(--blue));
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:900;color:#fff;
+}
+.pw-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:8px}
+.pw-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:32px}
+.pw-input-wrap{position:relative;margin-bottom:16px}
+.pw-input{
+  width:100%;padding:14px 18px;border:2px solid rgba(255,255,255,.15);
+  border-radius:12px;background:rgba(255,255,255,.08);color:#fff;
+  font-size:16px;outline:none;transition:var(--transition);
+  font-family:var(--font);
+}
+.pw-input::placeholder{color:rgba(255,255,255,.3)}
+.pw-input:focus{border-color:var(--orange)}
+.pw-input.error{border-color:var(--red);animation:shake .4s ease}
+.pw-submit{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dark));
+  color:#fff;font-size:16px;font-weight:700;cursor:pointer;
+  transition:var(--transition);font-family:var(--font);
+}
+.pw-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,107,53,.3)}
+.pw-error-msg{color:var(--red);font-size:13px;margin-top:8px;min-height:20px}
+.pw-hint{color:rgba(255,255,255,.3);font-size:12px;margin-top:24px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ===== LANDING HERO ===== */
+.landing{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(180deg,var(--white) 0%,var(--blue-bg) 100%);
+  padding:40px 24px;position:relative;overflow:hidden;
+}
+.landing::before{
+  content:'';position:absolute;top:-200px;right:-200px;
+  width:500px;height:500px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,107,53,.08),transparent 70%);
+}
+.landing::after{
+  content:'';position:absolute;bottom:-200px;left:-200px;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(49,130,246,.06),transparent 70%);
+}
+.landing>*{position:relative;z-index:1}
+.landing-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--orange-light);color:var(--orange);
+  font-size:13px;font-weight:700;padding:6px 16px;
+  border-radius:24px;margin-bottom:24px;
+}
+.landing-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--orange);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.landing-title{
+  font-size:clamp(28px,5vw,48px);font-weight:900;color:var(--navy);
+  line-height:1.3;margin-bottom:16px;
+}
+.landing-title span{
+  background:linear-gradient(135deg,var(--orange),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.landing-desc{
+  font-size:clamp(14px,2vw,18px);color:var(--gray-600);
+  max-width:560px;line-height:1.7;margin-bottom:40px;
+}
+.landing-stats{
+  display:flex;gap:32px;margin-bottom:40px;flex-wrap:wrap;justify-content:center;
+}
+.landing-stat{text-align:center}
+.landing-stat-num{
+  font-size:clamp(28px,4vw,40px);font-weight:900;
+  color:var(--navy);display:block;
+}
+.landing-stat-num.orange{color:var(--orange)}
+.landing-stat-num.blue{color:var(--blue)}
+.landing-stat-label{font-size:13px;color:var(--gray-500);margin-top:4px}
+.landing-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:16px 40px;border-radius:16px;border:none;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  color:#fff;font-size:17px;font-weight:700;cursor:pointer;
+  transition:var(--transition);font-family:var(--font);
+  box-shadow:0 4px 20px rgba(49,130,246,.3);
+}
+.landing-cta:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(49,130,246,.4)}
+.landing-cta svg{width:20px;height:20px}
+.landing-features{
+  display:flex;gap:16px;margin-top:48px;flex-wrap:wrap;justify-content:center;
+}
+.landing-feat{
+  display:flex;align-items:center;gap:8px;
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:12px;padding:12px 18px;font-size:13px;color:var(--gray-700);
+  font-weight:500;
+}
+.landing-feat-icon{font-size:18px}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal{
+  opacity:0;transform:translateY(24px);
+  transition:opacity .6s cubic-bezier(.4,0,.2,1), transform .6s cubic-bezier(.4,0,.2,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ===== SCROLL TO TOP ===== */
+.scroll-top{
+  position:fixed;bottom:90px;right:20px;z-index:90;
+  width:44px;height:44px;border-radius:50%;border:none;
+  background:var(--white);color:var(--navy);
+  box-shadow:var(--shadow-md);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;transition:var(--transition);
+  opacity:0;visibility:hidden;transform:translateY(10px);
+  -webkit-tap-highlight-color:transparent;
+}
+.scroll-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+.scroll-top:hover{background:var(--blue);color:#fff}
+@media(min-width:641px){.scroll-top{bottom:32px;right:32px}}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);
+  z-index:300;background:var(--navy);color:#fff;
+  padding:14px 24px;border-radius:14px;font-size:14px;font-weight:600;
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;
+  opacity:0;transition:all .4s ease;pointer-events:none;
+  white-space:nowrap;max-width:90vw;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.toast-btn{
+  background:var(--orange);border:none;color:#fff;
+  padding:6px 14px;border-radius:8px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:var(--font);flex-shrink:0;
+}
+
 /* ===== MOBILE HAMBURGER ===== */
 .mobile-menu-btn{
   display:none;width:40px;height:40px;border:none;background:var(--gray-100);
@@ -663,8 +825,48 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </head>
 <body>
 
+<!-- PASSWORD GATE -->
+<div class="pw-gate" id="pwGate">
+  <div class="pw-box">
+    <div class="pw-logo">VIP</div>
+    <div class="pw-title">VIP 전용 콘텐츠</div>
+    <div class="pw-sub">해외선물 핵심 키워드 마스터 가이드</div>
+    <div class="pw-input-wrap">
+      <input class="pw-input" id="pwInput" type="password" placeholder="비밀번호를 입력하세요" onkeydown="if(event.key==='Enter')checkPw()">
+    </div>
+    <button class="pw-submit" onclick="checkPw()">입장하기</button>
+    <div class="pw-error-msg" id="pwError"></div>
+    <div class="pw-hint">VIP 회원에게 전달된 비밀번호를 입력해주세요</div>
+  </div>
+</div>
+
+<!-- LANDING HERO -->
+<div class="landing" id="landingPage">
+  <div class="landing-badge"><span>VIP MEMBER EDITION</span></div>
+  <h1 class="landing-title">선물로 <span>500억</span>을 번<br>트레이더의 실전 원칙</h1>
+  <p class="landing-desc">기술보다 마인드, 감보다 기준. 500억을 벌기까지 직접 검증한 7가지 핵심 챕터를 VIP 회원님께만 공개합니다.</p>
+  <div class="landing-stats">
+    <div class="landing-stat"><span class="landing-stat-num orange" data-target="500">0</span><div class="landing-stat-label">억 실전 수익</div></div>
+    <div class="landing-stat"><span class="landing-stat-num blue" data-target="7">0</span><div class="landing-stat-label">핵심 챕터</div></div>
+    <div class="landing-stat"><span class="landing-stat-num" data-target="35">0</span><div class="landing-stat-label">검증된 원칙</div></div>
+  </div>
+  <button class="landing-cta" onclick="startGuide()">가이드 시작하기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+  <div class="landing-features">
+    <div class="landing-feat"><span class="landing-feat-icon">&#128218;</span>7개 챕터 완전정복</div>
+    <div class="landing-feat"><span class="landing-feat-icon">&#9989;</span>실전 체크리스트</div>
+    <div class="landing-feat"><span class="landing-feat-icon">&#127919;</span>프로 vs 초보 비교</div>
+    <div class="landing-feat"><span class="landing-feat-icon">&#128274;</span>VIP 전용 콘텐츠</div>
+  </div>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
 <!-- HEADER -->
-<header class="header">
+<header class="header" id="mainHeader" style="display:none">
   <div class="header-inner">
     <button class="mobile-menu-btn" id="menuBtn" onclick="toggleMenu()">
       <span></span><span></span><span></span>
@@ -680,11 +882,11 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </header>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
 
-<div class="progress-wrap">
+<div class="progress-wrap" id="progressWrap" style="display:none">
   <div class="progress-fill" id="progressFill" style="width:14.28%"></div>
 </div>
 
-<div class="layout">
+<div class="layout" id="mainLayout" style="display:none">
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -1219,7 +1421,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 <!-- Mobile Bottom Nav -->
-<div class="mobile-bottom-nav" id="mobileNav">
+<div class="mobile-bottom-nav" id="mobileNav" style="display:none">
   <div class="mobile-bottom-inner">
     <button class="mobile-nav-btn mobile-nav-prev" id="mobPrev" onclick="goTo(current-1)" disabled>← 이전</button>
     <div class="mobile-nav-indicator" id="mobDots"></div>
@@ -1230,7 +1432,67 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <script>
 let current = 1;
 const total = 7;
+const VIP_PASSWORD = 'vip2024';
 
+// ===== PASSWORD GATE =====
+function checkPw() {
+  const input = document.getElementById('pwInput');
+  const error = document.getElementById('pwError');
+  if (input.value === VIP_PASSWORD) {
+    localStorage.setItem('vipAuth', 'true');
+    document.getElementById('pwGate').classList.add('hidden');
+    setTimeout(() => animateCounters(), 500);
+  } else {
+    input.classList.add('error');
+    error.textContent = '비밀번호가 올바르지 않습니다';
+    setTimeout(() => input.classList.remove('error'), 400);
+  }
+}
+// Skip gate if already authed
+if (localStorage.getItem('vipAuth') === 'true') {
+  document.getElementById('pwGate').classList.add('hidden');
+}
+
+// ===== LANDING =====
+function animateCounters() {
+  document.querySelectorAll('.landing-stat-num[data-target]').forEach(el => {
+    const target = +el.dataset.target;
+    const duration = 1500;
+    const start = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(target * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+      else el.textContent = target;
+    };
+    requestAnimationFrame(tick);
+  });
+}
+// Auto-run counters if gate already passed
+if (localStorage.getItem('vipAuth') === 'true') {
+  setTimeout(() => animateCounters(), 300);
+}
+
+function startGuide() {
+  document.getElementById('landingPage').style.display = 'none';
+  document.getElementById('mainHeader').style.display = '';
+  document.getElementById('progressWrap').style.display = '';
+  document.getElementById('mainLayout').style.display = '';
+  // Restore mobile nav display (CSS controls actual visibility)
+  document.getElementById('mobileNav').style.display = '';
+
+  const saved = localStorage.getItem('lastChapter');
+  if (saved && +saved > 1) {
+    showToast('Chapter ' + saved + '까지 읽으셨어요', '이어보기', () => goTo(+saved));
+  } else {
+    goTo(1);
+  }
+  // Init scroll reveal
+  initScrollReveal();
+}
+
+// ===== CHAPTER NAVIGATION =====
 function goTo(n) {
   document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
@@ -1238,7 +1500,7 @@ function goTo(n) {
   document.querySelectorAll('.chapter-btn')[n - 1].classList.add('active');
   document.getElementById('progressFill').style.width = ((n / total) * 100) + '%';
 
-  // Update nav dots
+  // Desktop nav dots
   document.querySelectorAll('.nav-dots').forEach(wrap => {
     wrap.querySelectorAll('.nav-dot').forEach((d, i) => {
       d.classList.toggle('active', i === n - 1);
@@ -1248,15 +1510,17 @@ function goTo(n) {
   current = n;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Update mobile bottom nav
+  // Save progress
+  localStorage.setItem('lastChapter', n);
+
+  // Mobile bottom nav
   const mobPrev = document.getElementById('mobPrev');
   const mobNext = document.getElementById('mobNext');
-  if (mobPrev) { mobPrev.disabled = n <= 1; }
+  if (mobPrev) mobPrev.disabled = n <= 1;
   if (mobNext) {
     if (n >= total) { mobNext.textContent = '완료 ✓'; mobNext.disabled = true; }
     else { mobNext.textContent = '다음 →'; mobNext.disabled = false; }
   }
-  // Mobile dots
   const mobDots = document.getElementById('mobDots');
   if (mobDots) {
     mobDots.innerHTML = '';
@@ -1267,17 +1531,21 @@ function goTo(n) {
     }
   }
 
-  // Close sidebar if open
   closeSidebar();
+
+  // Re-trigger scroll reveals for new chapter
+  setTimeout(() => {
+    document.querySelectorAll('#ch' + n + ' .reveal').forEach(el => el.classList.remove('visible'));
+    initScrollReveal();
+  }, 100);
 }
 
-// Sidebar toggle
+// ===== SIDEBAR =====
 function toggleMenu() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   const btn = document.getElementById('menuBtn');
-  const isOpen = sidebar.classList.contains('open');
-  if (isOpen) { closeSidebar(); } else {
+  if (sidebar.classList.contains('open')) { closeSidebar(); } else {
     sidebar.classList.add('open');
     overlay.classList.add('active');
     btn.classList.add('active');
@@ -1290,38 +1558,73 @@ function closeSidebar() {
   const btn = document.getElementById('menuBtn');
   sidebar.classList.remove('open');
   overlay.classList.remove('active');
-  btn.classList.remove('active');
+  if (btn) btn.classList.remove('active');
   document.body.style.overflow = '';
 }
 
-// Dark mode
+// ===== DARK MODE =====
 function toggleDark() {
   document.body.classList.toggle('dark');
   const btn = document.querySelector('.dark-toggle');
-  btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+  const isDark = document.body.classList.contains('dark');
+  btn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('darkMode', isDark);
 }
-// Restore dark mode
 if (localStorage.getItem('darkMode') === 'true') {
   document.body.classList.add('dark');
   document.querySelector('.dark-toggle').textContent = '☀️';
 }
 
-// Swipe support
+// ===== SWIPE =====
 let touchStartX = 0;
-let touchEndX = 0;
 document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive:true});
 document.addEventListener('touchend', e => {
-  touchEndX = e.changedTouches[0].screenX;
-  const diff = touchStartX - touchEndX;
-  if (Math.abs(diff) > 80) {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 80 && document.getElementById('mainLayout').style.display !== 'none') {
     if (diff > 0 && current < total) goTo(current + 1);
     else if (diff < 0 && current > 1) goTo(current - 1);
   }
 }, {passive:true});
 
-// Init mobile dots
-goTo(1);
+// ===== SCROLL REVEAL =====
+function initScrollReveal() {
+  // Auto-add reveal class to sections
+  document.querySelectorAll('.chapter-page.active .section, .chapter-page.active .chapter-hero').forEach((el, i) => {
+    if (!el.classList.contains('reveal')) {
+      el.classList.add('reveal');
+      if (i > 0) el.classList.add('reveal-delay-' + Math.min(i, 3));
+    }
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// ===== SCROLL TO TOP =====
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTop');
+  if (btn) btn.classList.toggle('show', window.scrollY > 400);
+}, {passive:true});
+
+// ===== TOAST =====
+function showToast(msg, btnText, btnAction) {
+  const toast = document.getElementById('toast');
+  toast.innerHTML = msg;
+  if (btnText) {
+    const btn = document.createElement('button');
+    btn.className = 'toast-btn';
+    btn.textContent = btnText;
+    btn.onclick = () => { btnAction(); toast.classList.remove('show'); };
+    toast.appendChild(btn);
+  }
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 6000);
+}
 </script>
 </body>
 </html>
