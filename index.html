@@ -664,7 +664,29 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .ec4-state{text-align:center;padding:48px 20px;color:var(--gray-500);font-size:14px}
 .ec4-spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:ec4spin .8s linear infinite;margin-bottom:12px}
 @keyframes ec4spin{to{transform:rotate(360deg)}}
-/* 2-column layout */
+/* News + Calendar Layout */
+.news-layout{display:grid;grid-template-columns:70% 30%;gap:20px}
+.news-main{min-width:0}
+.news-side{min-width:0}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.news-card{
+  border-radius:12px;overflow:hidden;background:var(--white);
+  border:1px solid var(--gray-200);cursor:pointer;
+  transition:box-shadow .2s,transform .2s;text-decoration:none;color:inherit;display:block;
+}
+.news-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.news-card-img{width:100%;height:180px;object-fit:cover;display:block;background:var(--gray-100)}
+.news-card-body{padding:14px}
+.news-card-title{font-size:14px;font-weight:700;color:var(--navy);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px}
+.news-card-desc{font-size:12px;color:var(--gray-600);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
+.news-card-meta{font-size:11px;color:var(--gray-400);display:flex;justify-content:space-between}
+.news-skel{height:300px;border-radius:12px;background:var(--gray-100);animation:skelPulse 1.2s infinite}
+.ec4-updated{font-size:11px;color:var(--gray-400)}
+
+@media(max-width:1024px){.news-layout{grid-template-columns:1fr}.news-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.news-grid{grid-template-columns:1fr}.news-card-img{height:160px}}
+
+/* Legacy 2-col */
 .ec4-two-col{display:grid;grid-template-columns:60% 40%;gap:20px}
 .ec4-col-main{min-width:0}
 .ec4-col-news{min-width:0}
@@ -1664,7 +1686,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </button>
   <button class="chapter-btn tool-btn" onclick="goToCalendar()">
     <div class="chapter-num" style="background:var(--blue);color:#fff;font-size:13px">&#128197;</div>
-    <div><span class="chapter-btn-title">경제지표 캘린더</span><span class="chapter-btn-sub">CPI · NFP · FOMC 일정</span></div>
+    <div><span class="chapter-btn-title">뉴스 & 경제 캘린더</span><span class="chapter-btn-sub">시장뉴스 · CPI · NFP · FOMC</span></div>
   </button>
   <button class="chapter-btn tool-btn" onclick="goToCalc()">
     <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128178;</div>
@@ -2202,74 +2224,51 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <div class="chapter-page" id="chCalendar">
 
   <div class="ec4-header">
-    <div class="ec4-title">경제 캘린더</div>
-    <div class="ec4-kst" id="ec4Kst">KST --:--:--</div>
-  </div>
-
-  <div class="ec4-cards">
-    <div class="ec4-card">
-      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">FOMC 금리 결정</span></div>
-      <div class="ec4-card-val">—</div>
-      <div class="ec4-card-meta"><span class="ec4-meta"><span class="ec4-ml">예상</span> —</span><span class="ec4-meta"><span class="ec4-ml">이전</span> —</span></div>
-    </div>
-    <div class="ec4-card">
-      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">CPI 소비자물가</span></div>
-      <div class="ec4-card-val">—</div>
-      <div class="ec4-card-meta"><span class="ec4-meta"><span class="ec4-ml">예상</span> —</span><span class="ec4-meta"><span class="ec4-ml">이전</span> —</span></div>
-    </div>
-    <div class="ec4-card">
-      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">NFP 비농업고용</span></div>
-      <div class="ec4-card-val">—</div>
-      <div class="ec4-card-meta"><span class="ec4-meta"><span class="ec4-ml">예상</span> —</span><span class="ec4-meta"><span class="ec4-ml">이전</span> —</span></div>
+    <div><div class="ec4-title">시장 뉴스 & 경제 캘린더</div><div class="ec4-kst" id="ec4Kst">KST --:--:--</div></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="ec4-updated" id="newsUpdated"></span>
+      <button class="ec4-fb" onclick="loadNews()" style="padding:6px 12px">&#8635; 새로고침</button>
     </div>
   </div>
 
-  <!-- 2-column: Calendar + News -->
-  <div class="ec4-two-col">
-    <!-- Left: Calendar -->
-    <div class="ec4-col-main">
-      <div class="ec4-panel">
-        <div class="ec4-toolbar">
+  <!-- Main Layout: News(70%) + Calendar(30%) -->
+  <div class="news-layout">
+    <!-- Left: News (Main) -->
+    <div class="news-main">
+      <h2 class="section-title">실시간 시장 뉴스</h2>
+      <div class="news-grid" id="newsGrid">
+        <div class="news-skel"></div><div class="news-skel"></div><div class="news-skel"></div>
+        <div class="news-skel"></div><div class="news-skel"></div><div class="news-skel"></div>
+      </div>
+
+      <!-- TradingView 한국어 뉴스 -->
+      <div style="margin-top:24px">
+        <h2 class="section-title">한국어 시장 뉴스</h2>
+        <span style="font-size:11px;color:var(--gray-400);padding-left:12px">TradingView 제공</span>
+        <div class="ec4-panel" style="margin-top:10px;min-height:400px">
+          <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+            {"feedMode":"all_symbols","isTransparent":true,"displayMode":"regular","width":"100%","height":"400","colorTheme":"light","locale":"kr"}
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Calendar (Sub) -->
+    <div class="news-side">
+      <h2 class="section-title">오늘의 경제 일정</h2>
+      <div class="ec4-panel" style="max-height:calc(100vh - 160px);overflow-y:auto">
+        <div class="ec4-toolbar" style="padding:12px 14px 0">
           <div class="ec4-fg" id="ec4DateF">
-            <button class="ec4-fb" data-range="yesterday" onclick="ec4SetRange(this)">어제</button>
             <button class="ec4-fb active" data-range="today" onclick="ec4SetRange(this)">오늘</button>
             <button class="ec4-fb" data-range="tomorrow" onclick="ec4SetRange(this)">내일</button>
             <button class="ec4-fb" data-range="week" onclick="ec4SetRange(this)">이번주</button>
           </div>
-          <div class="ec4-fg" id="ec4ImpF">
-            <button class="ec4-fb active" data-imp="all" onclick="ec4SetImp(this)">전체</button>
-            <button class="ec4-fb" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
-            <button class="ec4-fb" data-imp="2" onclick="ec4SetImp(this)">★★☆</button>
-            <button class="ec4-fb" data-imp="1" onclick="ec4SetImp(this)">★☆☆</button>
-          </div>
         </div>
         <div class="ec4-divider"></div>
-        <div class="ec4-section-title">곧 있을 주요 경제 이벤트</div>
-        <div id="ec4Body"><div class="ec4-state"><div class="ec4-spinner"></div><br>데이터 불러오는 중...</div></div>
-      </div>
-    </div>
-
-    <!-- Right: News -->
-    <div class="ec4-col-news">
-      <div class="ec4-news-header">
-        <h2 class="section-title">실시간 시장 뉴스</h2>
-        <span class="ec4-news-sub">TradingView 제공</span>
-      </div>
-      <div class="ec4-panel" style="min-height:600px">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-          {
-            "feedMode": "all_symbols",
-            "isTransparent": true,
-            "displayMode": "regular",
-            "width": "100%",
-            "height": "600",
-            "colorTheme": "light",
-            "locale": "kr"
-          }
-          </script>
-        </div>
+        <div id="ec4Body"><div class="ec4-state"><div class="ec4-spinner"></div><br>로딩중...</div></div>
       </div>
     </div>
   </div>
@@ -2871,6 +2870,8 @@ function goToCalendar(){
   goToPage('chCalendar','tool-btn');
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
   initEconCalendar();
+  loadNews();
+  clearInterval(_newsTimer);_newsTimer=setInterval(loadNews,600000);
 }
 function goToJournal(){goToCalc()}
 function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
@@ -3177,6 +3178,74 @@ function getDescKey(title){
   return null;
 }
 function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleString("en-US",{timeZone:"Asia/Seoul"}))}
+
+// ===== NEWS =====
+const NEWS_API_KEY='08ed4fb093b5406b8809d600a74444ce';
+let _newsTimer;
+
+function loadNews(){
+  const grid=document.getElementById('newsGrid');
+  if(!grid)return;
+  grid.innerHTML='<div class="news-skel"></div>'.repeat(6);
+
+  // Try NewsAPI first (works on localhost, may fail on production)
+  fetch('https://newsapi.org/v2/top-headlines?category=business&country=us&pageSize=12&apiKey='+NEWS_API_KEY)
+    .then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+    .then(d=>{
+      if(d.status==='ok'&&d.articles?.length)renderNews(d.articles);
+      else throw new Error('empty');
+    })
+    .catch(()=>{
+      // Fallback: Yahoo Finance via RapidAPI
+      const rk=localStorage.getItem('rapidApiKey')||'';
+      if(rk){
+        fetch('https://yahoo-finance15.p.rapidapi.com/api/v1/markets/news?type=ALL',{
+          headers:{'x-rapidapi-key':rk,'x-rapidapi-host':'yahoo-finance15.p.rapidapi.com'}
+        }).then(r=>r.json()).then(d=>{
+          if(d.body?.length){
+            const articles=d.body.slice(0,12).map(a=>({
+              title:a.title||'',description:a.text||'',url:a.url||'#',
+              urlToImage:a.img||null,source:{name:a.source||'Yahoo'},publishedAt:a.pubDate||''
+            }));
+            renderNews(articles);
+          }else throw new Error('yf empty');
+        }).catch(()=>newsError());
+      }else newsError();
+    });
+}
+
+function renderNews(articles){
+  const grid=document.getElementById('newsGrid');
+  const placeholder='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" fill="%23E9ECEF"><rect width="400" height="200"/><text x="200" y="105" text-anchor="middle" fill="%23ADB5BD" font-size="14">No Image</text></svg>');
+
+  grid.innerHTML=articles.map(a=>{
+    const ago=timeAgo(a.publishedAt);
+    const img=a.urlToImage||placeholder;
+    return '<a class="news-card" href="'+escHtml(a.url)+'" target="_blank" rel="noopener">'+
+      '<img class="news-card-img" src="'+escHtml(img)+'" alt="" onerror="this.src=\''+placeholder+'\'" loading="lazy">'+
+      '<div class="news-card-body">'+
+      '<div class="news-card-title">'+escHtml(a.title||'')+'</div>'+
+      '<div class="news-card-desc">'+escHtml(a.description||'')+'</div>'+
+      '<div class="news-card-meta"><span>'+escHtml(a.source?.name||'')+'</span><span>'+ago+'</span></div>'+
+      '</div></a>';
+  }).join('');
+
+  const up=document.getElementById('newsUpdated');
+  if(up)up.textContent='업데이트: '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function newsError(){
+  const grid=document.getElementById('newsGrid');
+  if(grid)grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--gray-400)">뉴스를 불러오지 못했습니다. 새로고침 해주세요.</div>';
+}
+
+function timeAgo(dateStr){
+  if(!dateStr)return '';
+  const diff=Math.floor((Date.now()-new Date(dateStr).getTime())/60000);
+  if(diff<1)return '방금 전';if(diff<60)return diff+'분 전';
+  if(diff<1440)return Math.floor(diff/60)+'시간 전';
+  return Math.floor(diff/1440)+'일 전';
+}
 
 let _ec4Timer;
 let ec4Events=[];let ec4Range='today';let ec4Imp='all';
