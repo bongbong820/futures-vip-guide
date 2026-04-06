@@ -619,7 +619,62 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .tool-btn.active{background:var(--blue-light)}
 .tool-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
 
-/* ===== ECONOMIC CALENDAR V3 ===== */
+/* ===== ECONOMIC CALENDAR V4 (TradingView) ===== */
+.ec-page-header{max-width:100%;margin-bottom:24px}
+.ec-page-title{font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
+.ec-kst-time{font-size:12px;color:var(--gray-500);margin-top:4px;font-family:'Courier New',monospace}
+
+.ec-feature-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.ec-feat-card{
+  background:var(--white);border-radius:14px;padding:18px 20px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;
+  transition:box-shadow .2s,transform .2s;
+}
+.ec-feat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.ec-feat-top{display:flex;align-items:center;gap:8px}
+.ec-feat-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;
+  position:relative;
+}
+.ec-feat-dot::after{
+  content:'';position:absolute;inset:-3px;border-radius:50%;
+  background:rgba(255,107,107,.18);
+}
+.ec-feat-name{font-size:13px;font-weight:600;color:var(--navy)}
+.ec-feat-val{font-size:20px;font-weight:700;color:var(--navy);padding-left:16px;min-height:28px}
+.ec-feat-meta{display:flex;gap:10px;padding-left:16px}
+.ec-feat-meta-item{font-size:11px;color:var(--gray-500)}
+.ec-feat-label{font-weight:500}
+
+.ec-cal-panel{
+  background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;
+}
+.ec-cal-toolbar{
+  padding:18px 20px 0;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.ec-cal-filters{display:flex;gap:6px;flex-wrap:wrap}
+.ec-cal-btn{
+  border:none;border-radius:20px;padding:6px 14px;font-size:13px;
+  font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;
+  background:var(--gray-100);color:var(--gray-600);
+  -webkit-tap-highlight-color:transparent;
+}
+.ec-cal-btn:hover{background:var(--blue-light);color:var(--blue)}
+.ec-cal-btn.active{background:var(--blue);color:#fff}
+.ec-cal-divider{height:1px;background:var(--gray-200);margin:14px 0 0}
+.ec-tv-wrap{min-height:520px}
+.ec-tv-wrap .tradingview-widget-container{width:100%;height:600px}
+.ec-tv-wrap .tradingview-widget-container__widget{width:100%;height:100%}
+
+@media(max-width:720px){
+  .ec-feature-cards{grid-template-columns:1fr}
+}
+@media(max-width:500px){
+  .ec-cal-toolbar{flex-direction:column;align-items:flex-start}
+}
+
+/* OLD V3 - kept for compatibility */
 .ec2-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;padding:0 4px}
 .ec2-title{font-size:24px;font-weight:800;color:var(--navy);margin:0}
 .ec2-clock{font-size:12px;color:var(--gray-500);margin-top:2px;font-family:'Courier New',monospace}
@@ -1972,79 +2027,69 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 
 <!-- CALENDAR PAGE -->
 <div class="chapter-page" id="chCalendar">
-  <div class="ec2-header">
-    <div class="ec2-header-left">
-      <h1 class="ec2-title">경제 캘린더</h1>
-      <div class="ec2-clock" id="ec2Clock">GMT+9:00</div>
+
+  <!-- Header -->
+  <div class="ec-page-header">
+    <div class="ec-page-title">경제 캘린더</div>
+    <div class="ec-kst-time" id="ecKstTime">KST --:--:--</div>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="ec-feature-cards">
+    <div class="ec-feat-card">
+      <div class="ec-feat-top"><div class="ec-feat-dot"></div><span class="ec-feat-name">FOMC 금리 결정</span></div>
+      <div class="ec-feat-val" id="ecFomcVal">—</div>
+      <div class="ec-feat-meta"><span class="ec-feat-meta-item"><span class="ec-feat-label">예상</span> —</span><span class="ec-feat-meta-item"><span class="ec-feat-label">이전</span> —</span></div>
     </div>
-    <div class="ec2-header-right">
-      <span class="ec2-updated" id="ec2Updated"></span>
+    <div class="ec-feat-card">
+      <div class="ec-feat-top"><div class="ec-feat-dot"></div><span class="ec-feat-name">CPI 소비자물가</span></div>
+      <div class="ec-feat-val" id="ecCpiVal">—</div>
+      <div class="ec-feat-meta"><span class="ec-feat-meta-item"><span class="ec-feat-label">예상</span> —</span><span class="ec-feat-meta-item"><span class="ec-feat-label">이전</span> —</span></div>
+    </div>
+    <div class="ec-feat-card">
+      <div class="ec-feat-top"><div class="ec-feat-dot"></div><span class="ec-feat-name">NFP 비농업고용</span></div>
+      <div class="ec-feat-val" id="ecNfpVal">—</div>
+      <div class="ec-feat-meta"><span class="ec-feat-meta-item"><span class="ec-feat-label">예상</span> —</span><span class="ec-feat-meta-item"><span class="ec-feat-label">이전</span> —</span></div>
     </div>
   </div>
 
-  <!-- Summary Banner -->
-  <div class="section">
-    <div class="ec2-banner" id="ec2Banner">
-      <div class="ec2-ban-card"><div class="ec2-ban-dot high"></div><div class="ec2-ban-info"><div class="ec2-ban-name">FOMC 금리 결정</div><div class="ec2-ban-time" id="banFomc">—</div></div><div class="ec2-ban-dday" id="banFomcD">—</div></div>
-      <div class="ec2-ban-card"><div class="ec2-ban-dot high"></div><div class="ec2-ban-info"><div class="ec2-ban-name">CPI 소비자물가</div><div class="ec2-ban-time" id="banCpi">—</div></div><div class="ec2-ban-dday" id="banCpiD">—</div></div>
-      <div class="ec2-ban-card"><div class="ec2-ban-dot high"></div><div class="ec2-ban-info"><div class="ec2-ban-name">NFP 비농업고용</div><div class="ec2-ban-time" id="banNfp">—</div></div><div class="ec2-ban-dday" id="banNfpD">—</div></div>
-    </div>
-  </div>
-
-  <!-- Controls -->
-  <div class="section">
-    <div class="ec2-controls">
-      <div class="ec2-tabs" id="ec2Tabs">
-        <button class="ec2-tab" onclick="setEc2Date(this,'yesterday')">어제</button>
-        <button class="ec2-tab active" onclick="setEc2Date(this,'today')">오늘</button>
-        <button class="ec2-tab" onclick="setEc2Date(this,'tomorrow')">내일</button>
-        <button class="ec2-tab" onclick="setEc2Date(this,'week')">이번주</button>
+  <!-- Calendar Panel -->
+  <div class="ec-cal-panel">
+    <div class="ec-cal-toolbar">
+      <div class="ec-cal-filters" id="ecDateFilters">
+        <button class="ec-cal-btn" onclick="setEcDateFilter(this,'yesterday')">어제</button>
+        <button class="ec-cal-btn active" onclick="setEcDateFilter(this,'today')">오늘</button>
+        <button class="ec-cal-btn" onclick="setEcDateFilter(this,'tomorrow')">내일</button>
+        <button class="ec-cal-btn" onclick="setEcDateFilter(this,'thisweek')">이번주</button>
       </div>
-      <div class="ec2-filters">
-        <div class="ec2-fgroup">
-          <button class="ec2-fb active" onclick="setEc2F(this,'impact','all')">전체</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'impact','High')">★★★</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'impact','Medium')">★★☆</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'impact','Low')">★☆☆</button>
-        </div>
-        <div class="ec2-fgroup">
-          <button class="ec2-fb active" onclick="setEc2F(this,'country','all')">전체</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'country','USD')">🇺🇸 US</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'country','EUR')">🇪🇺 EU</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'country','JPY')">🇯🇵 JP</button>
-          <button class="ec2-fb" onclick="setEc2F(this,'country','GBP')">🇬🇧 GB</button>
-        </div>
+      <div class="ec-cal-filters">
+        <button class="ec-cal-btn active" onclick="setEcImpFilter(this,'all')">전체</button>
+        <button class="ec-cal-btn" onclick="setEcImpFilter(this,'High')">★★★</button>
+        <button class="ec-cal-btn" onclick="setEcImpFilter(this,'Medium')">★★☆</button>
+        <button class="ec-cal-btn" onclick="setEcImpFilter(this,'Low')">★☆☆</button>
       </div>
     </div>
+    <div class="ec-cal-divider"></div>
 
-    <!-- Upcoming Major -->
-    <h2 class="ec2-section-title">곧 있을 주요 경제 이벤트</h2>
-    <div class="ec2-skeleton" id="ec2Skel"><div class="ec2-skel-r"></div><div class="ec2-skel-r"></div><div class="ec2-skel-r"></div><div class="ec2-skel-r"></div><div class="ec2-skel-r"></div></div>
-    <div class="ec2-table-wrap" id="ec2TableWrap" style="display:none">
-      <table class="ec2-table">
-        <thead><tr><th>시간</th><th>국가</th><th>이벤트</th><th>중요도</th><th class="ec2-num-col">실제</th><th class="ec2-num-col ec2-hide-m">예측</th><th class="ec2-num-col ec2-hide-m">이전</th></tr></thead>
-        <tbody id="ec2Body"></tbody>
-      </table>
-    </div>
-    <div class="ec2-empty" id="ec2Empty" style="display:none">해당 조건에 맞는 이벤트가 없습니다</div>
-
-    <!-- Show All -->
-    <div class="ec2-expand-wrap">
-      <button class="ec2-expand-btn" id="ec2ExpandBtn" onclick="toggleEc2All()" style="display:none">모든 이벤트 보기 ↓</button>
-    </div>
-    <div class="ec2-all-wrap" id="ec2AllWrap" style="display:none">
-      <div id="ec2AllBody"></div>
+    <!-- TradingView Economic Calendar Widget -->
+    <div class="ec-tv-wrap">
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+        {
+          "colorTheme": "light",
+          "isTransparent": true,
+          "width": "100%",
+          "height": "600",
+          "locale": "kr",
+          "importanceFilter": "-1,0,1",
+          "countryFilter": "us,eu,jp,gb,kr,cn,ca,au"
+        }
+        </script>
+      </div>
     </div>
   </div>
 
-</div>
-
-<!-- Modal -->
-<div class="ec-modal-overlay" id="ecModal" onclick="if(event.target===this)closeEcModal()">
-  <div class="ec-modal">
-    <button class="ec-modal-close" onclick="closeEcModal()">&#10005;</button>
-    <div id="ecModalBody"></div>
-  </div>
 </div>
 
 <!-- JOURNAL PAGE -->
@@ -2705,156 +2750,29 @@ function getDescKey(title){
 }
 function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleString("en-US",{timeZone:"Asia/Seoul"}))}
 
-let _ec2ClockTimer,_ec2RefreshTimer;
+let _ec2ClockTimer;
 function initEconCalendar(){
-  clearInterval(_ec2ClockTimer);clearInterval(_ec2RefreshTimer);
-  updateEc2Clock();_ec2ClockTimer=setInterval(updateEc2Clock,1000);
-  loadEc2Data();_ec2RefreshTimer=setInterval(loadEc2Data,300000);
+  clearInterval(_ec2ClockTimer);
+  function updateEcKst(){
+    const now=new Date();
+    const h=String(now.getHours()).padStart(2,'0');
+    const m=String(now.getMinutes()).padStart(2,'0');
+    const s=String(now.getSeconds()).padStart(2,'0');
+    const el=document.getElementById('ecKstTime');
+    if(el)el.textContent='KST '+h+':'+m+':'+s;
+  }
+  updateEcKst();_ec2ClockTimer=setInterval(updateEcKst,1000);
 }
 
-function updateEc2Clock(){
-  const now=new Date();
-  const h=now.getHours().toString().padStart(2,'0');
-  const m=now.getMinutes().toString().padStart(2,'0');
-  const s=now.getSeconds().toString().padStart(2,'0');
-  const el=document.getElementById('ec2Clock');
-  if(el)el.textContent='KST '+h+':'+m+':'+s;
+// TradingView widget handles its own data, these are UI-only filter toggles
+function setEcDateFilter(btn,type){
+  document.querySelectorAll('#ecDateFilters .ec-cal-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
 }
-
-function loadEc2Data(){
-  const skel=document.getElementById('ec2Skel');
-  if(skel)skel.style.display='';
-  const tw=document.getElementById('ec2TableWrap');if(tw)tw.style.display='none';
-  fetch('https://nfs.faireconomy.media/ff_calendar_thisweek.json')
-    .then(r=>r.json()).then(data=>{
-      ecData=data;if(skel)skel.style.display='none';
-      updateEc2Banner();renderEc2Table();
-      const up=document.getElementById('ec2Updated');
-      if(up)up.textContent='마지막 업데이트: '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-    }).catch(()=>{
-      if(skel)skel.style.display='none';
-      const em=document.getElementById('ec2Empty');if(em){em.style.display='';em.textContent='데이터를 불러오지 못했습니다. 새로고침 해주세요.'}
-    });
+function setEcImpFilter(btn,type){
+  btn.parentElement.querySelectorAll('.ec-cal-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
 }
-
-function updateEc2Banner(){
-  const now=new Date();
-  const find=(kw)=>{
-    const e=ecData.find(ev=>ev.title.toLowerCase().includes(kw)&&new Date(ev.date)>now);
-    if(e){const kst=toKST(e.date);const diff=Math.ceil((new Date(e.date)-now)/86400000);return{time:(kst.getMonth()+1)+'/'+kst.getDate()+' '+kst.getHours().toString().padStart(2,'0')+':'+kst.getMinutes().toString().padStart(2,'0'),dday:'D-'+diff}}
-    return{time:'이번주 없음',dday:'—'};
-  };
-  const f=find('fomc'),c=find('cpi'),n=find('nonfarm');
-  document.getElementById('banFomc').textContent=f.time;document.getElementById('banFomcD').textContent=f.dday;
-  document.getElementById('banCpi').textContent=c.time;document.getElementById('banCpiD').textContent=c.dday;
-  document.getElementById('banNfp').textContent=n.time;document.getElementById('banNfpD').textContent=n.dday;
-}
-
-function setEc2Date(btn,mode){
-  document.querySelectorAll('.ec2-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');ec2DateMode=mode;renderEc2Table();
-}
-
-function setEc2F(btn,type,val){
-  btn.parentElement.querySelectorAll('.ec2-fb').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');ec2Filters[type]=val;renderEc2Table();
-}
-
-function filterEc2(list){
-  const now=new Date();const today=new Date();today.setHours(0,0,0,0);
-  let f=list.filter(e=>{
-    if(e.impact==='Holiday')return false;
-    const kst=toKST(e.date);const day=new Date(kst);day.setHours(0,0,0,0);
-    const diff=Math.round((day-today)/86400000);
-    if(ec2DateMode==='yesterday')return diff===-1;
-    if(ec2DateMode==='today')return diff===0;
-    if(ec2DateMode==='tomorrow')return diff===1;
-    if(ec2DateMode==='week')return diff>=-1&&diff<=6;
-    return true;
-  });
-  if(ec2Filters.impact!=='all')f=f.filter(e=>e.impact===ec2Filters.impact);
-  if(ec2Filters.country!=='all')f=f.filter(e=>e.country===ec2Filters.country);
-  return f;
-}
-
-function ec2Row(e,now){
-  const d=new Date(e.date);const kst=toKST(e.date);
-  const time=kst.getHours().toString().padStart(2,'0')+':'+kst.getMinutes().toString().padStart(2,'0');
-  const flag=EC_FLAGS[e.country]||'🌐';
-  const imp=e.impact||'Low';
-  const stars=imp==='High'?'<span class="ec2-star-high">★★★</span>':imp==='Medium'?'<span class="ec2-star-med">★★☆</span>':'<span class="ec2-star-low">★☆☆</span>';
-  const diffMin=(d.getTime()-now.getTime())/60000;
-  const imminent=diffMin>0&&diffMin<=60;
-  const kr=getKrName(e.title);const krSpan=kr?'<span class="ec2-event-kr">'+kr+'</span>':'';
-  const fc=e.forecast||'';const ac=e.actual||'';const pv=e.previous||'';
-  let acClass='ec2-val-pending';
-  if(ac&&fc){const a=parseFloat(ac.replace(/[%,K]/g,'')),f=parseFloat(fc.replace(/[%,K]/g,''));if(!isNaN(a)&&!isNaN(f))acClass=a>f?'ec2-val-up':a<f?'ec2-val-down':''}
-  return '<tr class="'+(imminent?'ec2-imminent':'')+'" onclick="openEcModal(\''+e.title.replace(/'/g,"\\'")+'\')" style="cursor:pointer">'+
-    '<td class="ec2-time-cell">'+time+'</td>'+
-    '<td class="ec2-country-cell"><span class="ec2-country-flag">'+flag+'</span><span class="ec2-country-code">'+e.country+'</span></td>'+
-    '<td class="ec2-event-cell">'+e.title+krSpan+'</td>'+
-    '<td class="ec2-stars">'+stars+'</td>'+
-    '<td class="ec2-num-col '+(ac?acClass:'ec2-val-pending')+'">'+(ac||'—')+'</td>'+
-    '<td class="ec2-num-col ec2-hide-m">'+(fc||'—')+'</td>'+
-    '<td class="ec2-num-col ec2-hide-m">'+(pv||'—')+'</td></tr>';
-}
-
-function renderEc2Table(){
-  const now=new Date();
-  // Major upcoming (High/Medium within 48h)
-  const upcoming=ecData.filter(e=>{
-    if(e.impact!=='High'&&e.impact!=='Medium')return false;
-    const diff=(new Date(e.date)-now)/3600000;
-    return diff>-2&&diff<=48;
-  });
-
-  const filtered=filterEc2(ecData);
-  const body=document.getElementById('ec2Body');
-  const wrap=document.getElementById('ec2TableWrap');
-  const empty=document.getElementById('ec2Empty');
-  const expandBtn=document.getElementById('ec2ExpandBtn');
-
-  if(filtered.length===0){wrap.style.display='none';empty.style.display='';expandBtn.style.display='none';return}
-  empty.style.display='none';wrap.style.display='';
-
-  // Show only major first (or all if few)
-  const major=filtered.filter(e=>e.impact==='High'||e.impact==='Medium');
-  const display=major.length>0?major:filtered.slice(0,10);
-  body.innerHTML=display.map(e=>ec2Row(e,now)).join('');
-  expandBtn.style.display=filtered.length>display.length?'':'none';
-
-  // Build all events grouped by date
-  const allWrap=document.getElementById('ec2AllWrap');
-  const dayNames=['일','월','화','수','목','금','토'];
-  const grouped={};
-  filtered.forEach(e=>{
-    const kst=toKST(e.date);const key=kst.toISOString().slice(0,10);
-    if(!grouped[key])grouped[key]=[];grouped[key].push(e);
-  });
-  let allHtml='';
-  Object.keys(grouped).sort().forEach(key=>{
-    const dt=new Date(key+'T00:00:00');
-    allHtml+='<div class="ec2-all-date-header">── '+dt.getFullYear()+'년 '+(dt.getMonth()+1)+'월 '+dt.getDate()+'일 '+dayNames[dt.getDay()]+'요일 ──</div>';
-    allHtml+='<table class="ec2-table"><thead><tr><th>시간</th><th>국가</th><th>이벤트</th><th>중요도</th><th class="ec2-num-col">실제</th><th class="ec2-num-col ec2-hide-m">예측</th><th class="ec2-num-col ec2-hide-m">이전</th></tr></thead><tbody>';
-    allHtml+=grouped[key].map(e=>ec2Row(e,now)).join('');
-    allHtml+='</tbody></table>';
-  });
-  allWrap.innerHTML=allHtml;
-}
-
-function toggleEc2All(){
-  ec2AllOpen=!ec2AllOpen;
-  document.getElementById('ec2AllWrap').style.display=ec2AllOpen?'':'none';
-  document.getElementById('ec2ExpandBtn').textContent=ec2AllOpen?'접기 ↑':'모든 이벤트 보기 ↓';
-}
-
-function openEcModal(title){
-  const key=getDescKey(title);const modal=document.getElementById('ecModal');const body=document.getElementById('ecModalBody');const kr=getKrName(title)||title;
-  if(key&&EC_DESC[key]){body.innerHTML='<h3>'+kr+'</h3><div class="ec-modal-en">'+title+'</div><div class="ec-modal-desc">'+EC_DESC[key].desc+'</div><div class="ec-modal-effect"><strong>시장 영향</strong>'+EC_DESC[key].effect.replace(/\n/g,'<br>')+'</div>'}
-  else{body.innerHTML='<h3>'+kr+'</h3><div class="ec-modal-en">'+title+'</div><div class="ec-modal-desc">이 지표에 대한 상세 정보가 아직 준비되지 않았습니다.</div>'}
-  modal.classList.add('open');document.body.style.overflow='hidden';
-}
-function closeEcModal(){document.getElementById('ecModal').classList.remove('open');document.body.style.overflow=''}
 
 // ===== YAHOO FINANCE (RapidAPI) =====
 function getRapidKey(){return localStorage.getItem('rapidApiKey')||''}
