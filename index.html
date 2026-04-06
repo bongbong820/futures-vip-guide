@@ -997,6 +997,53 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 }
 
 /* ===== GLOSSARY ===== */
+/* ===== GLOSSARY V2 ===== */
+.gl-search{
+  width:100%;padding:12px 18px;border:1px solid var(--gray-200);
+  border-radius:12px;font-size:15px;background:var(--white);
+  color:var(--gray-900);font-family:var(--font);outline:none;margin-bottom:12px;
+}
+.gl-search:focus{border-color:var(--blue)}
+.gl-cats{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.gl-cat{
+  padding:6px 14px;border:1px solid var(--gray-200);border-radius:20px;
+  background:var(--white);color:var(--gray-600);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .15s;font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;
+}
+.gl-cat:hover{border-color:var(--blue);color:var(--blue)}
+.gl-cat.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.gl-count{font-size:13px;color:var(--gray-400);margin-bottom:14px}
+.gl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.gl-card{
+  padding:16px 18px;border:1px solid var(--gray-200);border-radius:12px;
+  background:var(--white);cursor:pointer;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.gl-card:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.gl-card.hidden{display:none}
+.gl-card-icon{font-size:14px;margin-right:6px}
+.gl-card-term{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.gl-card-cat{font-size:10px;color:var(--gray-400);font-weight:600}
+.gl-card-desc{font-size:13px;color:var(--gray-600);line-height:1.5;margin-top:6px}
+
+/* Glossary Modal */
+.gl-modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.gl-modal-overlay.open{display:flex}
+.gl-modal{background:var(--white);border-radius:16px;padding:28px;max-width:560px;width:92%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg)}
+.gl-modal-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;border-radius:50%;background:var(--gray-100);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.gl-modal h3{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.gl-modal-cat{font-size:12px;color:var(--gray-500);margin-bottom:16px}
+.gl-modal-full{font-size:14px;line-height:1.8;color:var(--gray-700);margin-bottom:16px;white-space:pre-line}
+.gl-modal-example{padding:16px;border-radius:10px;background:var(--blue-light);font-size:13px;color:var(--navy);line-height:1.6;margin-bottom:16px}
+.gl-modal-example strong{display:block;margin-bottom:4px;font-size:14px}
+.gl-modal-related{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.gl-modal-tag{padding:4px 12px;border-radius:16px;background:var(--gray-100);color:var(--gray-600);font-size:12px;font-weight:600;cursor:pointer}
+.gl-modal-tag:hover{background:var(--blue-light);color:var(--blue)}
+
+@media(max-width:640px){.gl-grid{grid-template-columns:1fr}}
+
+/* OLD glossary CSS below */
 .glossary-search{
   width:100%;padding:12px 18px;border:1px solid var(--gray-200);
   border-radius:12px;font-size:15px;background:var(--white);
@@ -2163,13 +2210,22 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div>
       <div class="chapter-label">Trading Glossary</div>
       <h2 class="chapter-title">용어 사전</h2>
-      <p class="chapter-desc">해외선물·암호화폐 트레이딩에 필요한 핵심 용어를 정리했습니다.</p>
+      <p class="chapter-desc">해외선물·암호화폐 트레이딩에 필요한 핵심 용어 60+개를 카테고리별로 정리했습니다.</p>
     </div>
   </div>
   <div class="section">
-    <input class="glossary-search" id="glossarySearch" type="text" placeholder="용어 검색 (한글 또는 영어)" oninput="filterGlossary()">
-    <div class="glossary-count" id="glossaryCount"></div>
-    <div class="glossary-list" id="glossaryList"></div>
+    <input class="gl-search" id="glSearch" type="text" placeholder="용어 검색 (한글 또는 영어)" oninput="glFilter()">
+    <div class="gl-cats" id="glCats"></div>
+    <div class="gl-count" id="glCount"></div>
+    <div class="gl-grid" id="glGrid"></div>
+  </div>
+</div>
+
+<!-- Glossary Modal -->
+<div class="gl-modal-overlay" id="glModal" onclick="if(event.target===this)closeGlModal()">
+  <div class="gl-modal">
+    <button class="gl-modal-close" onclick="closeGlModal()">&#10005;</button>
+    <div id="glModalBody"></div>
   </div>
 </div>
 
@@ -2256,6 +2312,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
+<script src="glossary-data.js"></script>
 <script>
 function escHtml(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 let current = 1;
@@ -2662,7 +2719,8 @@ function renderJournal(){
 }
 
 // ===== GLOSSARY =====
-const glossaryData=[
+// Old glossaryData removed - now in glossary-data.js as GLOSSARY_DATA
+const _oldGlossaryData=[
   {term:"손절",en:"Stop-Loss",def:"사전에 정한 가격에서 포지션을 청산하여 더 큰 손실을 방지하는 것",tag:"리스크"},
   {term:"정배열",en:"Bullish Alignment",def:"단기 이동평균선이 장기 이동평균선 위에 위치한 강세 배열",tag:"기술적분석"},
   {term:"역배열",en:"Bearish Alignment",def:"단기 이동평균선이 장기 이동평균선 아래에 위치한 약세 배열",tag:"기술적분석"},
@@ -2704,28 +2762,65 @@ const glossaryData=[
   {term:"Over-trading",en:"Over-trading",def:"과도하게 많은 횟수로 매매하는 것. 수수료와 심리적 피로 누적",tag:"심리"}
 ];
 
+// ===== GLOSSARY V2 =====
+let glCatFilter='all';
+
 function renderGlossary(){
-  const list=document.getElementById('glossaryList');
-  if(!list)return;
-  list.innerHTML=glossaryData.map(g=>
-    '<div class="glossary-item" data-search="'+g.term+' '+g.en+' '+g.def+'">'+
-    '<div><span class="glossary-term">'+g.term+'</span><span class="glossary-en">'+g.en+'</span></div>'+
-    '<div class="glossary-def">'+g.def+'</div>'+
-    '<span class="glossary-tag">'+g.tag+'</span></div>'
-  ).join('');
-  document.getElementById('glossaryCount').textContent='총 '+glossaryData.length+'개 용어';
+  const cats=[...new Set(GLOSSARY_DATA.map(g=>g.category))];
+  const catsEl=document.getElementById('glCats');
+  if(!catsEl)return;
+  const icons={'기초 개념':'📊','차트 & 기술적 분석':'📈','주문 & 거래 방식':'💰','거시경제 & 지표':'🌍','리스크 관리':'⚠️','선물/파생상품 전용':'🔥'};
+  catsEl.innerHTML='<button class="gl-cat active" onclick="setGlCat(this,\'all\')">전체</button>'+
+    cats.map(c=>'<button class="gl-cat" onclick="setGlCat(this,\''+c+'\')">'+(icons[c]||'')+' '+c+'</button>').join('');
+  glRenderCards();
 }
 
-function filterGlossary(){
-  const q=document.getElementById('glossarySearch').value.toLowerCase();
-  let count=0;
-  document.querySelectorAll('.glossary-item').forEach(el=>{
-    const match=el.dataset.search.toLowerCase().includes(q);
-    el.classList.toggle('hidden',!match);
-    if(match)count++;
-  });
-  document.getElementById('glossaryCount').textContent=q?count+'개 검색 결과':'총 '+glossaryData.length+'개 용어';
+function glRenderCards(){
+  const grid=document.getElementById('glGrid');
+  const countEl=document.getElementById('glCount');
+  const q=(document.getElementById('glSearch')?.value||'').toLowerCase();
+  let filtered=GLOSSARY_DATA;
+  if(glCatFilter!=='all')filtered=filtered.filter(g=>g.category===glCatFilter);
+  if(q)filtered=filtered.filter(g=>(g.term+g.shortDesc+g.category).toLowerCase().includes(q));
+  countEl.textContent=filtered.length+'개 용어'+(q?' (검색 결과)':'');
+  grid.innerHTML=filtered.map((g,i)=>
+    '<div class="gl-card" onclick="openGlModal('+GLOSSARY_DATA.indexOf(g)+')">'+
+    '<div class="gl-card-term"><span class="gl-card-icon">'+g.icon+'</span>'+escHtml(g.term)+'</div>'+
+    '<div class="gl-card-cat">'+escHtml(g.category)+'</div>'+
+    '<div class="gl-card-desc">'+escHtml(g.shortDesc)+'</div></div>'
+  ).join('');
 }
+
+function setGlCat(btn,cat){
+  document.querySelectorAll('.gl-cat').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');glCatFilter=cat;glRenderCards();
+}
+function glFilter(){glRenderCards()}
+
+function openGlModal(idx){
+  const g=GLOSSARY_DATA[idx];if(!g)return;
+  const body=document.getElementById('glModalBody');
+  let html='<h3>'+escHtml(g.term)+'</h3><div class="gl-modal-cat">'+g.icon+' '+escHtml(g.category)+'</div>';
+  html+='<div class="gl-modal-full">'+escHtml(g.fullDesc)+'</div>';
+  if(g.example)html+='<div class="gl-modal-example"><strong>실전 예시</strong>'+escHtml(g.example)+'</div>';
+  if(g.relatedTerms&&g.relatedTerms.length){
+    html+='<div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:6px">관련 용어</div><div class="gl-modal-related">';
+    html+=g.relatedTerms.map(t=>'<span class="gl-modal-tag" onclick="glSearchTerm(\''+t.replace(/'/g,"\\'")+'\')">'+escHtml(t)+'</span>').join('');
+    html+='</div>';
+  }
+  body.innerHTML=html;
+  document.getElementById('glModal').classList.add('open');document.body.style.overflow='hidden';
+}
+function closeGlModal(){document.getElementById('glModal').classList.remove('open');document.body.style.overflow=''}
+function glSearchTerm(term){
+  closeGlModal();
+  document.getElementById('glSearch').value=term;glCatFilter='all';
+  document.querySelectorAll('.gl-cat').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.gl-cat')?.classList.add('active');
+  glRenderCards();
+}
+
+function filterGlossary(){glFilter()}
 
 // ===== BOOKMARK =====
 function initBookmarks(){
