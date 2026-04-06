@@ -1512,26 +1512,26 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
         <button class="chart-search-btn" onclick="searchSymbol()">검색</button>
       </div>
       <div class="chart-categories">
-        <button class="chart-cat active" onclick="filterCat(this,'futures')">해외선물</button>
-        <button class="chart-cat" onclick="filterCat(this,'crypto')">암호화폐</button>
+        <button class="chart-cat active" onclick="filterCat(this,'crypto')">암호화폐</button>
+        <button class="chart-cat" onclick="filterCat(this,'futures')">해외선물</button>
         <button class="chart-cat" onclick="filterCat(this,'index')">지수</button>
         <button class="chart-cat" onclick="filterCat(this,'forex')">외환</button>
         <button class="chart-cat" onclick="filterCat(this,'stock')">주식</button>
         <button class="chart-cat" onclick="filterCat(this,'all')">전체</button>
       </div>
       <div class="chart-symbols" id="chartSymbols">
+        <!-- Crypto -->
+        <button class="chart-sym active" data-cat="crypto" data-symbol="BINANCE:BTCUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#8383;</span>BTC/USDT</button>
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:ETHUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#9830;</span>ETH/USDT</button>
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:SOLUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#9788;</span>SOL/USDT</button>
+        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:XRPUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#10005;</span>XRP/USDT</button>
         <!-- Futures -->
-        <button class="chart-sym active" data-cat="futures" data-symbol="CME_MINI:ES1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>E-mini S&P 500</button>
+        <button class="chart-sym" data-cat="futures" data-symbol="CME_MINI:ES1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>E-mini S&P 500</button>
         <button class="chart-sym" data-cat="futures" data-symbol="CME_MINI:NQ1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>E-mini Nasdaq</button>
         <button class="chart-sym" data-cat="futures" data-symbol="COMEX:GC1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#129351;</span>Gold (GC)</button>
         <button class="chart-sym" data-cat="futures" data-symbol="NYMEX:CL1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#128738;</span>Crude Oil (CL)</button>
         <button class="chart-sym" data-cat="futures" data-symbol="CME:6E1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127466;&#127482;</span>Euro FX</button>
         <button class="chart-sym" data-cat="futures" data-symbol="CME:6J1!" onclick="changeChart(this)"><span class="chart-sym-flag">&#127471;&#127477;</span>Japanese Yen</button>
-        <!-- Crypto -->
-        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:BTCUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#8383;</span>BTC/USDT</button>
-        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:ETHUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#9830;</span>ETH/USDT</button>
-        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:SOLUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#9788;</span>SOL/USDT</button>
-        <button class="chart-sym" data-cat="crypto" data-symbol="BINANCE:XRPUSDT" onclick="changeChart(this)"><span class="chart-sym-flag">&#10005;</span>XRP/USDT</button>
         <!-- Index -->
         <button class="chart-sym" data-cat="index" data-symbol="TVC:SPX" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>S&P 500</button>
         <button class="chart-sym" data-cat="index" data-symbol="TVC:IXIC" onclick="changeChart(this)"><span class="chart-sym-flag">&#127482;&#127480;</span>Nasdaq</button>
@@ -1551,9 +1551,9 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
 
     <!-- Chart -->
-    <div class="chart-current-label" id="chartLabel">CME_MINI:ES1! · E-mini S&P 500</div>
+    <div class="chart-current-label" id="chartLabel">BINANCE:BTCUSDT · BTC/USDT</div>
     <div class="chart-page-widget">
-      <iframe id="tvIframe" src="https://s.tradingview.com/widgetembed/?symbol=CME_MINI%3AES1!&interval=60&theme=dark&style=1&locale=kr&timezone=Asia%2FSeoul&hideideas=1" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
+      <iframe id="tvIframe" src="https://s.tradingview.com/widgetembed/?symbol=BINANCE%3ABTCUSDT&interval=60&theme=dark&style=1&locale=kr&timezone=Asia%2FSeoul&hideideas=1" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -1782,7 +1782,7 @@ function goToChart() {
 // ===== CHART CONTROLS =====
 // Default filter: futures only
 document.querySelectorAll('.chart-sym').forEach(s => {
-  if (s.dataset.cat !== 'futures') s.classList.add('hidden');
+  if (s.dataset.cat !== 'crypto') s.classList.add('hidden');
 });
 function changeChart(btn) {
   const symbol = btn.dataset.symbol;
