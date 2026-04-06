@@ -619,7 +619,58 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .tool-btn.active{background:var(--blue-light)}
 .tool-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
 
-/* ===== ECONOMIC CALENDAR V4 (TradingView) ===== */
+/* ===== ECONOMIC CALENDAR V5 (FMP API) ===== */
+.ec4-header{margin-bottom:24px}
+.ec4-title{font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
+.ec4-kst{font-size:12px;color:var(--gray-500);margin-top:4px;font-family:'Courier New',monospace}
+.ec4-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.ec4-card{background:var(--white);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;transition:box-shadow .2s,transform .2s}
+.ec4-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.ec4-card-top{display:flex;align-items:center;gap:8px}
+.ec4-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;position:relative}
+.ec4-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(255,107,107,.18)}
+.ec4-card-name{font-size:13px;font-weight:600;color:var(--navy)}
+.ec4-card-val{font-size:20px;font-weight:700;color:var(--gray-500);padding-left:16px;min-height:28px;display:flex;align-items:center}
+.ec4-card-meta{display:flex;gap:10px;padding-left:16px}
+.ec4-meta{font-size:11px;color:var(--gray-500)}
+.ec4-ml{font-weight:500}
+.ec4-panel{background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.ec4-toolbar{padding:18px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.ec4-fg{display:flex;gap:6px;flex-wrap:wrap}
+.ec4-fb{border:none;border-radius:20px;padding:6px 14px;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s;background:var(--gray-100);color:var(--gray-600);-webkit-tap-highlight-color:transparent}
+.ec4-fb:hover{background:var(--blue-light);color:var(--blue)}
+.ec4-fb.active{background:var(--blue);color:#fff}
+.ec4-divider{height:1px;background:var(--gray-200);margin:14px 0 0}
+.ec4-section-title{font-size:14px;font-weight:600;text-align:center;padding:20px 20px 0;color:var(--navy)}
+.ec4-table{width:100%;border-collapse:collapse;margin-top:8px}
+.ec4-table th{font-size:12px;font-weight:500;color:var(--gray-500);padding:10px 16px;border-bottom:1px solid var(--gray-200);text-align:left}
+.ec4-table th.r,.ec4-table td.r{text-align:right}
+.ec4-table td{font-size:13px;padding:13px 16px;border-bottom:1px solid var(--gray-100);vertical-align:middle}
+.ec4-table tr:last-child td{border-bottom:none}
+.ec4-table tbody tr:hover td{background:var(--blue-light)}
+.ec4-time{color:var(--gray-500);font-size:12px;white-space:nowrap}
+.ec4-country{display:flex;align-items:center;gap:6px}
+.ec4-flag{font-size:16px}
+.ec4-cc{font-size:11px;font-weight:600;color:var(--gray-500)}
+.ec4-event{font-weight:500}
+.ec4-stars{color:#f5a623;font-size:12px;letter-spacing:1px}
+.ec4-stars .empty{color:var(--gray-300)}
+.ec4-dg td{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-light);padding:7px 16px;letter-spacing:.5px}
+.ec4-other{display:none}
+.ec4-other.show{display:table-row}
+.ec4-more-wrap{text-align:center;padding:18px 0 22px}
+.ec4-more-btn{background:none;border:1.5px solid var(--blue);color:var(--blue);border-radius:20px;padding:8px 28px;font-size:13px;font-family:var(--font);font-weight:600;cursor:pointer;transition:all .15s}
+.ec4-more-btn:hover{background:var(--blue);color:#fff}
+.ec4-state{text-align:center;padding:48px 20px;color:var(--gray-500);font-size:14px}
+.ec4-spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:ec4spin .8s linear infinite;margin-bottom:12px}
+@keyframes ec4spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){
+  .ec4-cards{grid-template-columns:1fr}
+  .ec4-table th:nth-child(5),.ec4-table td:nth-child(5){display:none}
+  .ec4-toolbar{flex-direction:column;align-items:flex-start}
+}
+
+/* OLD V4 below */
 .ec-page-header{max-width:100%;margin-bottom:24px}
 .ec-page-title{font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
 .ec-kst-time{font-size:12px;color:var(--gray-500);margin-top:4px;font-family:'Courier New',monospace}
@@ -2028,66 +2079,47 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <!-- CALENDAR PAGE -->
 <div class="chapter-page" id="chCalendar">
 
-  <!-- Header -->
-  <div class="ec-page-header">
-    <div class="ec-page-title">경제 캘린더</div>
-    <div class="ec-kst-time" id="ecKstTime">KST --:--:--</div>
+  <div class="ec4-header">
+    <div class="ec4-title">경제 캘린더</div>
+    <div class="ec4-kst" id="ec4Kst">KST --:--:--</div>
   </div>
 
-  <!-- Feature Cards -->
-  <div class="ec-feature-cards">
-    <div class="ec-feat-card">
-      <div class="ec-feat-top"><div class="ec-feat-dot"></div><span class="ec-feat-name">FOMC 금리 결정</span></div>
-      <div class="ec-feat-val" id="ecFomcVal">—</div>
-      <div class="ec-feat-meta"><span class="ec-feat-meta-item"><span class="ec-feat-label">예상</span> —</span><span class="ec-feat-meta-item"><span class="ec-feat-label">이전</span> —</span></div>
+  <div class="ec4-cards">
+    <div class="ec4-card">
+      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">FOMC 금리 결정</span></div>
+      <div class="ec4-card-val">—</div>
+      <div class="ec4-card-meta"><span class="ec4-meta"><span class="ec4-ml">예상</span> —</span><span class="ec4-meta"><span class="ec4-ml">이전</span> —</span></div>
     </div>
-    <div class="ec-feat-card">
-      <div class="ec-feat-top"><div class="ec-feat-dot"></div><span class="ec-feat-name">CPI 소비자물가</span></div>
-      <div class="ec-feat-val" id="ecCpiVal">—</div>
-      <div class="ec-feat-meta"><span class="ec-feat-meta-item"><span class="ec-feat-label">예상</span> —</span><span class="ec-feat-meta-item"><span class="ec-feat-label">이전</span> —</span></div>
+    <div class="ec4-card">
+      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">CPI 소비자물가</span></div>
+      <div class="ec4-card-val">—</div>
+      <div class="ec4-card-meta"><span class="ec4-meta"><span class="ec4-ml">예상</span> —</span><span class="ec4-meta"><span class="ec4-ml">이전</span> —</span></div>
     </div>
-    <div class="ec-feat-card">
-      <div class="ec-feat-top"><div class="ec-feat-dot"></div><span class="ec-feat-name">NFP 비농업고용</span></div>
-      <div class="ec-feat-val" id="ecNfpVal">—</div>
-      <div class="ec-feat-meta"><span class="ec-feat-meta-item"><span class="ec-feat-label">예상</span> —</span><span class="ec-feat-meta-item"><span class="ec-feat-label">이전</span> —</span></div>
+    <div class="ec4-card">
+      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">NFP 비농업고용</span></div>
+      <div class="ec4-card-val">—</div>
+      <div class="ec4-card-meta"><span class="ec4-meta"><span class="ec4-ml">예상</span> —</span><span class="ec4-meta"><span class="ec4-ml">이전</span> —</span></div>
     </div>
   </div>
 
-  <!-- Calendar Panel -->
-  <div class="ec-cal-panel">
-    <div class="ec-cal-toolbar">
-      <div class="ec-cal-filters" id="ecDateFilters">
-        <button class="ec-cal-btn" onclick="setEcDateFilter(this,'yesterday')">어제</button>
-        <button class="ec-cal-btn active" onclick="setEcDateFilter(this,'today')">오늘</button>
-        <button class="ec-cal-btn" onclick="setEcDateFilter(this,'tomorrow')">내일</button>
-        <button class="ec-cal-btn" onclick="setEcDateFilter(this,'thisweek')">이번주</button>
+  <div class="ec4-panel">
+    <div class="ec4-toolbar">
+      <div class="ec4-fg" id="ec4DateF">
+        <button class="ec4-fb" data-range="yesterday" onclick="ec4SetRange(this)">어제</button>
+        <button class="ec4-fb active" data-range="today" onclick="ec4SetRange(this)">오늘</button>
+        <button class="ec4-fb" data-range="tomorrow" onclick="ec4SetRange(this)">내일</button>
+        <button class="ec4-fb" data-range="week" onclick="ec4SetRange(this)">이번주</button>
       </div>
-      <div class="ec-cal-filters">
-        <button class="ec-cal-btn active" onclick="setEcImpFilter(this,'all')">전체</button>
-        <button class="ec-cal-btn" onclick="setEcImpFilter(this,'High')">★★★</button>
-        <button class="ec-cal-btn" onclick="setEcImpFilter(this,'Medium')">★★☆</button>
-        <button class="ec-cal-btn" onclick="setEcImpFilter(this,'Low')">★☆☆</button>
-      </div>
-    </div>
-    <div class="ec-cal-divider"></div>
-
-    <!-- TradingView Economic Calendar Widget -->
-    <div class="ec-tv-wrap">
-      <div class="tradingview-widget-container">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-        {
-          "colorTheme": "light",
-          "isTransparent": true,
-          "width": "100%",
-          "height": "600",
-          "locale": "kr",
-          "importanceFilter": "-1,0,1",
-          "countryFilter": "us,eu,jp,gb,kr,cn,ca,au"
-        }
-        </script>
+      <div class="ec4-fg" id="ec4ImpF">
+        <button class="ec4-fb active" data-imp="all" onclick="ec4SetImp(this)">전체</button>
+        <button class="ec4-fb" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
+        <button class="ec4-fb" data-imp="2" onclick="ec4SetImp(this)">★★☆</button>
+        <button class="ec4-fb" data-imp="1" onclick="ec4SetImp(this)">★☆☆</button>
       </div>
     </div>
+    <div class="ec4-divider"></div>
+    <div class="ec4-section-title">곧 있을 주요 경제 이벤트</div>
+    <div id="ec4Body"><div class="ec4-state"><div class="ec4-spinner"></div><br>데이터 불러오는 중...</div></div>
   </div>
 
 </div>
@@ -2715,7 +2747,7 @@ function initBookmarks(){
   });
 }
 
-// ===== ECONOMIC CALENDAR V3 =====
+// ===== ECONOMIC CALENDAR V5 (FMP API + TradingView fallback) =====
 let ecData=[];let ec2Filters={impact:'all',country:'all'};let ec2DateMode='today';let ec2AllOpen=false;
 const EC_FLAGS={'USD':'🇺🇸','EUR':'🇪🇺','GBP':'🇬🇧','JPY':'🇯🇵','CNY':'🇨🇳','KRW':'🇰🇷','CAD':'🇨🇦','AUD':'🇦🇺','NZD':'🇳🇿','CHF':'🇨🇭','All':'🌐'};
 const EC_KR={
@@ -2750,28 +2782,84 @@ function getDescKey(title){
 }
 function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleString("en-US",{timeZone:"Asia/Seoul"}))}
 
-let _ec2ClockTimer;
+let _ec4Timer;
+let ec4Events=[];let ec4Range='today';let ec4Imp='all';
+
 function initEconCalendar(){
-  clearInterval(_ec2ClockTimer);
-  function updateEcKst(){
-    const now=new Date();
-    const h=String(now.getHours()).padStart(2,'0');
-    const m=String(now.getMinutes()).padStart(2,'0');
-    const s=String(now.getSeconds()).padStart(2,'0');
-    const el=document.getElementById('ecKstTime');
-    if(el)el.textContent='KST '+h+':'+m+':'+s;
+  clearInterval(_ec4Timer);
+  function tick(){
+    const kst=new Date(Date.now()+9*3600000);
+    const p=n=>String(n).padStart(2,'0');
+    const el=document.getElementById('ec4Kst');
+    if(el)el.textContent='KST '+p(kst.getUTCHours())+':'+p(kst.getUTCMinutes())+':'+p(kst.getUTCSeconds());
   }
-  updateEcKst();_ec2ClockTimer=setInterval(updateEcKst,1000);
+  tick();_ec4Timer=setInterval(tick,1000);
+  ec4Fetch();
 }
 
-// TradingView widget handles its own data, these are UI-only filter toggles
-function setEcDateFilter(btn,type){
-  document.querySelectorAll('#ecDateFilters .ec-cal-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function ec4DateStr(off){const d=new Date(Date.now()+9*3600000+off*86400000);return d.toISOString().slice(0,10)}
+function ec4WeekRange(){const kst=new Date(Date.now()+9*3600000);const dow=kst.getUTCDay();const s=-(dow===0?6:dow-1);return{start:ec4DateStr(s),end:ec4DateStr(s+6)}}
+function ec4DateLabel(ds){
+  const[,mo,dy]=ds.split('-');const td=ec4DateStr(0),yd=ec4DateStr(-1),tm=ec4DateStr(1);
+  if(ds===td)return+mo+'월 '+(+dy)+'일 (오늘)';if(ds===yd)return+mo+'월 '+(+dy)+'일 (어제)';if(ds===tm)return+mo+'월 '+(+dy)+'일 (내일)';
+  const dn=['일','월','화','수','목','금','토'];return+mo+'월 '+(+dy)+'일 ('+dn[new Date(ds+'T00:00:00Z').getUTCDay()]+')';
 }
-function setEcImpFilter(btn,type){
-  btn.parentElement.querySelectorAll('.ec-cal-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+const EC4C={USD:{f:'🇺🇸',c:'US'},EUR:{f:'🇪🇺',c:'EU'},JPY:{f:'🇯🇵',c:'JP'},GBP:{f:'🇬🇧',c:'GB'},KRW:{f:'🇰🇷',c:'KR'},CNY:{f:'🇨🇳',c:'CN'},CAD:{f:'🇨🇦',c:'CA'},AUD:{f:'🇦🇺',c:'AU'},CHF:{f:'🇨🇭',c:'CH'}};
+function ec4Stars(imp){const n=imp==='High'?3:imp==='Medium'?2:1;return '★'.repeat(n)+'<span class="empty">'+'★'.repeat(3-n)+'<\/span>'}
+function ec4ImpN(imp){return imp==='High'?3:imp==='Medium'?2:1}
+
+function ec4Filter(){
+  const td=ec4DateStr(0),wr=ec4WeekRange();
+  return ec4Events.filter(ev=>{
+    const d=ev.date.slice(0,10);
+    if(ec4Range==='today'&&d!==td)return false;
+    if(ec4Range==='yesterday'&&d!==ec4DateStr(-1))return false;
+    if(ec4Range==='tomorrow'&&d!==ec4DateStr(1))return false;
+    if(ec4Range==='week'&&(d<wr.start||d>wr.end))return false;
+    if(ec4Imp!=='all'&&ec4ImpN(ev.impact)!==+ec4Imp)return false;
+    return true;
+  });
+}
+
+function ec4Render(){
+  const evts=ec4Filter();const body=document.getElementById('ec4Body');const td=ec4DateStr(0);
+  if(!evts.length){body.innerHTML='<div class="ec4-state">해당 조건의 이벤트가 없습니다.</div>';return}
+  const groups={};evts.forEach(ev=>{const d=ev.date.slice(0,10);(groups[d]=groups[d]||[]).push(ev)});
+  const dates=Object.keys(groups).sort();
+  const others=dates.filter(d=>d!==td);const showMore=ec4Range==='week'&&others.length>0;
+  let h='<table class="ec4-table"><thead><tr><th>시간 (KST)</th><th>국가</th><th>종목명</th><th class="r">중요도</th><th class="r">예상</th><th class="r">이전</th></tr></thead><tbody>';
+  dates.forEach(ds=>{
+    const isO=ds!==td&&ec4Range==='week';const cls=isO?'ec4-other':'';
+    if(ec4Range==='week')h+='<tr class="ec4-dg '+cls+'"><td colspan="6">'+ec4DateLabel(ds)+'</td></tr>';
+    groups[ds].forEach(ev=>{
+      const kst=new Date(new Date(ev.date).getTime()+9*3600000);
+      const hh=String(kst.getUTCHours()).padStart(2,'0');
+      const mm=String(kst.getUTCMinutes()).padStart(2,'0');
+      const ci=EC4C[ev.currency]||{f:'🌐',c:ev.currency||''};
+      h+='<tr class="'+cls+'"><td class="ec4-time">'+hh+':'+mm+'</td><td><div class="ec4-country"><span class="ec4-flag">'+ci.f+'</span><span class="ec4-cc">'+ci.c+'</span></div></td><td class="ec4-event">'+escHtml(ev.event)+'</td><td class="r"><span class="ec4-stars">'+ec4Stars(ev.impact)+'</span></td><td class="r" style="color:var(--gray-500)">'+(ev.estimate||'—')+'</td><td class="r" style="color:var(--gray-500)">'+(ev.previous||'—')+'</td></tr>';
+    });
+  });
+  h+='</tbody></table>';
+  if(showMore)h+='<div class="ec4-more-wrap"><button class="ec4-more-btn" onclick="ec4ShowMore()">다른 날짜 이벤트 더보기 ▾</button></div>';
+  body.innerHTML=h;
+}
+
+function ec4ShowMore(){document.querySelectorAll('.ec4-other').forEach(el=>el.classList.add('show'));const w=document.querySelector('.ec4-more-wrap');if(w)w.remove()}
+function ec4SetRange(btn){document.querySelectorAll('#ec4DateF .ec4-fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');ec4Range=btn.dataset.range;ec4Render()}
+function ec4SetImp(btn){document.querySelectorAll('#ec4ImpF .ec4-fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');ec4Imp=btn.dataset.imp;ec4Render()}
+
+async function ec4Fetch(){
+  const wr=ec4WeekRange();
+  const url='https://financialmodelingprep.com/api/v3/economic_calendar?from='+wr.start+'&to='+wr.end+'&apikey=demo';
+  try{
+    const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();if(!Array.isArray(data)||!data.length)throw new Error('empty');
+    ec4Events=data.sort((a,b)=>new Date(a.date)-new Date(b.date));
+    ec4Render();
+  }catch(e){
+    // TradingView fallback
+    document.getElementById('ec4Body').innerHTML='<div style="padding:0"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>{"colorTheme":"light","isTransparent":true,"width":"100%","height":"520","locale":"kr","importanceFilter":"1","countryFilter":"us,eu,jp,gb,kr,cn,ca,au"}<\/script></div></div>';
+  }
 }
 
 // ===== YAHOO FINANCE (RapidAPI) =====
