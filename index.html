@@ -2180,7 +2180,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 <script>
-function escHtml(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escHtml(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 let current = 1;
 const total = 7;
 // Password stored as SHA-256 hash
