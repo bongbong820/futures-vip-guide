@@ -2037,18 +2037,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
   </div>
 
-  <!-- Yahoo Finance 실시간 시세 (RapidAPI) -->
-  <div class="section">
-    <h2 class="section-title">실시간 주요 시세</h2>
-    <div class="finnhub-key-wrap" id="rapidApiWrap">
-      <div class="finnhub-key-row">
-        <input class="finnhub-key-input" id="rapidApiInput" type="password" placeholder="RapidAPI Key 입력">
-        <button class="finnhub-key-btn" onclick="saveRapidKey()">저장 후 로드</button>
-      </div>
-      <div style="font-size:11px;color:var(--gray-500);margin-top:4px">API 키는 브라우저에만 저장됩니다 · 소스코드에 노출되지 않습니다</div>
-    </div>
-    <div class="finnhub-quotes" id="finnhubQuotes"></div>
-  </div>
 </div>
 
 <!-- Modal -->
@@ -2549,7 +2537,6 @@ function goToCalendar(){
   goToPage('chCalendar','tool-btn');
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
   initEconCalendar();
-  if(!document.getElementById('finnhubQuotes').innerHTML) loadYahooQuotes();
 }
 function goToJournal(){goToPage('chJournal','');document.querySelectorAll('.tool-btn')[1].classList.add('active');renderJournal()}
 function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
