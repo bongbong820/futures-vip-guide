@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="VIP Guide">
 <title>해외선물 핵심 키워드 마스터 가이드 — VIP Edition</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet" crossorigin>
 <style>
 /* ===== FONT ===== */
 @supports (font-variation-settings: normal) {
@@ -67,7 +67,7 @@ a{text-decoration:none;color:inherit}
 .header{
   position:sticky;top:0;z-index:100;
   background:rgba(255,255,255,0.85);
-  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--gray-200);
   padding:0 24px;
 }
@@ -753,7 +753,7 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .ec-card-val-num.pending{color:var(--gray-400);font-size:13px}
 .ec-card-warn{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--red-light);color:var(--red);font-size:12px;font-weight:600}
 .ec-empty{text-align:center;padding:40px;color:var(--gray-400);font-size:14px}
-.ec-modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+.ec-modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);align-items:center;justify-content:center}
 .ec-modal-overlay.open{display:flex}
 .ec-modal{background:var(--white);border-radius:16px;padding:28px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;position:relative;box-shadow:var(--shadow-lg)}
 .ec-modal-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border:none;border-radius:50%;background:var(--gray-100);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
@@ -764,100 +764,7 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .ec-modal .ec-modal-effect strong{display:block;margin-bottom:4px;font-size:14px}
 @media(max-width:640px){.ec-summary{gap:8px}.ec-sum-card{min-width:140px;padding:14px}.ec-filters{flex-direction:column;gap:8px}.ec-card-title{font-size:15px}.ec-card-val-num{font-size:14px}.ec-date-tab{flex-shrink:0}}
 
-/* OLD - remove later */
-.econ-date-tab{
-  padding:8px 18px;border:1px solid var(--gray-200);border-radius:10px;
-  background:var(--white);color:var(--gray-600);font-size:13px;font-weight:600;
-  cursor:pointer;transition:var(--transition);font-family:var(--font);
-  -webkit-tap-highlight-color:transparent;
-}
-.econ-date-tab:hover{border-color:var(--blue);color:var(--blue)}
-.econ-date-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.econ-date-tab .tab-day{font-weight:800;display:block;font-size:11px;color:inherit;opacity:.7}
-
-.econ-filters{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
-.econ-filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.econ-filter-label{font-size:12px;font-weight:700;color:var(--gray-400);margin-right:4px}
-.econ-fbtn{
-  padding:5px 12px;border:1px solid var(--gray-200);border-radius:20px;
-  background:var(--white);color:var(--gray-600);font-size:12px;font-weight:600;
-  cursor:pointer;transition:var(--transition);font-family:var(--font);
-}
-.econ-fbtn:hover{border-color:var(--blue);color:var(--blue)}
-.econ-fbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
-
-/* Skeleton */
-.econ-skeleton{display:flex;flex-direction:column;gap:10px}
-.econ-skel-row{display:flex;gap:10px;align-items:center;padding:14px 16px;border-radius:10px;background:var(--white);border:1px solid var(--gray-200)}
-.skel-block{border-radius:6px;background:var(--gray-200);animation:skelPulse 1.2s infinite ease-in-out}
-.skel-time{width:50px;height:16px}
-.skel-flag{width:24px;height:16px}
-.skel-title{flex:1;height:16px}
-.skel-dot{width:16px;height:16px;border-radius:50%}
-.skel-val{width:50px;height:16px}
-@keyframes skelPulse{0%,100%{opacity:.4}50%{opacity:1}}
-
-/* Event List */
-.econ-list{display:flex;flex-direction:column;gap:6px}
-.econ-event{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px;border-radius:var(--radius-sm);
-  background:var(--white);border:1px solid var(--gray-200);
-  border-left:4px solid transparent;transition:var(--transition);
-}
-.econ-event:hover{box-shadow:var(--shadow)}
-.econ-event.impact-high{border-left-color:var(--red)}
-.econ-event.impact-medium{border-left-color:var(--orange)}
-.econ-event.impact-low{border-left-color:var(--gray-300)}
-.econ-event.impact-holiday{border-left-color:var(--gray-300);opacity:.5}
-.econ-event.upcoming{animation:blink 1.5s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
-.econ-event.hidden{display:none}
-
-.econ-time{width:52px;font-size:13px;font-weight:700;color:var(--navy);flex-shrink:0;text-align:center}
-.econ-flag{font-size:18px;flex-shrink:0}
-.econ-info{flex:1;min-width:0}
-.econ-title{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.econ-country-tag{font-size:10px;color:var(--gray-500);font-weight:500}
-.econ-impact-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.econ-impact-dot.high{background:var(--red)}
-.econ-impact-dot.medium{background:var(--orange)}
-.econ-impact-dot.low{background:var(--gray-400)}
-.econ-vals{display:flex;gap:8px;flex-shrink:0}
-.econ-val{text-align:center;min-width:52px}
-.econ-val-label{font-size:9px;color:var(--gray-400);text-transform:uppercase;font-weight:700}
-.econ-val-num{font-size:13px;font-weight:700;color:var(--gray-700)}
-.econ-val-num.actual-up{color:var(--green)}
-.econ-val-num.actual-down{color:var(--red)}
-.econ-empty{text-align:center;padding:40px;color:var(--gray-400);font-size:14px}
-
-/* Earnings Calendar */
-.earnings-date-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-.earnings-list{display:flex;flex-direction:column;gap:6px}
-.earnings-card{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 16px;border-radius:var(--radius-sm);
-  background:var(--white);border:1px solid var(--gray-200);
-  transition:var(--transition);
-}
-.earnings-card:hover{box-shadow:var(--shadow);border-color:var(--blue)}
-.earnings-symbol{
-  font-size:14px;font-weight:800;color:var(--blue);
-  background:var(--blue-light);padding:6px 12px;border-radius:8px;
-  min-width:70px;text-align:center;flex-shrink:0;
-}
-.earnings-info{flex:1;min-width:0}
-.earnings-name{font-size:13px;font-weight:600;color:var(--navy)}
-.earnings-meta{font-size:11px;color:var(--gray-500);margin-top:2px}
-.earnings-vals{display:flex;gap:10px;flex-shrink:0}
-.earnings-val{text-align:center;min-width:65px}
-.earnings-val-label{font-size:9px;color:var(--gray-400);text-transform:uppercase;font-weight:700}
-.earnings-val-num{font-size:13px;font-weight:700;color:var(--gray-700)}
-.earnings-val-num.beat{color:var(--green)}
-.earnings-val-num.miss{color:var(--red)}
-.earnings-hour{font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;flex-shrink:0}
-.earnings-hour.bmo{background:var(--orange-light);color:var(--orange)}
-.earnings-hour.amc{background:var(--blue-light);color:var(--blue)}
+/* Old calendar CSS removed */
 
 @media(max-width:640px){
   .econ-event{flex-wrap:wrap;gap:8px;padding:12px}
@@ -1211,7 +1118,7 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 
 .sidebar-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
-  z-index:150;backdrop-filter:blur(4px);
+  z-index:150;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
   opacity:0;transition:opacity .3s ease;
 }
 .sidebar-overlay.active{display:block;opacity:1}
@@ -1434,7 +1341,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <!-- LANDING HERO -->
 <div class="landing" id="landingPage">
   <div class="landing-badge"><span>VIP MEMBER EDITION</span></div>
-  <h1 class="landing-title">선물로 <span>500억</span>을 번<br>트레이더의 실전 원칙</h1>
+  <h1 class="landing-title">선물로 <span>500억</span>을 번<br>트레이더의 실전 원칙</h2>
   <p class="landing-desc">기술보다 마인드, 감보다 기준. 500억을 벌기까지 직접 검증한 7가지 핵심 챕터를 VIP 회원님께만 공개합니다.</p>
   <div class="landing-stats">
     <div class="landing-stat"><span class="landing-stat-num orange" data-target="500">0</span><div class="landing-stat-label">억 실전 수익</div></div>
@@ -1451,7 +1358,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 <!-- SCROLL TO TOP -->
-<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+<button class="scroll-top" id="scrollTop" aria-label="맨 위로" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
@@ -1459,7 +1366,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <!-- HEADER -->
 <header class="header" id="mainHeader" style="display:none">
   <div class="header-inner">
-    <button class="mobile-menu-btn" id="menuBtn" onclick="toggleMenu()">
+    <button class="mobile-menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="메뉴 열기">
       <span></span><span></span><span></span>
     </button>
     <div class="header-logo">
@@ -1469,7 +1376,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="header-badge">VIP MEMBER</div>
     <div class="header-right">선물로 500억 번 트레이더 · 7 챕터 완성</div>
     <button class="pdf-btn" onclick="window.print()" title="PDF 저장">&#128438; PDF</button>
-    <button class="dark-toggle" onclick="toggleDark()" title="다크모드">🌙</button>
+    <button class="dark-toggle" onclick="toggleDark()" title="다크모드" aria-label="다크모드 전환">🌙</button>
   </div>
 </header>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
@@ -1562,7 +1469,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">01</div>
     <div>
       <div class="chapter-label">Chapter 1 — Mindset</div>
-      <h1 class="chapter-title">트레이딩 마인드셋 기초</h1>
+      <h2 class="chapter-title">트레이딩 마인드셋 기초</h2>
       <p class="chapter-desc">선물 시장에서 500억을 벌기까지, 기술보다 마인드에서 갈리는 경우가 훨씬 많았어요. 이 챕터는 그 경험에서 나온 이야기입니다.</p>
     </div>
   </div>
@@ -1626,7 +1533,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">02</div>
     <div>
       <div class="chapter-label">Chapter 2 — Risk Management</div>
-      <h1 class="chapter-title">손절 & 리스크 관리</h1>
+      <h2 class="chapter-title">손절 & 리스크 관리</h2>
       <p class="chapter-desc">500억을 버는 과정에서 계좌를 날린 사람들을 가장 많이 본 챕터이기도 합니다. 이 내용만큼은 꼭 몸에 익혀두세요. 기술보다 이게 먼저입니다.</p>
     </div>
   </div>
@@ -1693,7 +1600,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">03</div>
     <div>
       <div class="chapter-label">Chapter 3 — Pro vs Beginner</div>
-      <h1 class="chapter-title">고수 vs 초보의 차이</h1>
+      <h2 class="chapter-title">고수 vs 초보의 차이</h2>
       <p class="chapter-desc">차이는 생각보다 단순합니다. 저도 처음엔 초보였고, 이 차이를 직접 경험하며 넘어왔습니다.</p>
     </div>
   </div>
@@ -1752,7 +1659,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">04</div>
     <div>
       <div class="chapter-label">Chapter 4 — Technical Analysis</div>
-      <h1 class="chapter-title">기술적 분석 기초</h1>
+      <h2 class="chapter-title">기술적 분석 기초</h2>
       <p class="chapter-desc">복잡한 지표가 많지만, 500억을 벌면서 실전에서 사용해온 건 생각보다 간단합니다. 먼저 기초를 완벽하게 이해하는 게 중요해요.</p>
     </div>
   </div>
@@ -1803,7 +1710,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">05</div>
     <div>
       <div class="chapter-label">Chapter 5 — Trend & Entry</div>
-      <h1 class="chapter-title">추세 & 진입 전략</h1>
+      <h2 class="chapter-title">추세 & 진입 전략</h2>
       <p class="chapter-desc">어디서 들어가느냐가 수익의 90%를 결정합니다. 진입 타점을 찾는 원칙, 500억을 벌면서 직접 쓴 방법을 그대로 알려드릴게요.</p>
     </div>
   </div>
@@ -1872,7 +1779,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">06</div>
     <div>
       <div class="chapter-label">Chapter 6 — Pattern & Trap</div>
-      <h1 class="chapter-title">패턴 & 트랩</h1>
+      <h2 class="chapter-title">패턴 & 트랩</h2>
       <p class="chapter-desc">이 챕터를 이해하고 나면, 속임수가 두려움이 아니라 기회로 보이기 시작합니다. 시장을 읽는 눈이 달라질 거예요.</p>
     </div>
   </div>
@@ -1949,7 +1856,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num">07</div>
     <div>
       <div class="chapter-label">Chapter 7 — Trading Rules</div>
-      <h1 class="chapter-title">실전 매매 원칙</h1>
+      <h2 class="chapter-title">실전 매매 원칙</h2>
       <p class="chapter-desc">매일 시장에 나가기 전, 이 챕터를 한 번씩 훑어보세요. 체크리스트 하나하나가 제 오랜 경험에서 나온 원칙들입니다.</p>
     </div>
   </div>
@@ -2043,7 +1950,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num" style="font-size:40px">&#128221;</div>
     <div>
       <div class="chapter-label">Knowledge Check</div>
-      <h1 class="chapter-title">실력 점검 퀴즈</h1>
+      <h2 class="chapter-title">실력 점검 퀴즈</h2>
       <p class="chapter-desc">챕터 1~7에서 배운 내용을 확인해보세요. 총 10문제, 4지선다 객관식입니다.</p>
     </div>
   </div>
@@ -2067,7 +1974,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <div class="chapter-page" id="chCalendar">
   <div class="ec2-header">
     <div class="ec2-header-left">
-      <h1 class="ec2-title">경제 캘린더</h1>
+      <h1 class="ec2-title">경제 캘린더</h2>
       <div class="ec2-clock" id="ec2Clock">GMT+9:00</div>
     </div>
     <div class="ec2-header-right">
@@ -2133,6 +2040,13 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <!-- Yahoo Finance 실시간 시세 (RapidAPI) -->
   <div class="section">
     <h2 class="section-title">실시간 주요 시세</h2>
+    <div class="finnhub-key-wrap" id="rapidApiWrap">
+      <div class="finnhub-key-row">
+        <input class="finnhub-key-input" id="rapidApiInput" type="password" placeholder="RapidAPI Key 입력">
+        <button class="finnhub-key-btn" onclick="saveRapidKey()">저장 후 로드</button>
+      </div>
+      <div style="font-size:11px;color:var(--gray-500);margin-top:4px">API 키는 브라우저에만 저장됩니다 · 소스코드에 노출되지 않습니다</div>
+    </div>
     <div class="finnhub-quotes" id="finnhubQuotes"></div>
   </div>
 </div>
@@ -2151,7 +2065,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num" style="font-size:40px">&#128212;</div>
     <div>
       <div class="chapter-label">Trading Journal</div>
-      <h1 class="chapter-title">매매 일지</h1>
+      <h2 class="chapter-title">매매 일지</h2>
       <p class="chapter-desc">매매 기록을 남기고 복기하세요. 데이터는 브라우저에 저장됩니다.</p>
     </div>
   </div>
@@ -2183,7 +2097,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num" style="font-size:40px">&#128214;</div>
     <div>
       <div class="chapter-label">Trading Glossary</div>
-      <h1 class="chapter-title">용어 사전</h1>
+      <h2 class="chapter-title">용어 사전</h2>
       <p class="chapter-desc">해외선물·암호화폐 트레이딩에 필요한 핵심 용어를 정리했습니다.</p>
     </div>
   </div>
@@ -2200,7 +2114,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-hero-num" style="font-size:40px">&#128200;</div>
     <div>
       <div class="chapter-label">Live Chart — TradingView</div>
-      <h1 class="chapter-title">실시간 차트</h1>
+      <h2 class="chapter-title">실시간 차트</h2>
       <p class="chapter-desc">해외선물, 암호화폐, 주요 지수 차트를 실시간으로 확인하세요.</p>
     </div>
   </div>
@@ -2278,15 +2192,18 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 <script>
+function escHtml(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 let current = 1;
 const total = 7;
-const VIP_PASSWORD = '1111';
+// Password stored as SHA-256 hash
+const VIP_PW_HASH = '0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c';
+async function hashPw(pw){const enc=new TextEncoder().encode(pw);const buf=await crypto.subtle.digest('SHA-256',enc);return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 
 // ===== PASSWORD GATE =====
-function checkPw() {
+async function checkPw() {
   const input = document.getElementById('pwInput');
   const error = document.getElementById('pwError');
-  if (input.value === VIP_PASSWORD) {
+  const inputHash = await hashPw(input.value); if (inputHash === VIP_PW_HASH) {
     localStorage.setItem('vipAuth', 'true');
     document.getElementById('pwGate').classList.add('hidden');
     setTimeout(() => animateCounters(), 500);
@@ -2419,7 +2336,7 @@ function toggleDark() {
   btn.textContent = isDark ? '☀️' : '🌙';
   localStorage.setItem('darkMode', isDark);
 }
-if (localStorage.getItem('darkMode') === 'true') {
+if (localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
   document.body.classList.add('dark');
   document.querySelector('.dark-toggle').textContent = '☀️';
 }
@@ -2753,7 +2670,7 @@ function initBookmarks(){
     if(!chPage||chPage.id.startsWith('ch')===false)return;
     const key='bm_'+chPage.id+'_'+i;
     const btn=document.createElement('button');
-    btn.className='bookmark-btn'+(localStorage.getItem(key)?'saved':'');
+    btn.className='bookmark-btn'+(localStorage.getItem(key)?' saved':'');
     btn.innerHTML=localStorage.getItem(key)?'&#9733;':'&#9734;';
     btn.title='북마크';
     btn.onclick=function(e){
@@ -2799,11 +2716,13 @@ function getDescKey(title){
   for(const k of Object.keys(EC_DESC)){if(title.toUpperCase().includes(k.toUpperCase()))return k}
   return null;
 }
-function toKST(dateStr){return new Date(new Date(dateStr).getTime()+13*3600000)}
+function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleString("en-US",{timeZone:"Asia/Seoul"}))}
 
+let _ec2ClockTimer,_ec2RefreshTimer;
 function initEconCalendar(){
-  updateEc2Clock();setInterval(updateEc2Clock,1000);
-  loadEc2Data();setInterval(loadEc2Data,300000);
+  clearInterval(_ec2ClockTimer);clearInterval(_ec2RefreshTimer);
+  updateEc2Clock();_ec2ClockTimer=setInterval(updateEc2Clock,1000);
+  loadEc2Data();_ec2RefreshTimer=setInterval(loadEc2Data,300000);
 }
 
 function updateEc2Clock(){
@@ -2950,209 +2869,46 @@ function openEcModal(title){
 }
 function closeEcModal(){document.getElementById('ecModal').classList.remove('open');document.body.style.overflow=''}
 
-// ===== EARNINGS CALENDAR =====
-let earningsData = [];
-let earningsSelectedDate = '';
-
-function loadEarnings(){
-  const apiKey = localStorage.getItem('finnhubKey') || document.getElementById('finnhubKey').value;
-  if(!apiKey) return;
-
-  const skel = document.getElementById('earningsSkeleton');
-  skel.style.display = '';
-
-  const today = new Date();
-  const from = today.toISOString().slice(0,10);
-  const to = new Date(today.getTime() + 6*86400000).toISOString().slice(0,10);
-
-  fetch('https://finnhub.io/api/v1/calendar/earnings?from='+from+'&to='+to+'&token='+apiKey)
-    .then(r=>r.json())
-    .then(data=>{
-      skel.style.display='none';
-      earningsData = data.earningsCalendar || [];
-      buildEarningsDateTabs();
-      renderEarnings();
-    })
-    .catch(()=>{
-      skel.style.display='none';
-      document.getElementById('earningsEmpty').style.display='';
-      document.getElementById('earningsEmpty').textContent='실적 데이터 로딩 실패';
-    });
-}
-
-function buildEarningsDateTabs(){
-  const tabs = document.getElementById('earningsDateTabs');
-  const dates = [...new Set(earningsData.map(e=>e.date))].sort();
-  const dayNames = ['일','월','화','수','목','금','토'];
-  const today = new Date().toISOString().slice(0,10);
-  earningsSelectedDate = dates.includes(today) ? today : (dates[0]||today);
-
-  tabs.innerHTML = dates.map(d=>{
-    const dt = new Date(d+'T00:00:00');
-    const dayName = dayNames[dt.getDay()];
-    const label = (dt.getMonth()+1)+'/'+dt.getDate();
-    const count = earningsData.filter(e=>e.date===d).length;
-    const isActive = d===earningsSelectedDate;
-    return '<button class="econ-date-tab'+(isActive?' active':'')+'" onclick="selectEarningsDate(\''+d+'\',this)"><span class="tab-day">'+dayName+'</span>'+label+' <span style="font-size:10px;opacity:.6">('+count+')</span></button>';
-  }).join('');
-}
-
-function selectEarningsDate(dateStr, btn){
-  document.querySelectorAll('.earnings-date-tabs .econ-date-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  earningsSelectedDate = dateStr;
-  renderEarnings();
-}
-
-function renderEarnings(){
-  const list = document.getElementById('earningsList');
-  const empty = document.getElementById('earningsEmpty');
-  const filtered = earningsData.filter(e=>e.date===earningsSelectedDate);
-
-  if(filtered.length===0){
-    list.innerHTML='';empty.style.display='';return;
-  }
-  empty.style.display='none';
-
-  // Sort: with estimates first
-  filtered.sort((a,b)=>(b.epsEstimate||0)-(a.epsEstimate||0));
-
-  list.innerHTML = filtered.map(e=>{
-    const hourLabel = e.hour==='bmo'?'장전':e.hour==='amc'?'장후':'';
-    const hourClass = e.hour==='bmo'?'bmo':e.hour==='amc'?'amc':'';
-
-    let epsClass = '';
-    if(e.epsActual!==null && e.epsEstimate!==null){
-      epsClass = e.epsActual >= e.epsEstimate ? 'beat' : 'miss';
-    }
-
-    const revActual = e.revenueActual ? '$'+(e.revenueActual/1e6).toFixed(0)+'M' : '—';
-    const revEst = e.revenueEstimate ? '$'+(e.revenueEstimate/1e6).toFixed(0)+'M' : '—';
-    let revClass = '';
-    if(e.revenueActual && e.revenueEstimate){
-      revClass = e.revenueActual >= e.revenueEstimate ? 'beat' : 'miss';
-    }
-
-    return '<div class="earnings-card">'+
-      '<div class="earnings-symbol">'+e.symbol+'</div>'+
-      '<div class="earnings-info">'+
-        '<div class="earnings-name">Q'+e.quarter+' '+e.year+' 실적</div>'+
-        '<div class="earnings-meta">'+e.date+(hourLabel?' · '+hourLabel+' 발표':'')+'</div>'+
-      '</div>'+
-      (hourLabel?'<span class="earnings-hour '+hourClass+'">'+hourLabel+'</span>':'')+
-      '<div class="earnings-vals">'+
-        '<div class="earnings-val"><div class="earnings-val-label">EPS 예상</div><div class="earnings-val-num">'+(e.epsEstimate!==null?'$'+e.epsEstimate:'—')+'</div></div>'+
-        '<div class="earnings-val"><div class="earnings-val-label">EPS 실제</div><div class="earnings-val-num '+epsClass+'">'+(e.epsActual!==null?'$'+e.epsActual:'대기중')+'</div></div>'+
-        '<div class="earnings-val"><div class="earnings-val-label">매출 예상</div><div class="earnings-val-num">'+revEst+'</div></div>'+
-        '<div class="earnings-val"><div class="earnings-val-label">매출 실제</div><div class="earnings-val-num '+revClass+'">'+revActual+'</div></div>'+
-      '</div></div>';
-  }).join('');
-}
-
 // ===== YAHOO FINANCE (RapidAPI) =====
-const RAPIDAPI_KEY='02303fa555msh6432fea13c30d9ep1ec864jsn62b72b7c99cc';
+function getRapidKey(){return localStorage.getItem('rapidApiKey')||''}
+function saveRapidKey(){
+  const key=document.getElementById('rapidApiInput').value.trim();
+  if(!key){showToast('API 키를 입력하세요','',null);return}
+  localStorage.setItem('rapidApiKey',key);
+  showToast('API 키 저장 완료!','',null);loadYahooQuotes();
+}
 const YF_SYMBOLS=['AAPL','TSLA','NVDA','MSFT','AMZN','GOOG'];
 
 function loadYahooQuotes(){
   const grid=document.getElementById('finnhubQuotes');
+  const apiKey=getRapidKey();
+  if(!apiKey){
+    grid.innerHTML='<div class="ec2-empty">RapidAPI 키를 입력하면 실시간 시세를 볼 수 있습니다</div>';
+    const inp=document.getElementById('rapidApiInput');
+    if(inp)inp.value=apiKey;
+    return;
+  }
+  // Hide key input if already saved
+  const wrap=document.getElementById('rapidApiWrap');
+  if(wrap&&apiKey)wrap.style.display='none';
   grid.innerHTML=YF_SYMBOLS.map(()=>'<div class="fh-quote"><div class="skel-block" style="width:60%;height:14px;margin-bottom:8px"></div><div class="skel-block" style="width:40%;height:22px"></div></div>').join('');
 
   Promise.all(YF_SYMBOLS.map(sym=>
     fetch('https://yahoo-finance15.p.rapidapi.com/api/v1/markets/stock/quotes?ticker='+sym,{
-      headers:{'x-rapidapi-key':RAPIDAPI_KEY,'x-rapidapi-host':'yahoo-finance15.p.rapidapi.com'}
-    }).then(r=>r.json()).then(d=>d.body?.[0]).catch(()=>null)
+      headers:{'x-rapidapi-key':apiKey,'x-rapidapi-host':'yahoo-finance15.p.rapidapi.com'}
+    }).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>d.body?.[0]).catch(()=>null)
   )).then(results=>{
     grid.innerHTML=results.filter(Boolean).map(q=>{
       const chg=q.regularMarketChange||0;
       const chgPct=q.regularMarketChangePercent||0;
       const upDown=chg>=0?'up':'down';
       const arrow=chg>=0?'▲':'▼';
-      return '<div class="fh-quote"><div class="fh-quote-name">'+(q.shortName||q.symbol)+' ('+q.symbol+')</div>'+
+      return '<div class="fh-quote"><div class="fh-quote-name">'+escHtml(q.shortName||q.symbol)+' ('+escHtml(q.symbol)+')</div>'+
         '<div class="fh-quote-price">$'+(q.regularMarketPrice||0).toFixed(2)+'</div>'+
         '<div class="fh-quote-change '+upDown+'">'+arrow+' '+Math.abs(chg).toFixed(2)+' ('+chgPct.toFixed(2)+'%)</div>'+
         '<div class="fh-quote-detail">H: $'+(q.regularMarketDayHigh||0).toFixed(2)+' · L: $'+(q.regularMarketDayLow||0).toFixed(2)+'</div></div>';
     }).join('');
   }).catch(()=>{grid.innerHTML='<div class="ec2-empty">시세 데이터를 불러오지 못했습니다</div>'});
-}
-
-// Legacy compatibility
-function saveFinnhubKey(){
-  const key = document.getElementById('finnhubKey').value.trim();
-  if(!key){showToast('API 키를 입력하세요','',null);return}
-  localStorage.setItem('finnhubKey', key);
-  const status = document.getElementById('finnhubStatus');
-  status.textContent = '✅ API 키가 저장되었습니다';
-  status.className = 'finnhub-key-status success';
-  showToast('Finnhub API 키 저장 완료','',null);
-}
-
-function testFinnhubKey(){
-  const key = document.getElementById('finnhubKey').value.trim() || localStorage.getItem('finnhubKey');
-  if(!key){showToast('API 키를 먼저 입력하세요','',null);return}
-  const status = document.getElementById('finnhubStatus');
-  status.textContent = '연결 테스트 중...';
-  status.className = 'finnhub-key-status';
-  localStorage.setItem('finnhubKey', key);
-  loadFinnhubData(key);
-}
-
-const FH_SYMBOLS = [
-  {symbol:'AAPL',name:'Apple'},
-  {symbol:'TSLA',name:'Tesla'},
-  {symbol:'NVDA',name:'Nvidia'},
-  {symbol:'MSFT',name:'Microsoft'},
-  {symbol:'AMZN',name:'Amazon'},
-  {symbol:'GOOG',name:'Google'}
-];
-
-function loadFinnhubData(apiKey){
-  const loading = document.getElementById('finnhubLoading');
-  const empty = document.getElementById('finnhubEmpty');
-  const status = document.getElementById('finnhubStatus');
-  loading.style.display = '';
-  empty.style.display = 'none';
-
-  // Load quotes
-  const quotePromises = FH_SYMBOLS.map(s =>
-    fetch('https://finnhub.io/api/v1/quote?symbol='+s.symbol+'&token='+apiKey)
-      .then(r=>r.json()).then(d=>({...d, name:s.name, symbol:s.symbol}))
-  );
-
-  Promise.all(quotePromises).then(quotes=>{
-    loading.style.display='none';
-    if(quotes[0].error){
-      status.textContent='❌ API 키 오류';status.className='finnhub-key-status error';
-      empty.style.display='';empty.textContent='API 키를 확인해주세요';return;
-    }
-    status.textContent='✅ 연결 성공! 실시간 시세 로드됨';
-    status.className='finnhub-key-status success';
-    const grid=document.getElementById('finnhubQuotes');
-    grid.innerHTML=quotes.map(q=>{
-      const upDown=q.d>=0?'up':'down';
-      const arrow=q.d>=0?'▲':'▼';
-      return '<div class="fh-quote"><div class="fh-quote-name">'+q.name+' ('+q.symbol+')</div>'+
-        '<div class="fh-quote-price">$'+q.c.toFixed(2)+'</div>'+
-        '<div class="fh-quote-change '+upDown+'">'+arrow+' '+Math.abs(q.d).toFixed(2)+' ('+q.dp.toFixed(2)+'%)</div>'+
-        '<div class="fh-quote-detail">H: $'+q.h.toFixed(2)+' · L: $'+q.l.toFixed(2)+'</div></div>';
-    }).join('');
-  }).catch(err=>{
-    loading.style.display='none';empty.style.display='';
-    status.textContent='❌ 연결 실패: '+err.message;status.className='finnhub-key-status error';
-  });
-
-  // Load news
-  fetch('https://finnhub.io/api/v1/news?category=general&token='+apiKey)
-    .then(r=>r.json()).then(news=>{
-      const container=document.getElementById('finnhubNews');
-      container.innerHTML=news.slice(0,8).map(n=>{
-        const date=new Date(n.datetime*1000);
-        const timeStr=date.toLocaleDateString('ko-KR')+' '+date.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-        return '<a class="fh-news" href="'+n.url+'" target="_blank" rel="noopener">'+
-          (n.image?'<img class="fh-news-img" src="'+n.image+'" alt="" onerror="this.style.display=\'none\'">':'')+
-          '<div><div class="fh-news-title">'+n.headline+'</div>'+
-          '<div class="fh-news-meta">'+n.source+' · '+timeStr+'</div></div></a>';
-      }).join('');
-    }).catch(()=>{});
 }
 
 // ===== CHART CONTROLS =====
@@ -3192,7 +2948,9 @@ function filterCat(btn, cat) {
 }
 
 // ===== SCROLL REVEAL =====
+let _scrollObserver;
 function initScrollReveal() {
+  if(_scrollObserver)_scrollObserver.disconnect();
   // Auto-add reveal class to sections
   document.querySelectorAll('.chapter-page.active .section, .chapter-page.active .chapter-hero').forEach((el, i) => {
     if (!el.classList.contains('reveal')) {
@@ -3200,14 +2958,14 @@ function initScrollReveal() {
       if (i > 0) el.classList.add('reveal-delay-' + Math.min(i, 3));
     }
   });
-  const observer = new IntersectionObserver((entries) => {
+  _scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
       }
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  document.querySelectorAll('.reveal').forEach(el => _scrollObserver.observe(el));
 }
 
 // ===== SCROLL TO TOP =====
