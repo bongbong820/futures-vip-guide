@@ -687,11 +687,41 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .econ-val-num.actual-down{color:var(--red)}
 .econ-empty{text-align:center;padding:40px;color:var(--gray-400);font-size:14px}
 
+/* Earnings Calendar */
+.earnings-date-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.earnings-list{display:flex;flex-direction:column;gap:6px}
+.earnings-card{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border-radius:var(--radius-sm);
+  background:var(--white);border:1px solid var(--gray-200);
+  transition:var(--transition);
+}
+.earnings-card:hover{box-shadow:var(--shadow);border-color:var(--blue)}
+.earnings-symbol{
+  font-size:14px;font-weight:800;color:var(--blue);
+  background:var(--blue-light);padding:6px 12px;border-radius:8px;
+  min-width:70px;text-align:center;flex-shrink:0;
+}
+.earnings-info{flex:1;min-width:0}
+.earnings-name{font-size:13px;font-weight:600;color:var(--navy)}
+.earnings-meta{font-size:11px;color:var(--gray-500);margin-top:2px}
+.earnings-vals{display:flex;gap:10px;flex-shrink:0}
+.earnings-val{text-align:center;min-width:65px}
+.earnings-val-label{font-size:9px;color:var(--gray-400);text-transform:uppercase;font-weight:700}
+.earnings-val-num{font-size:13px;font-weight:700;color:var(--gray-700)}
+.earnings-val-num.beat{color:var(--green)}
+.earnings-val-num.miss{color:var(--red)}
+.earnings-hour{font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;flex-shrink:0}
+.earnings-hour.bmo{background:var(--orange-light);color:var(--orange)}
+.earnings-hour.amc{background:var(--blue-light);color:var(--blue)}
+
 @media(max-width:640px){
   .econ-event{flex-wrap:wrap;gap:8px;padding:12px}
   .econ-vals{width:100%;justify-content:space-around;padding-top:8px;border-top:1px solid var(--gray-100)}
   .econ-time{width:auto;text-align:left}
   .econ-filters{flex-direction:column;gap:8px}
+  .earnings-card{flex-wrap:wrap;gap:8px}
+  .earnings-vals{width:100%;justify-content:space-around;padding-top:8px;border-top:1px solid var(--gray-100)}
 }
 
 .finnhub-key-wrap{margin-bottom:16px}
@@ -1938,7 +1968,21 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="econ-empty" id="econEmpty" style="display:none">해당 날짜에 예정된 경제지표가 없습니다</div>
   </div>
 
-  <!-- Finnhub 시세 + 뉴스 (기존 유지) -->
+  <!-- Earnings Calendar -->
+  <div class="section">
+    <h2 class="section-title">실적 발표 캘린더</h2>
+    <p class="prose">이번 주 실적 발표 예정 기업입니다. 실적 발표 전후 변동성이 급증하니 포지션 관리에 유의하세요.</p>
+    <div class="earnings-date-tabs" id="earningsDateTabs"></div>
+    <div class="econ-skeleton" id="earningsSkeleton" style="display:none">
+      <div class="econ-skel-row"><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+      <div class="econ-skel-row"><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+      <div class="econ-skel-row"><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+    </div>
+    <div class="earnings-list" id="earningsList"></div>
+    <div class="econ-empty" id="earningsEmpty" style="display:none">해당 날짜에 실적 발표 예정 기업이 없습니다</div>
+  </div>
+
+  <!-- Finnhub 시세 + 뉴스 -->
   <div class="section">
     <h2 class="section-title">Finnhub 실시간 시세</h2>
     <div class="finnhub-key-wrap">
@@ -2446,6 +2490,7 @@ function goToCalendar(){
   goToPage('chCalendar','tool-btn');
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
   initEconCalendar();
+  loadEarnings();
   const savedKey = localStorage.getItem('finnhubKey') || document.getElementById('finnhubKey').value;
   if(savedKey){
     document.getElementById('finnhubKey').value = savedKey;
@@ -2704,6 +2749,105 @@ function setEconFilter(btn, type, val){
   btn.classList.add('active');
   econFilters[type] = val;
   renderEconEvents();
+}
+
+// ===== EARNINGS CALENDAR =====
+let earningsData = [];
+let earningsSelectedDate = '';
+
+function loadEarnings(){
+  const apiKey = localStorage.getItem('finnhubKey') || document.getElementById('finnhubKey').value;
+  if(!apiKey) return;
+
+  const skel = document.getElementById('earningsSkeleton');
+  skel.style.display = '';
+
+  const today = new Date();
+  const from = today.toISOString().slice(0,10);
+  const to = new Date(today.getTime() + 6*86400000).toISOString().slice(0,10);
+
+  fetch('https://finnhub.io/api/v1/calendar/earnings?from='+from+'&to='+to+'&token='+apiKey)
+    .then(r=>r.json())
+    .then(data=>{
+      skel.style.display='none';
+      earningsData = data.earningsCalendar || [];
+      buildEarningsDateTabs();
+      renderEarnings();
+    })
+    .catch(()=>{
+      skel.style.display='none';
+      document.getElementById('earningsEmpty').style.display='';
+      document.getElementById('earningsEmpty').textContent='실적 데이터 로딩 실패';
+    });
+}
+
+function buildEarningsDateTabs(){
+  const tabs = document.getElementById('earningsDateTabs');
+  const dates = [...new Set(earningsData.map(e=>e.date))].sort();
+  const dayNames = ['일','월','화','수','목','금','토'];
+  const today = new Date().toISOString().slice(0,10);
+  earningsSelectedDate = dates.includes(today) ? today : (dates[0]||today);
+
+  tabs.innerHTML = dates.map(d=>{
+    const dt = new Date(d+'T00:00:00');
+    const dayName = dayNames[dt.getDay()];
+    const label = (dt.getMonth()+1)+'/'+dt.getDate();
+    const count = earningsData.filter(e=>e.date===d).length;
+    const isActive = d===earningsSelectedDate;
+    return '<button class="econ-date-tab'+(isActive?' active':'')+'" onclick="selectEarningsDate(\''+d+'\',this)"><span class="tab-day">'+dayName+'</span>'+label+' <span style="font-size:10px;opacity:.6">('+count+')</span></button>';
+  }).join('');
+}
+
+function selectEarningsDate(dateStr, btn){
+  document.querySelectorAll('.earnings-date-tabs .econ-date-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  earningsSelectedDate = dateStr;
+  renderEarnings();
+}
+
+function renderEarnings(){
+  const list = document.getElementById('earningsList');
+  const empty = document.getElementById('earningsEmpty');
+  const filtered = earningsData.filter(e=>e.date===earningsSelectedDate);
+
+  if(filtered.length===0){
+    list.innerHTML='';empty.style.display='';return;
+  }
+  empty.style.display='none';
+
+  // Sort: with estimates first
+  filtered.sort((a,b)=>(b.epsEstimate||0)-(a.epsEstimate||0));
+
+  list.innerHTML = filtered.map(e=>{
+    const hourLabel = e.hour==='bmo'?'장전':e.hour==='amc'?'장후':'';
+    const hourClass = e.hour==='bmo'?'bmo':e.hour==='amc'?'amc':'';
+
+    let epsClass = '';
+    if(e.epsActual!==null && e.epsEstimate!==null){
+      epsClass = e.epsActual >= e.epsEstimate ? 'beat' : 'miss';
+    }
+
+    const revActual = e.revenueActual ? '$'+(e.revenueActual/1e6).toFixed(0)+'M' : '—';
+    const revEst = e.revenueEstimate ? '$'+(e.revenueEstimate/1e6).toFixed(0)+'M' : '—';
+    let revClass = '';
+    if(e.revenueActual && e.revenueEstimate){
+      revClass = e.revenueActual >= e.revenueEstimate ? 'beat' : 'miss';
+    }
+
+    return '<div class="earnings-card">'+
+      '<div class="earnings-symbol">'+e.symbol+'</div>'+
+      '<div class="earnings-info">'+
+        '<div class="earnings-name">Q'+e.quarter+' '+e.year+' 실적</div>'+
+        '<div class="earnings-meta">'+e.date+(hourLabel?' · '+hourLabel+' 발표':'')+'</div>'+
+      '</div>'+
+      (hourLabel?'<span class="earnings-hour '+hourClass+'">'+hourLabel+'</span>':'')+
+      '<div class="earnings-vals">'+
+        '<div class="earnings-val"><div class="earnings-val-label">EPS 예상</div><div class="earnings-val-num">'+(e.epsEstimate!==null?'$'+e.epsEstimate:'—')+'</div></div>'+
+        '<div class="earnings-val"><div class="earnings-val-label">EPS 실제</div><div class="earnings-val-num '+epsClass+'">'+(e.epsActual!==null?'$'+e.epsActual:'대기중')+'</div></div>'+
+        '<div class="earnings-val"><div class="earnings-val-label">매출 예상</div><div class="earnings-val-num">'+revEst+'</div></div>'+
+        '<div class="earnings-val"><div class="earnings-val-label">매출 실제</div><div class="earnings-val-num '+revClass+'">'+revActual+'</div></div>'+
+      '</div></div>';
+  }).join('');
 }
 
 // ===== FINNHUB API =====
