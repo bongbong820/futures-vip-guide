@@ -997,6 +997,55 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 }
 
 /* ===== GLOSSARY ===== */
+/* ===== CALCULATOR ===== */
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.calc-inputs{display:flex;flex-direction:column;gap:14px}
+.calc-row,.calc-row-2col,.calc-row-3col{display:flex;flex-direction:column;gap:4px}
+.calc-row-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.calc-row-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.calc-label{font-size:12px;font-weight:700;color:var(--gray-500)}
+.calc-select,.calc-input{
+  width:100%;padding:10px 14px;border:1px solid var(--gray-200);
+  border-radius:10px;font-size:14px;background:var(--white);
+  color:var(--gray-900);font-family:var(--font);outline:none;
+}
+.calc-select:focus,.calc-input:focus{border-color:var(--blue)}
+.calc-toggle{display:flex;gap:0;border:1px solid var(--gray-200);border-radius:10px;overflow:hidden}
+.calc-dir{flex:1;padding:10px;border:none;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-500)}
+.calc-dir.active.long{background:var(--green);color:#fff}
+.calc-dir.active.short{background:var(--red);color:#fff}
+.calc-qty-wrap{display:flex;gap:0;border:1px solid var(--gray-200);border-radius:10px;overflow:hidden}
+.calc-qty-btn{width:44px;border:none;font-size:18px;font-weight:700;background:var(--gray-100);color:var(--gray-600);cursor:pointer;transition:all .15s}
+.calc-qty-btn:hover{background:var(--blue-light);color:var(--blue)}
+.calc-qty{flex:1;border:none;border-radius:0;text-align:center;font-size:16px;font-weight:700;-moz-appearance:textfield}
+.calc-qty::-webkit-outer-spin-button,.calc-qty::-webkit-inner-spin-button{-webkit-appearance:none}
+.calc-divider{height:1px;background:var(--gray-200);margin:4px 0}
+.calc-row-label{font-size:13px;font-weight:700;color:var(--navy)}
+.calc-sym-info{display:flex;gap:16px;flex-wrap:wrap;padding:10px 14px;background:var(--gray-100);border-radius:10px;font-size:12px;color:var(--gray-600)}
+.calc-sym-info strong{color:var(--navy)}
+
+.calc-results{
+  background:var(--white);border:1px solid var(--gray-200);
+  border-radius:14px;padding:24px;position:sticky;top:100px;
+}
+.calc-result-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:16px}
+.calc-result-placeholder{text-align:center;padding:40px 0;color:var(--gray-400);font-size:14px}
+.calc-result-body{display:flex;flex-direction:column;gap:10px}
+.calc-r-row{display:flex;justify-content:space-between;align-items:center}
+.calc-r-label{font-size:13px;color:var(--gray-500)}
+.calc-r-val{font-size:14px;font-weight:700;color:var(--navy);font-family:'Courier New',monospace}
+.calc-r-big .calc-r-label{font-size:14px;font-weight:600;color:var(--navy)}
+.calc-r-big .calc-r-val{font-size:18px}
+.calc-r-val.profit{color:var(--green)}
+.calc-r-val.loss{color:var(--red)}
+.calc-r-divider{height:1px;background:var(--gray-100);margin:2px 0}
+
+@media(max-width:640px){
+  .calc-grid{grid-template-columns:1fr}
+  .calc-results{position:static}
+  .calc-row-3col{grid-template-columns:1fr}
+}
+
 /* ===== GLOSSARY V2 ===== */
 .gl-search{
   width:100%;padding:12px 18px;border:1px solid var(--gray-200);
@@ -1603,6 +1652,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <button class="chapter-btn tool-btn" onclick="goToJournal()">
     <div class="chapter-num" style="background:var(--navy);color:#fff;font-size:13px">&#128212;</div>
     <div><span class="chapter-btn-title">매매 일지</span><span class="chapter-btn-sub">진입 · 손절 · 결과 기록</span></div>
+  </button>
+  <button class="chapter-btn tool-btn" onclick="goToCalc()">
+    <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128178;</div>
+    <div><span class="chapter-btn-title">증거금 & 손익 계산기</span><span class="chapter-btn-sub">NQ · ES · CL · GC</span></div>
   </button>
   <button class="chapter-btn tool-btn" onclick="goToGlossary()">
     <div class="chapter-num" style="background:var(--gray-600);color:#fff;font-size:13px">&#128214;</div>
@@ -2212,6 +2265,98 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
+<!-- CALCULATOR PAGE -->
+<div class="chapter-page" id="chCalc">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128178;</div>
+    <div>
+      <div class="chapter-label">Margin & P/L Calculator</div>
+      <h2 class="chapter-title">증거금 & 손익 계산기</h2>
+      <p class="chapter-desc">종목을 선택하고 진입가/청산가를 입력하면 증거금, 수수료, 순손익이 자동으로 계산됩니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="calc-grid">
+      <!-- Left: Inputs -->
+      <div class="calc-inputs">
+        <div class="calc-row">
+          <label class="calc-label">종목</label>
+          <select class="calc-select" id="calcSymbol" onchange="calcUpdate()">
+            <option value="NQ">나스닥 NQ</option>
+            <option value="MNQ">마이크로 NQ</option>
+            <option value="ES">S&P 500 ES</option>
+            <option value="MES">마이크로 ES</option>
+            <option value="YM">다우 YM</option>
+            <option value="MYM">마이크로 YM</option>
+            <option value="CL">원유 CL</option>
+            <option value="GC">금 GC</option>
+            <option value="SI">은 SI</option>
+            <option value="6E">유로/달러 6E</option>
+          </select>
+        </div>
+
+        <div class="calc-row">
+          <label class="calc-label">방향</label>
+          <div class="calc-toggle">
+            <button class="calc-dir active" id="calcLong" onclick="setCalcDir('long')">매수 (롱)</button>
+            <button class="calc-dir" id="calcShort" onclick="setCalcDir('short')">매도 (숏)</button>
+          </div>
+        </div>
+
+        <div class="calc-row">
+          <label class="calc-label">계약수</label>
+          <div class="calc-qty-wrap">
+            <button class="calc-qty-btn" onclick="calcQty(-1)">−</button>
+            <input class="calc-input calc-qty" id="calcContracts" type="number" value="1" min="1" oninput="calcUpdate()">
+            <button class="calc-qty-btn" onclick="calcQty(1)">+</button>
+          </div>
+        </div>
+
+        <div class="calc-row-2col">
+          <div><label class="calc-label">진입가 (pt)</label><input class="calc-input" id="calcEntry" type="number" step="any" placeholder="0.00" oninput="calcUpdate()"></div>
+          <div><label class="calc-label">청산가 (pt)</label><input class="calc-input" id="calcExit" type="number" step="any" placeholder="0.00" oninput="calcUpdate()"></div>
+        </div>
+
+        <div class="calc-divider"></div>
+        <div class="calc-row-label">수수료 설정</div>
+
+        <div class="calc-row-3col">
+          <div><label class="calc-label">스프레드 (pt)</label><input class="calc-input" id="calcSpread" type="number" step="any" value="0.25" oninput="calcUpdate()"></div>
+          <div><label class="calc-label">수수료 (USD/계약)</label><input class="calc-input" id="calcFee" type="number" step="any" value="4.50" oninput="calcUpdate()"></div>
+          <div><label class="calc-label">USD/KRW 환율</label><input class="calc-input" id="calcFx" type="number" step="any" value="1450" oninput="calcUpdate()"></div>
+        </div>
+
+        <div class="calc-sym-info" id="calcSymInfo">
+          <span>틱값: <strong>$5.00</strong></span>
+          <span>틱사이즈: <strong>0.25</strong></span>
+          <span>증거금: <strong>$1,600</strong></span>
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="calc-results" id="calcResults">
+        <div class="calc-result-title">계산 결과</div>
+        <div class="calc-result-placeholder" id="calcPlaceholder">진입가와 청산가를 입력하세요</div>
+        <div class="calc-result-body" id="calcBody" style="display:none">
+          <div class="calc-r-row"><span class="calc-r-label">틱 이동</span><span class="calc-r-val" id="rTicks">—</span></div>
+          <div class="calc-r-row"><span class="calc-r-label">포인트 변동</span><span class="calc-r-val" id="rPts">—</span></div>
+          <div class="calc-r-divider"></div>
+          <div class="calc-r-row"><span class="calc-r-label">스프레드 비용</span><span class="calc-r-val" id="rSpread">—</span></div>
+          <div class="calc-r-row"><span class="calc-r-label">고정 수수료</span><span class="calc-r-val" id="rFee">—</span></div>
+          <div class="calc-r-row"><span class="calc-r-label">총 비용</span><span class="calc-r-val" id="rCost">—</span></div>
+          <div class="calc-r-divider"></div>
+          <div class="calc-r-row calc-r-big"><span class="calc-r-label">순 손익 (USD)</span><span class="calc-r-val" id="rPnlUsd">—</span></div>
+          <div class="calc-r-row calc-r-big"><span class="calc-r-label">순 손익 (KRW)</span><span class="calc-r-val" id="rPnlKrw">—</span></div>
+          <div class="calc-r-divider"></div>
+          <div class="calc-r-row"><span class="calc-r-label">필요 증거금</span><span class="calc-r-val" id="rMargin">—</span></div>
+          <div class="calc-r-row"><span class="calc-r-label">손익분기 틱수</span><span class="calc-r-val" id="rBe">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- GLOSSARY PAGE -->
 <div class="chapter-page" id="chGlossary">
   <div class="chapter-hero">
@@ -2682,7 +2827,7 @@ function goToCalendar(){
   initEconCalendar();
 }
 function goToJournal(){goToPage('chJournal','');document.querySelectorAll('.tool-btn')[1].classList.add('active');renderJournal()}
-function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
+function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[3].classList.add('active');renderGlossary()}
 
 // ===== JOURNAL =====
 function getJournalData(){return JSON.parse(localStorage.getItem('tradingJournal')||'[]')}
@@ -2770,6 +2915,100 @@ const _oldGlossaryData=[
   {term:"매물 소화",en:"Absorption",def:"대량 매도 물량을 소화하고 가격이 유지되는 현상",tag:"패턴"},
   {term:"Over-trading",en:"Over-trading",def:"과도하게 많은 횟수로 매매하는 것. 수수료와 심리적 피로 누적",tag:"심리"}
 ];
+
+// ===== CALCULATOR =====
+const CALC_SYMBOLS={
+  NQ:{tickVal:5,tickSize:0.25,margin:1600,name:'나스닥 NQ'},
+  MNQ:{tickVal:0.5,tickSize:0.25,margin:160,name:'마이크로 NQ'},
+  ES:{tickVal:12.5,tickSize:0.25,margin:500,name:'S&P 500 ES'},
+  MES:{tickVal:1.25,tickSize:0.25,margin:50,name:'마이크로 ES'},
+  YM:{tickVal:5,tickSize:1,margin:900,name:'다우 YM'},
+  MYM:{tickVal:0.5,tickSize:1,margin:90,name:'마이크로 YM'},
+  CL:{tickVal:10,tickSize:0.01,margin:1000,name:'원유 CL'},
+  GC:{tickVal:10,tickSize:0.1,margin:1000,name:'금 GC'},
+  SI:{tickVal:25,tickSize:0.005,margin:1500,name:'은 SI'},
+  '6E':{tickVal:12.5,tickSize:0.00005,margin:1000,name:'유로/달러 6E'}
+};
+let calcDir='long';
+
+function goToCalc(){
+  goToPage('chCalc','');
+  // tool-btn index: calendar=0, journal=1, calc=2, glossary=3
+  document.querySelectorAll('.tool-btn')[2].classList.add('active');
+  calcUpdate();
+}
+
+function setCalcDir(dir){
+  calcDir=dir;
+  document.getElementById('calcLong').className='calc-dir'+(dir==='long'?' active long':'');
+  document.getElementById('calcShort').className='calc-dir'+(dir==='short'?' active short':'');
+  calcUpdate();
+}
+
+function calcQty(delta){
+  const el=document.getElementById('calcContracts');
+  el.value=Math.max(1,+(el.value||1)+delta);
+  calcUpdate();
+}
+
+function calcUpdate(){
+  const sym=CALC_SYMBOLS[document.getElementById('calcSymbol').value];
+  if(!sym)return;
+
+  // Update symbol info
+  document.getElementById('calcSymInfo').innerHTML=
+    '<span>틱값: <strong>$'+sym.tickVal.toFixed(2)+'</strong></span>'+
+    '<span>틱사이즈: <strong>'+sym.tickSize+'</strong></span>'+
+    '<span>증거금: <strong>$'+sym.margin.toLocaleString()+'</strong></span>';
+
+  const entry=parseFloat(document.getElementById('calcEntry').value);
+  const exit=parseFloat(document.getElementById('calcExit').value);
+  const contracts=Math.max(1,parseInt(document.getElementById('calcContracts').value)||1);
+  const spread=parseFloat(document.getElementById('calcSpread').value)||0;
+  const fee=parseFloat(document.getElementById('calcFee').value)||0;
+  const fx=parseFloat(document.getElementById('calcFx').value)||1450;
+
+  if(isNaN(entry)||isNaN(exit)){
+    document.getElementById('calcPlaceholder').style.display='';
+    document.getElementById('calcBody').style.display='none';
+    return;
+  }
+  document.getElementById('calcPlaceholder').style.display='none';
+  document.getElementById('calcBody').style.display='';
+
+  const dirSign=calcDir==='long'?1:-1;
+  const ticks=Math.round((exit-entry)/sym.tickSize);
+  const pts=+(exit-entry).toFixed(6);
+  const grossPnl=dirSign*ticks*sym.tickVal*contracts;
+  const spreadCost=Math.round(spread/sym.tickSize)*sym.tickVal*contracts;
+  const feeCost=fee*contracts;
+  const totalCost=spreadCost+feeCost;
+  const netPnlUsd=grossPnl-totalCost;
+  const netPnlKrw=netPnlUsd*fx;
+  const margin=sym.margin*contracts;
+  const beTicks=contracts>0?Math.ceil(totalCost/(sym.tickVal*contracts)):0;
+
+  const fmt=(v)=>'$'+Math.abs(v).toFixed(2);
+  const fmtK=(v)=>'₩'+Math.abs(v).toLocaleString('ko-KR',{maximumFractionDigits:0});
+  const cls=(v)=>v>0?'profit':v<0?'loss':'';
+
+  document.getElementById('rTicks').textContent=(ticks>0?'+':'')+ticks+' 틱';
+  document.getElementById('rPts').textContent=(pts>0?'+':'')+pts+' pt';
+  document.getElementById('rSpread').textContent='-'+fmt(spreadCost);
+  document.getElementById('rFee').textContent='-'+fmt(feeCost);
+  document.getElementById('rCost').textContent='-'+fmt(totalCost);
+
+  const pnlEl=document.getElementById('rPnlUsd');
+  pnlEl.textContent=(netPnlUsd>=0?'+':'-')+fmt(netPnlUsd);
+  pnlEl.className='calc-r-val '+cls(netPnlUsd);
+
+  const krwEl=document.getElementById('rPnlKrw');
+  krwEl.textContent=(netPnlKrw>=0?'+':'-')+fmtK(netPnlKrw);
+  krwEl.className='calc-r-val '+cls(netPnlKrw);
+
+  document.getElementById('rMargin').textContent='$'+margin.toLocaleString();
+  document.getElementById('rBe').textContent=beTicks+' 틱 (손익분기)';
+}
 
 // ===== GLOSSARY V2 =====
 let glCatFilter='기초 개념';
