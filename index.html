@@ -997,6 +997,12 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 }
 
 /* ===== GLOSSARY ===== */
+/* ===== CALCULATOR TABS ===== */
+.calc-tabs{display:flex;gap:0;border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:24px}
+.calc-tab{flex:1;padding:12px;border:none;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-500);-webkit-tap-highlight-color:transparent}
+.calc-tab:hover{background:var(--gray-100)}
+.calc-tab.active{background:var(--blue);color:#fff}
+
 /* ===== CALCULATOR ===== */
 .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .calc-inputs{display:flex;flex-direction:column;gap:14px}
@@ -2237,13 +2243,19 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="chapter-hero">
     <div class="chapter-hero-num" style="font-size:40px">&#128178;</div>
     <div>
-      <div class="chapter-label">Margin & P/L Calculator</div>
-      <h2 class="chapter-title">증거금 & 손익 계산기</h2>
-      <p class="chapter-desc">종목을 선택하고 진입가/청산가를 입력하면 증거금, 수수료, 순손익이 자동으로 계산됩니다.</p>
+      <div class="chapter-label">Calculator & Journal</div>
+      <h2 class="chapter-title">계산기 & 매매일지</h2>
+      <p class="chapter-desc">증거금/손익을 계산하고, 매매 기록을 남겨 복기하세요.</p>
     </div>
   </div>
 
-  <div class="section">
+  <!-- Sub Tabs -->
+  <div class="calc-tabs">
+    <button class="calc-tab active" onclick="switchCalcTab(this,'calcSection')">💲 증거금 & 손익 계산기</button>
+    <button class="calc-tab" onclick="switchCalcTab(this,'journalSection')">📔 매매 일지</button>
+  </div>
+
+  <div class="section calc-sub-section" id="calcSection">
     <div class="calc-grid">
       <!-- Left: Inputs -->
       <div class="calc-inputs">
@@ -2323,8 +2335,8 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
   </div>
 
-  <!-- 매매 일지 (계산기 안) -->
-  <div class="section">
+  <!-- 매매 일지 -->
+  <div class="section calc-sub-section" id="journalSection" style="display:none">
     <h2 class="section-title">매매 일지</h2>
     <p class="prose">매매 기록을 남기고 복기하세요. 데이터는 브라우저에 저장됩니다.</p>
     <div class="journal-stats" id="journalStats"></div>
@@ -2923,6 +2935,14 @@ const CALC_SYMBOLS={
   '6E':{tickVal:12.5,tickSize:0.00005,margin:1000,name:'유로/달러 6E'}
 };
 let calcDir='long';
+
+function switchCalcTab(btn,showId){
+  document.querySelectorAll('.calc-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.calc-sub-section').forEach(s=>s.style.display='none');
+  document.getElementById(showId).style.display='';
+  if(showId==='journalSection')renderJournal();
+}
 
 function goToCalc(){
   goToPage('chCalc','');
