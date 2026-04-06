@@ -1244,7 +1244,7 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 /* Chart page full width */
 #chChart .section{max-width:none}
 #chChart .chart-page-widget{
-  width:100%;height:calc(100vh - 200px);min-height:500px;
+  width:100%;height:calc((100vh - 200px) * 2 / 3);min-height:350px;
   border-radius:var(--radius);overflow:hidden;
   border:1px solid var(--gray-200);
   margin-left:-40px;margin-right:-40px;width:calc(100% + 80px);
@@ -1255,7 +1255,7 @@ body.dark .ticker-wrap{background:var(--gray-50)}
   border:1px solid var(--gray-200);
 }
 @media(max-width:640px){
-  .chart-page-widget{height:calc(100vh - 260px);min-height:350px}
+  .chart-page-widget{height:calc((100vh - 260px) * 2 / 3);min-height:280px}
   #chChart .chart-page-widget{margin-left:-16px;margin-right:-16px;width:calc(100% + 32px);border-radius:0}
   .chart-symbols{gap:4px}
   .chart-sym{padding:6px 10px;font-size:12px}
