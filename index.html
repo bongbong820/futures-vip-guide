@@ -602,6 +602,88 @@ a{text-decoration:none;color:inherit}
   cursor:pointer;font-family:var(--font);flex-shrink:0;
 }
 
+/* ===== QUIZ ===== */
+.quiz-btn .quiz-num{background:var(--green);color:#fff;font-size:13px}
+.quiz-btn.active{background:var(--green-light)}
+.quiz-btn.active .quiz-num{background:var(--green)}
+.quiz-btn.active .chapter-btn-title{color:var(--green);font-weight:700}
+
+.quiz-progress{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.quiz-progress-bar{flex:1;height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden}
+.quiz-progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--green));transition:width .4s ease;border-radius:3px}
+.quiz-progress-text{font-size:13px;font-weight:700;color:var(--gray-500);white-space:nowrap}
+
+.quiz-question-wrap{animation:fadeUp .4s ease}
+.quiz-question{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:20px;line-height:1.5}
+.quiz-options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.quiz-option{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border:2px solid var(--gray-200);border-radius:var(--radius);
+  background:var(--white);cursor:pointer;transition:var(--transition);
+  font-size:15px;color:var(--gray-700);
+  -webkit-tap-highlight-color:transparent;
+}
+.quiz-option:hover:not(.disabled){border-color:var(--blue);background:var(--blue-light);color:var(--blue)}
+.quiz-option-num{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:var(--gray-100);color:var(--gray-600);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;transition:var(--transition);
+}
+.quiz-option:hover:not(.disabled) .quiz-option-num{background:var(--blue);color:#fff}
+.quiz-option.correct{border-color:var(--green);background:var(--green-light);color:var(--green)}
+.quiz-option.correct .quiz-option-num{background:var(--green);color:#fff}
+.quiz-option.wrong{border-color:var(--red);background:var(--red-light);color:var(--red)}
+.quiz-option.wrong .quiz-option-num{background:var(--red);color:#fff}
+.quiz-option.disabled{cursor:default;opacity:.7}
+.quiz-option.show-correct{border-color:var(--green);background:var(--green-light)}
+
+.quiz-feedback{
+  padding:16px 20px;border-radius:var(--radius);margin-bottom:20px;
+  font-size:14px;line-height:1.6;
+}
+.quiz-feedback.correct{background:var(--green-light);color:var(--green)}
+.quiz-feedback.wrong{background:var(--red-light);color:var(--red)}
+.quiz-feedback strong{display:block;font-size:16px;margin-bottom:4px}
+.quiz-feedback .explanation{color:var(--gray-700);font-size:13px;margin-top:6px}
+
+.quiz-next-btn{
+  padding:12px 32px;border:none;border-radius:12px;
+  background:var(--blue);color:#fff;font-size:15px;font-weight:700;
+  cursor:pointer;transition:var(--transition);font-family:var(--font);
+}
+.quiz-next-btn:hover{background:var(--navy)}
+
+/* Quiz Result */
+.quiz-result{text-align:center;padding:20px 0}
+.quiz-result-score{
+  font-size:clamp(48px,8vw,72px);font-weight:900;
+  background:linear-gradient(135deg,var(--orange),var(--green));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.quiz-result-label{font-size:16px;color:var(--gray-500);margin-bottom:16px}
+.quiz-result-msg{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.quiz-result-sub{font-size:14px;color:var(--gray-600);margin-bottom:32px}
+.quiz-result-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.quiz-result-btns button{
+  padding:12px 28px;border:none;border-radius:12px;
+  font-size:14px;font-weight:700;cursor:pointer;
+  transition:var(--transition);font-family:var(--font);
+}
+.quiz-retry{background:var(--orange);color:#fff}
+.quiz-retry:hover{background:var(--orange-dark)}
+.quiz-wrong-retry{background:var(--white);color:var(--orange);border:2px solid var(--orange) !important}
+.quiz-wrong-retry:hover{background:var(--orange-light)}
+.quiz-to-chart{background:var(--blue);color:#fff}
+.quiz-to-chart:hover{background:var(--navy)}
+
+@media(max-width:640px){
+  .quiz-question{font-size:16px}
+  .quiz-option{padding:14px 16px;font-size:14px}
+  .quiz-option-num{width:28px;height:28px;font-size:12px}
+}
+
 /* ===== TRADINGVIEW CHART PAGE ===== */
 .chart-btn .chart-num{
   background:var(--orange);color:#fff;font-size:13px;
@@ -993,6 +1075,11 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <button class="chapter-btn" onclick="goTo(7)">
     <div class="chapter-num">07</div>
     <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
+  </button>
+
+  <button class="chapter-btn quiz-btn" onclick="goToQuiz()">
+    <div class="chapter-num quiz-num">&#128221;</div>
+    <div><span class="chapter-btn-title">실력 점검 퀴즈</span><span class="chapter-btn-sub" id="quizLastScore">10문제 · 챕터 1~7 기반</span></div>
   </button>
 
   <button class="chapter-btn chart-btn" onclick="goToChart()">
@@ -1489,6 +1576,32 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="chapter-nav-bottom">
     <button class="nav-btn" onclick="goTo(6)">← 이전 챕터</button>
     <div class="nav-dots"><button class="nav-dot" onclick="goTo(1)"></button><button class="nav-dot" onclick="goTo(2)"></button><button class="nav-dot" onclick="goTo(3)"></button><button class="nav-dot" onclick="goTo(4)"></button><button class="nav-dot" onclick="goTo(5)"></button><button class="nav-dot" onclick="goTo(6)"></button><button class="nav-dot active" onclick="goTo(7)"></button></div>
+    <button class="nav-btn" onclick="goToQuiz()">퀴즈 풀기 →</button>
+  </div>
+</div>
+
+<!-- QUIZ PAGE -->
+<div class="chapter-page" id="chQuiz">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128221;</div>
+    <div>
+      <div class="chapter-label">Knowledge Check</div>
+      <h1 class="chapter-title">실력 점검 퀴즈</h1>
+      <p class="chapter-desc">챕터 1~7에서 배운 내용을 확인해보세요. 총 10문제, 4지선다 객관식입니다.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="quiz-progress">
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
+      <div class="quiz-progress-text" id="quizProgressText">1 / 10</div>
+    </div>
+    <div id="quizBody"></div>
+  </div>
+
+  <div class="chapter-nav-bottom">
+    <button class="nav-btn" onclick="goTo(7)">← Chapter 7</button>
+    <div></div>
     <button class="nav-btn" onclick="goToChart()">차트 보기 →</button>
   </div>
 </div>
@@ -1665,7 +1778,7 @@ function goTo(n) {
   const mobNext = document.getElementById('mobNext');
   if (mobPrev) mobPrev.disabled = n <= 1;
   if (mobNext) {
-    if (n >= total) { mobNext.textContent = '차트 →'; mobNext.disabled = false; mobNext.onclick = () => goToChart(); }
+    if (n >= total) { mobNext.textContent = '퀴즈 →'; mobNext.disabled = false; mobNext.onclick = () => goToQuiz(); }
     else { mobNext.textContent = '다음 →'; mobNext.disabled = false; mobNext.onclick = () => goTo(current + 1); }
   }
   const mobDots = document.getElementById('mobDots');
@@ -1778,6 +1891,143 @@ function goToChart() {
     }
   }
 }
+
+// ===== QUIZ =====
+const quizData = [
+  { question:"트레이딩에서 두려움의 근본 원인은 무엇인가요?", options:["자금 부족","과거 손실 경험이 몸에 남은 것","차트를 못 읽는 것","레버리지가 높아서"], answer:1, explanation:"두려움은 정보 부족의 신호이며, 과거 손실 경험이 몸에 각인되어 발생합니다 (Ch.1)" },
+  { question:"감/촉 매매(Gut Trading)를 해서는 안 되는 이유는?", options:["수수료가 높아서","거래소가 금지해서","매매 기준 없이 감으로 진입하면 반복 손실","속도가 느려서"], answer:2, explanation:"기준 없는 진입은 근거 없는 자신감을 만들고 반복 손실로 이어집니다 (Ch.1)" },
+  { question:"손절(Stop-Loss)에 대한 올바른 관점은?", options:["손절은 실패의 증거다","손절은 더 좋은 수익을 위한 기회다","손절은 가능한 피해야 한다","손절은 고수만 하는 것이다"], answer:1, explanation:"손절은 손실이 아니라 더 좋은 수익을 만들기 위한 기회입니다 (Ch.2)" },
+  { question:"리스크 관리에서 가장 우선시해야 할 원칙은?", options:["수익 극대화","레버리지 최대 활용","원금 보호","빠른 진입"], answer:2, explanation:"원금을 지키는 것이 수익을 내는 것보다 우선입니다 (Ch.2)" },
+  { question:"고수와 초보의 가장 큰 차이점은?", options:["사용하는 지표의 수","매매 횟수","손절 습관","투자 금액"], answer:2, explanation:"초보에서 고수로 가는 첫 번째 단계는 손절 습관입니다 (Ch.3)" },
+  { question:"이동평균선(MA)에서 단기선이 장기선 위에 있는 상태를 무엇이라 하나요?", options:["역배열","데드크로스","정배열","수렴"], answer:2, explanation:"단기선이 장기선 위에 있으면 정배열(강세 신호)입니다 (Ch.4)" },
+  { question:"캔들 강도를 판단하는 3가지 요소가 아닌 것은?", options:["볼륨(거래량)","기울기(속도)","심리(꼬리)","색상(빨강/파랑)"], answer:3, explanation:"캔들 강도는 볼륨, 기울기(속도), 심리(꼬리 길이)로 판단합니다 (Ch.4)" },
+  { question:"최적의 롱 진입 시 최소 몇 개 조건이 충족되어야 하나요?", options:["1개","2개","3개 이상","6개 전부"], answer:2, explanation:"3개 이상 충족될수록 성공 확률이 높아집니다 (Ch.5)" },
+  { question:"Bull Trap이란 무엇인가요?", options:["전고점을 진짜 돌파하는 것","전고점 돌파처럼 보이지만 빠르게 하락 반전하는 것","저점에서 반등하는 것","볼륨이 급증하는 것"], answer:1, explanation:"Bull Trap은 가짜 돌파 후 하락 반전하며 매수자가 손절당하는 구간입니다 (Ch.6)" },
+  { question:"절대 원칙 3가지에 해당하지 않는 것은?", options:["기다려라","추세를 따라라","복기하라","물타기하라"], answer:3, explanation:"절대 원칙은 기다려라, 추세를 따라라, 복기하라입니다. 물타기는 금지 (Ch.7)" }
+];
+
+let quizState = { current:0, score:0, answers:[], wrongOnly:false, order:[] };
+
+function goToQuiz() {
+  document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('chQuiz').classList.add('active');
+  document.querySelector('.quiz-btn').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  window.scrollTo({ top:0, behavior:'smooth' });
+  closeSidebar();
+  // Reset quiz
+  quizState = { current:0, score:0, answers:[], wrongOnly:false, order:shuffleArray([...Array(quizData.length).keys()]) };
+  renderQuiz();
+  // Mobile nav
+  const mobPrev = document.getElementById('mobPrev');
+  const mobNext = document.getElementById('mobNext');
+  if(mobPrev){mobPrev.disabled=false;mobPrev.onclick=()=>goTo(7)}
+  if(mobNext){mobNext.textContent='차트 →';mobNext.disabled=false;mobNext.onclick=()=>goToChart()}
+}
+
+function shuffleArray(arr) {
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}
+  return arr;
+}
+
+function renderQuiz() {
+  const idx = quizState.order[quizState.current];
+  const q = quizData[idx];
+  const total = quizState.order.length;
+  const num = quizState.current + 1;
+  document.getElementById('quizProgressFill').style.width = ((num/total)*100)+'%';
+  document.getElementById('quizProgressText').textContent = num + ' / ' + total;
+
+  const labels = ['A','B','C','D'];
+  let html = '<div class="quiz-question-wrap"><div class="quiz-question">Q' + num + '. ' + q.question + '</div><div class="quiz-options">';
+  q.options.forEach((opt,i) => {
+    html += '<div class="quiz-option" onclick="selectAnswer('+i+')" data-idx="'+i+'"><div class="quiz-option-num">'+labels[i]+'</div><span>'+opt+'</span></div>';
+  });
+  html += '</div><div id="quizFeedback"></div><div id="quizNextWrap" style="display:none"></div></div>';
+  document.getElementById('quizBody').innerHTML = html;
+}
+
+function selectAnswer(selected) {
+  const idx = quizState.order[quizState.current];
+  const q = quizData[idx];
+  const correct = q.answer;
+  const options = document.querySelectorAll('.quiz-option');
+
+  // Disable all
+  options.forEach(o => o.classList.add('disabled'));
+  options.forEach(o => o.onclick = null);
+
+  // Highlight
+  if(selected === correct) {
+    options[selected].classList.add('correct');
+    quizState.score++;
+    document.getElementById('quizFeedback').innerHTML = '<div class="quiz-feedback correct"><strong>✅ 정답입니다!</strong><div class="explanation">'+q.explanation+'</div></div>';
+  } else {
+    options[selected].classList.add('wrong');
+    options[correct].classList.add('correct','show-correct');
+    document.getElementById('quizFeedback').innerHTML = '<div class="quiz-feedback wrong"><strong>❌ 오답입니다. 정답은 '+['A','B','C','D'][correct]+'입니다</strong><div class="explanation">'+q.explanation+'</div></div>';
+  }
+
+  quizState.answers.push({ qIdx:idx, selected:selected, correct:correct, isCorrect:selected===correct });
+
+  // Next button
+  const isLast = quizState.current >= quizState.order.length - 1;
+  const wrap = document.getElementById('quizNextWrap');
+  wrap.style.display = '';
+  wrap.innerHTML = '<button class="quiz-next-btn" onclick="'+(isLast?'showQuizResult()':'nextQuiz()')+'">'+(isLast?'결과 보기':'다음 문제 →')+'</button>';
+}
+
+function nextQuiz() {
+  quizState.current++;
+  renderQuiz();
+  document.querySelector('.quiz-question-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function showQuizResult() {
+  const total = quizState.order.length;
+  const score = quizState.score;
+  let msg='', sub='';
+  if(score>=9){msg='🏆 완벽합니다! 실전 준비 완료!';sub='당신은 이미 프로 트레이더의 마인드를 갖추고 있습니다'}
+  else if(score>=7){msg='💪 훌륭해요! 조금만 더 다듬으면 됩니다';sub='핵심 원칙을 거의 마스터했습니다'}
+  else if(score>=5){msg='📚 복습이 필요해요. 다시 한번 도전!';sub='틀린 부분을 중심으로 챕터를 다시 읽어보세요'}
+  else{msg='🔄 챕터를 다시 읽고 도전해보세요';sub='기초부터 차근차근 다시 시작해봅시다'}
+
+  const wrongCount = quizState.answers.filter(a=>!a.isCorrect).length;
+
+  let html = '<div class="quiz-result">';
+  html += '<div class="quiz-result-score">'+score+' / '+total+'</div>';
+  html += '<div class="quiz-result-label">정답 수</div>';
+  html += '<div class="quiz-result-msg">'+msg+'</div>';
+  html += '<div class="quiz-result-sub">'+sub+'</div>';
+  html += '<div class="quiz-result-btns">';
+  html += '<button class="quiz-retry" onclick="goToQuiz()">🔄 다시 풀기</button>';
+  if(wrongCount>0) html += '<button class="quiz-wrong-retry" onclick="retryWrong()">❌ 틀린 문제만 ('+wrongCount+'문제)</button>';
+  html += '<button class="quiz-to-chart" onclick="goToChart()">📈 차트 보러 가기</button>';
+  html += '</div></div>';
+
+  document.getElementById('quizBody').innerHTML = html;
+  document.getElementById('quizProgressFill').style.width = '100%';
+  document.getElementById('quizProgressText').textContent = '완료!';
+
+  // Save to localStorage
+  localStorage.setItem('quizLastScore', score+'/'+total);
+  const label = document.getElementById('quizLastScore');
+  if(label) label.textContent = '지난 점수: '+score+'/'+total;
+}
+
+function retryWrong() {
+  const wrongIdxs = quizState.answers.filter(a=>!a.isCorrect).map(a=>a.qIdx);
+  quizState = { current:0, score:0, answers:[], wrongOnly:true, order:shuffleArray(wrongIdxs) };
+  renderQuiz();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Restore last score label
+(function(){
+  const last = localStorage.getItem('quizLastScore');
+  if(last){const el=document.getElementById('quizLastScore');if(el)el.textContent='지난 점수: '+last}
+})();
 
 // ===== CHART CONTROLS =====
 // Default filter: futures only
