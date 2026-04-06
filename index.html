@@ -664,6 +664,17 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .ec4-state{text-align:center;padding:48px 20px;color:var(--gray-500);font-size:14px}
 .ec4-spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:ec4spin .8s linear infinite;margin-bottom:12px}
 @keyframes ec4spin{to{transform:rotate(360deg)}}
+/* 2-column layout */
+.ec4-two-col{display:grid;grid-template-columns:60% 40%;gap:20px}
+.ec4-col-main{min-width:0}
+.ec4-col-news{min-width:0}
+.ec4-news-header{margin-bottom:12px}
+.ec4-news-header .section-title{margin-bottom:2px}
+.ec4-news-sub{font-size:11px;color:var(--gray-400);padding-left:12px}
+
+@media(max-width:1024px){
+  .ec4-two-col{grid-template-columns:1fr}
+}
 @media(max-width:700px){
   .ec4-cards{grid-template-columns:1fr}
   .ec4-table th:nth-child(5),.ec4-table td:nth-child(5){display:none}
@@ -2213,24 +2224,54 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
   </div>
 
-  <div class="ec4-panel">
-    <div class="ec4-toolbar">
-      <div class="ec4-fg" id="ec4DateF">
-        <button class="ec4-fb" data-range="yesterday" onclick="ec4SetRange(this)">어제</button>
-        <button class="ec4-fb active" data-range="today" onclick="ec4SetRange(this)">오늘</button>
-        <button class="ec4-fb" data-range="tomorrow" onclick="ec4SetRange(this)">내일</button>
-        <button class="ec4-fb" data-range="week" onclick="ec4SetRange(this)">이번주</button>
-      </div>
-      <div class="ec4-fg" id="ec4ImpF">
-        <button class="ec4-fb active" data-imp="all" onclick="ec4SetImp(this)">전체</button>
-        <button class="ec4-fb" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
-        <button class="ec4-fb" data-imp="2" onclick="ec4SetImp(this)">★★☆</button>
-        <button class="ec4-fb" data-imp="1" onclick="ec4SetImp(this)">★☆☆</button>
+  <!-- 2-column: Calendar + News -->
+  <div class="ec4-two-col">
+    <!-- Left: Calendar -->
+    <div class="ec4-col-main">
+      <div class="ec4-panel">
+        <div class="ec4-toolbar">
+          <div class="ec4-fg" id="ec4DateF">
+            <button class="ec4-fb" data-range="yesterday" onclick="ec4SetRange(this)">어제</button>
+            <button class="ec4-fb active" data-range="today" onclick="ec4SetRange(this)">오늘</button>
+            <button class="ec4-fb" data-range="tomorrow" onclick="ec4SetRange(this)">내일</button>
+            <button class="ec4-fb" data-range="week" onclick="ec4SetRange(this)">이번주</button>
+          </div>
+          <div class="ec4-fg" id="ec4ImpF">
+            <button class="ec4-fb active" data-imp="all" onclick="ec4SetImp(this)">전체</button>
+            <button class="ec4-fb" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
+            <button class="ec4-fb" data-imp="2" onclick="ec4SetImp(this)">★★☆</button>
+            <button class="ec4-fb" data-imp="1" onclick="ec4SetImp(this)">★☆☆</button>
+          </div>
+        </div>
+        <div class="ec4-divider"></div>
+        <div class="ec4-section-title">곧 있을 주요 경제 이벤트</div>
+        <div id="ec4Body"><div class="ec4-state"><div class="ec4-spinner"></div><br>데이터 불러오는 중...</div></div>
       </div>
     </div>
-    <div class="ec4-divider"></div>
-    <div class="ec4-section-title">곧 있을 주요 경제 이벤트</div>
-    <div id="ec4Body"><div class="ec4-state"><div class="ec4-spinner"></div><br>데이터 불러오는 중...</div></div>
+
+    <!-- Right: News -->
+    <div class="ec4-col-news">
+      <div class="ec4-news-header">
+        <h2 class="section-title">실시간 시장 뉴스</h2>
+        <span class="ec4-news-sub">TradingView 제공</span>
+      </div>
+      <div class="ec4-panel" style="min-height:600px">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+          {
+            "feedMode": "all_symbols",
+            "isTransparent": true,
+            "displayMode": "regular",
+            "width": "100%",
+            "height": "600",
+            "colorTheme": "light",
+            "locale": "kr"
+          }
+          </script>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
