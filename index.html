@@ -619,9 +619,61 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .tool-btn.active{background:var(--blue-light)}
 .tool-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
 
-/* ===== CALENDAR ===== */
+/* ===== CALENDAR & FINNHUB ===== */
 .calendar-widget{width:100%;height:500px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--gray-200)}
 @media(max-width:640px){.calendar-widget{height:400px}}
+
+.finnhub-key-wrap{margin-bottom:16px}
+.finnhub-key-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.finnhub-key-input{
+  flex:1;min-width:200px;padding:10px 16px;border:1px solid var(--gray-200);
+  border-radius:10px;font-size:14px;background:var(--white);
+  color:var(--gray-900);font-family:var(--font);outline:none;
+}
+.finnhub-key-input:focus{border-color:var(--blue)}
+.finnhub-key-btn{
+  padding:10px 20px;border:none;border-radius:10px;
+  background:var(--blue);color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--font);white-space:nowrap;
+}
+.finnhub-key-btn:hover{background:var(--navy)}
+.finnhub-key-test{
+  padding:10px 20px;border:1px solid var(--green);border-radius:10px;
+  background:var(--white);color:var(--green);font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--font);white-space:nowrap;
+}
+.finnhub-key-test:hover{background:var(--green-light)}
+.finnhub-key-status{font-size:13px;color:var(--gray-500)}
+.finnhub-key-status.success{color:var(--green)}
+.finnhub-key-status.error{color:var(--red)}
+
+.finnhub-filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.finnhub-loading{text-align:center;padding:20px;color:var(--gray-400);font-size:14px}
+
+.finnhub-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--gray-200)}
+.finnhub-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+.finnhub-table th{
+  background:var(--navy);color:#fff;padding:10px 12px;
+  text-align:left;font-size:12px;font-weight:700;white-space:nowrap;
+}
+.finnhub-table td{
+  padding:10px 12px;border-bottom:1px solid var(--gray-100);
+  background:var(--white);color:var(--gray-700);
+}
+.finnhub-table tr:hover td{background:var(--blue-light)}
+.impact-high{color:var(--red);font-weight:700}
+.impact-medium{color:var(--orange);font-weight:600}
+.impact-low{color:var(--gray-500)}
+.econ-actual-up{color:var(--green);font-weight:700}
+.econ-actual-down{color:var(--red);font-weight:700}
+.finnhub-empty{text-align:center;padding:30px;color:var(--gray-400);font-size:14px}
+.finnhub-row.hidden{display:none}
+
+.country-flag{font-size:16px;margin-right:4px}
+@media(max-width:640px){
+  .finnhub-key-row{flex-direction:column}
+  .finnhub-key-input{min-width:100%}
+}
 
 /* ===== JOURNAL ===== */
 .journal-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
@@ -1758,13 +1810,48 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="chapter-hero">
     <div class="chapter-hero-num" style="font-size:40px">&#128197;</div>
     <div>
-      <div class="chapter-label">Economic Calendar</div>
+      <div class="chapter-label">Economic Calendar — Finnhub API</div>
       <h1 class="chapter-title">경제지표 캘린더</h1>
-      <p class="chapter-desc">CPI, NFP, FOMC 등 주요 경제지표 발표 일정을 확인하세요. 발표 직전 매매는 금지입니다.</p>
+      <p class="chapter-desc">Finnhub API로 실시간 경제지표 데이터를 확인하세요. 발표 직전 매매는 금지입니다.</p>
     </div>
   </div>
+
+  <!-- Finnhub API Key -->
   <div class="section">
+    <h2 class="section-title">Finnhub API 연결</h2>
+    <div class="finnhub-key-wrap">
+      <div class="finnhub-key-row">
+        <input class="finnhub-key-input" id="finnhubKey" type="password" placeholder="Finnhub API Key 입력" value="">
+        <button class="finnhub-key-btn" onclick="saveFinnhubKey()">저장</button>
+        <button class="finnhub-key-test" onclick="testFinnhubKey()">연결 테스트</button>
+      </div>
+      <div class="finnhub-key-status" id="finnhubStatus">API 키를 입력하세요 · <a href="https://finnhub.io/register" target="_blank" style="color:var(--blue)">무료 키 발급받기</a></div>
+    </div>
+  </div>
+
+  <!-- Finnhub Economic Data -->
+  <div class="section">
+    <h2 class="section-title">실시간 경제지표 데이터</h2>
     <div class="callout"><div class="callout-label">매매 원칙 (Ch.7)</div><p>주요 경제지표 발표 직전에는 절대 매매하지 마세요. 발표 후 시장 방향이 잡힌 뒤 진입하세요.</p></div>
+    <div class="finnhub-filters">
+      <button class="chart-cat active" onclick="filterEcon(this,'all')">전체</button>
+      <button class="chart-cat" onclick="filterEcon(this,'high')">높은 영향</button>
+      <button class="chart-cat" onclick="filterEcon(this,'medium')">중간 영향</button>
+      <button class="chart-cat" onclick="filterEcon(this,'low')">낮은 영향</button>
+    </div>
+    <div class="finnhub-loading" id="finnhubLoading" style="display:none">데이터 로딩 중...</div>
+    <div class="finnhub-table-wrap">
+      <table class="finnhub-table">
+        <thead><tr><th>시간</th><th>국가</th><th>지표</th><th>영향</th><th>예상</th><th>실제</th><th>이전</th></tr></thead>
+        <tbody id="finnhubBody"></tbody>
+      </table>
+    </div>
+    <div class="finnhub-empty" id="finnhubEmpty">API 키를 입력하고 "연결 테스트"를 클릭하면 데이터가 표시됩니다</div>
+  </div>
+
+  <!-- TradingView Fallback -->
+  <div class="section">
+    <h2 class="section-title">TradingView 캘린더</h2>
     <div class="calendar-widget">
       <iframe src="https://s.tradingview.com/embed-widget/events/?locale=kr&colorTheme=dark&isTransparent=false&width=100%25&height=100%25&importanceFilter=-1%2C0%2C1" style="width:100%;height:100%;border:none" allowfullscreen></iframe>
     </div>
@@ -2254,7 +2341,16 @@ function goToPage(pageId, btnClass) {
   window.scrollTo({top:0,behavior:'smooth'});
   closeSidebar();
 }
-function goToCalendar(){goToPage('chCalendar','tool-btn');document.querySelectorAll('.tool-btn')[0].classList.add('active')}
+function goToCalendar(){
+  goToPage('chCalendar','tool-btn');
+  document.querySelectorAll('.tool-btn')[0].classList.add('active');
+  // Restore saved API key
+  const savedKey = localStorage.getItem('finnhubKey');
+  if(savedKey){
+    document.getElementById('finnhubKey').value = savedKey;
+    if(!document.getElementById('finnhubBody').innerHTML) loadEconomicCalendar(savedKey);
+  }
+}
 function goToJournal(){goToPage('chJournal','');document.querySelectorAll('.tool-btn')[1].classList.add('active');renderJournal()}
 function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
 
@@ -2387,8 +2483,83 @@ function initBookmarks(){
   });
 }
 
+// ===== FINNHUB API =====
+function saveFinnhubKey(){
+  const key = document.getElementById('finnhubKey').value.trim();
+  if(!key){showToast('API 키를 입력하세요','',null);return}
+  localStorage.setItem('finnhubKey', key);
+  const status = document.getElementById('finnhubStatus');
+  status.textContent = '✅ API 키가 저장되었습니다';
+  status.className = 'finnhub-key-status success';
+  showToast('Finnhub API 키 저장 완료','',null);
+}
+
+function testFinnhubKey(){
+  const key = document.getElementById('finnhubKey').value.trim() || localStorage.getItem('finnhubKey');
+  if(!key){showToast('API 키를 먼저 입력하세요','',null);return}
+  const status = document.getElementById('finnhubStatus');
+  status.textContent = '연결 테스트 중...';
+  status.className = 'finnhub-key-status';
+  localStorage.setItem('finnhubKey', key);
+  loadEconomicCalendar(key);
+}
+
+function loadEconomicCalendar(apiKey){
+  const loading = document.getElementById('finnhubLoading');
+  const empty = document.getElementById('finnhubEmpty');
+  const status = document.getElementById('finnhubStatus');
+  loading.style.display = '';
+  empty.style.display = 'none';
+
+  const today = new Date();
+  const from = today.toISOString().slice(0,10);
+  const to = new Date(today.getTime() + 7*86400000).toISOString().slice(0,10);
+
+  fetch('https://finnhub.io/api/v1/calendar/economic?from='+from+'&to='+to+'&token='+apiKey)
+    .then(r=>{
+      if(!r.ok) throw new Error('API Error: '+r.status);
+      return r.json();
+    })
+    .then(data=>{
+      loading.style.display = 'none';
+      if(!data.economicCalendar || data.economicCalendar.length===0){
+        empty.style.display='';empty.textContent='이번 주 예정된 경제지표가 없습니다';return;
+      }
+      status.textContent = '✅ 연결 성공! '+data.economicCalendar.length+'개 지표 로드됨';
+      status.className = 'finnhub-key-status success';
+      renderEconomicData(data.economicCalendar);
+    })
+    .catch(err=>{
+      loading.style.display='none';empty.style.display='';
+      empty.textContent='API 오류: 키를 확인해주세요';
+      status.textContent = '❌ 연결 실패: '+err.message;
+      status.className = 'finnhub-key-status error';
+    });
+}
+
+function renderEconomicData(events){
+  const body = document.getElementById('finnhubBody');
+  document.getElementById('finnhubEmpty').style.display='none';
+  const flags = {'US':'🇺🇸','EU':'🇪🇺','GB':'🇬🇧','JP':'🇯🇵','CN':'🇨🇳','KR':'🇰🇷','CA':'🇨🇦','AU':'🇦🇺','DE':'🇩🇪','FR':'🇫🇷','CH':'🇨🇭'};
+  body.innerHTML = events.map(e => {
+    const imp = e.impact==='high'?'impact-high':e.impact==='medium'?'impact-medium':'impact-low';
+    const impL = e.impact==='high'?'🔴 높음':e.impact==='medium'?'🟡 중간':'⚪ 낮음';
+    const ac = e.actual>e.estimate?'econ-actual-up':e.actual<e.estimate?'econ-actual-down':'';
+    return '<tr class="finnhub-row" data-impact="'+(e.impact||'low')+'"><td>'+(e.time||'--:--')+'</td><td><span class="country-flag">'+(flags[e.country]||'🌐')+'</span>'+e.country+'</td><td><strong>'+e.event+'</strong></td><td class="'+imp+'">'+impL+'</td><td>'+(e.estimate!==null?e.estimate:'--')+'</td><td class="'+ac+'">'+(e.actual!==null?e.actual:'대기중')+'</td><td>'+(e.prev!==null?e.prev:'--')+'</td></tr>';
+  }).join('');
+}
+
+function filterEcon(btn, level){
+  document.querySelectorAll('.finnhub-filters .chart-cat').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.finnhub-row').forEach(row=>{
+    if(level==='all') row.classList.remove('hidden');
+    else row.classList.toggle('hidden', row.dataset.impact!==level);
+  });
+}
+
 // ===== CHART CONTROLS =====
-// Default filter: futures only
+// Default filter: crypto only
 document.querySelectorAll('.chart-sym').forEach(s => {
   if (s.dataset.cat !== 'crypto') s.classList.add('hidden');
 });
