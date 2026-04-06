@@ -1968,20 +1968,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="econ-empty" id="econEmpty" style="display:none">해당 날짜에 예정된 경제지표가 없습니다</div>
   </div>
 
-  <!-- Earnings Calendar -->
-  <div class="section">
-    <h2 class="section-title">실적 발표 캘린더</h2>
-    <p class="prose">이번 주 실적 발표 예정 기업입니다. 실적 발표 전후 변동성이 급증하니 포지션 관리에 유의하세요.</p>
-    <div class="earnings-date-tabs" id="earningsDateTabs"></div>
-    <div class="econ-skeleton" id="earningsSkeleton" style="display:none">
-      <div class="econ-skel-row"><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
-      <div class="econ-skel-row"><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
-      <div class="econ-skel-row"><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
-    </div>
-    <div class="earnings-list" id="earningsList"></div>
-    <div class="econ-empty" id="earningsEmpty" style="display:none">해당 날짜에 실적 발표 예정 기업이 없습니다</div>
-  </div>
-
   <!-- Finnhub 시세 + 뉴스 -->
   <div class="section">
     <h2 class="section-title">Finnhub 실시간 시세</h2>
@@ -2490,7 +2476,6 @@ function goToCalendar(){
   goToPage('chCalendar','tool-btn');
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
   initEconCalendar();
-  loadEarnings();
   const savedKey = localStorage.getItem('finnhubKey') || document.getElementById('finnhubKey').value;
   if(savedKey){
     document.getElementById('finnhubKey').value = savedKey;
