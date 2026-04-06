@@ -2763,15 +2763,15 @@ const _oldGlossaryData=[
 ];
 
 // ===== GLOSSARY V2 =====
-let glCatFilter='all';
+let glCatFilter='기초 개념';
 
 function renderGlossary(){
   const cats=[...new Set(GLOSSARY_DATA.map(g=>g.category))];
   const catsEl=document.getElementById('glCats');
   if(!catsEl)return;
   const icons={'기초 개념':'📊','차트 & 기술적 분석':'📈','주문 & 거래 방식':'💰','거시경제 & 지표':'🌍','리스크 관리':'⚠️','선물/파생상품 전용':'🔥'};
-  catsEl.innerHTML='<button class="gl-cat active" onclick="setGlCat(this,\'all\')">전체</button>'+
-    cats.map(c=>'<button class="gl-cat" onclick="setGlCat(this,\''+c+'\')">'+(icons[c]||'')+' '+c+'</button>').join('');
+  catsEl.innerHTML=cats.map(c=>'<button class="gl-cat'+(glCatFilter===c?' active':'')+'" onclick="setGlCat(this,\''+c+'\')">'+(icons[c]||'')+' '+c+'</button>').join('')+
+    '<button class="gl-cat'+(glCatFilter==='all'?' active':'')+'" onclick="setGlCat(this,\'all\')">전체</button>';
   glRenderCards();
 }
 
