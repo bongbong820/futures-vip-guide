@@ -676,6 +676,13 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 }
 .news-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .news-card-img{width:100%;height:180px;object-fit:cover;display:block;background:var(--gray-100)}
+.news-card-banner{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:rgba(255,255,255,.9);letter-spacing:1px}
+.news-card-banner.g1{background:linear-gradient(135deg,#1B2A4A,#2D4A7A)}
+.news-card-banner.g2{background:linear-gradient(135deg,#FF6B35,#FF8C00)}
+.news-card-banner.g3{background:linear-gradient(135deg,#3182F6,#1B2A4A)}
+.news-card-banner.g4{background:linear-gradient(135deg,#20C997,#1B2A4A)}
+.news-card-banner.g5{background:linear-gradient(135deg,#6C5CE7,#3182F6)}
+.news-card-banner.g6{background:linear-gradient(135deg,#E17055,#D63031)}
 .news-card-body{padding:14px}
 .news-card-title{font-size:14px;font-weight:700;color:var(--navy);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px}
 .news-card-desc{font-size:12px;color:var(--gray-600);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
@@ -3183,50 +3190,45 @@ function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleStri
 const NEWS_API_KEY='08ed4fb093b5406b8809d600a74444ce';
 let _newsTimer;
 
+const RAPIDAPI_NEWS_KEY='02303fa555msh6432fea13c30d9ep1ec864jsn62b72b7c99cc';
+
 function loadNews(){
   const grid=document.getElementById('newsGrid');
   if(!grid)return;
   grid.innerHTML='<div class="news-skel"></div>'.repeat(6);
 
-  // Try NewsAPI first (works on localhost, may fail on production)
-  fetch('https://newsapi.org/v2/top-headlines?category=business&country=us&pageSize=12&apiKey='+NEWS_API_KEY)
-    .then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
+  // Yahoo Finance RapidAPI (no CORS issues on production)
+  fetch('https://yahoo-finance15.p.rapidapi.com/api/v1/markets/news?type=ALL',{
+    headers:{'x-rapidapi-key':RAPIDAPI_NEWS_KEY,'x-rapidapi-host':'yahoo-finance15.p.rapidapi.com'}
+  }).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})
     .then(d=>{
-      if(d.status==='ok'&&d.articles?.length)renderNews(d.articles);
-      else throw new Error('empty');
-    })
-    .catch(()=>{
-      // Fallback: Yahoo Finance via RapidAPI
-      const rk=localStorage.getItem('rapidApiKey')||'';
-      if(rk){
-        fetch('https://yahoo-finance15.p.rapidapi.com/api/v1/markets/news?type=ALL',{
-          headers:{'x-rapidapi-key':rk,'x-rapidapi-host':'yahoo-finance15.p.rapidapi.com'}
-        }).then(r=>r.json()).then(d=>{
-          if(d.body?.length){
-            const articles=d.body.slice(0,12).map(a=>({
-              title:a.title||'',description:a.text||'',url:a.url||'#',
-              urlToImage:a.img||null,source:{name:a.source||'Yahoo'},publishedAt:a.pubDate||''
-            }));
-            renderNews(articles);
-          }else throw new Error('yf empty');
-        }).catch(()=>newsError());
-      }else newsError();
-    });
+      if(d.body?.length){
+        const articles=d.body.slice(0,12).map(a=>({
+          title:a.title||'',description:'',url:a.link||'#',
+          urlToImage:null,source:{name:a.source||'Yahoo Finance'},publishedAt:a.pubDate||''
+        }));
+        renderNews(articles);
+      }else throw new Error('empty');
+    }).catch(()=>newsError());
 }
 
 function renderNews(articles){
   const grid=document.getElementById('newsGrid');
-  const placeholder='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" fill="%23E9ECEF"><rect width="400" height="200"/><text x="200" y="105" text-anchor="middle" fill="%23ADB5BD" font-size="14">No Image</text></svg>');
+  const gradients=['g1','g2','g3','g4','g5','g6'];
 
-  grid.innerHTML=articles.map(a=>{
+  grid.innerHTML=articles.map((a,i)=>{
     const ago=timeAgo(a.publishedAt);
-    const img=a.urlToImage||placeholder;
+    const src=a.source?.name||'News';
+    const g=gradients[i%gradients.length];
+    const topPart=a.urlToImage
+      ?'<img class="news-card-img" src="'+escHtml(a.urlToImage)+'" alt="" onerror="this.outerHTML=\'<div class=news-card-banner '+g+'>'+escHtml(src)+'</div>\'" loading="lazy">'
+      :'<div class="news-card-banner '+g+'">'+escHtml(src)+'</div>';
     return '<a class="news-card" href="'+escHtml(a.url)+'" target="_blank" rel="noopener">'+
-      '<img class="news-card-img" src="'+escHtml(img)+'" alt="" onerror="this.src=\''+placeholder+'\'" loading="lazy">'+
+      topPart+
       '<div class="news-card-body">'+
       '<div class="news-card-title">'+escHtml(a.title||'')+'</div>'+
-      '<div class="news-card-desc">'+escHtml(a.description||'')+'</div>'+
-      '<div class="news-card-meta"><span>'+escHtml(a.source?.name||'')+'</span><span>'+ago+'</span></div>'+
+      (a.description?'<div class="news-card-desc">'+escHtml(a.description)+'</div>':'')+
+      '<div class="news-card-meta"><span>'+escHtml(src)+'</span><span>'+ago+'</span></div>'+
       '</div></a>';
   }).join('');
 
