@@ -647,29 +647,42 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .finnhub-key-status.success{color:var(--green)}
 .finnhub-key-status.error{color:var(--red)}
 
-.finnhub-filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .finnhub-loading{text-align:center;padding:20px;color:var(--gray-400);font-size:14px}
-
-.finnhub-table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--gray-200)}
-.finnhub-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
-.finnhub-table th{
-  background:var(--navy);color:#fff;padding:10px 12px;
-  text-align:left;font-size:12px;font-weight:700;white-space:nowrap;
-}
-.finnhub-table td{
-  padding:10px 12px;border-bottom:1px solid var(--gray-100);
-  background:var(--white);color:var(--gray-700);
-}
-.finnhub-table tr:hover td{background:var(--blue-light)}
-.impact-high{color:var(--red);font-weight:700}
-.impact-medium{color:var(--orange);font-weight:600}
-.impact-low{color:var(--gray-500)}
-.econ-actual-up{color:var(--green);font-weight:700}
-.econ-actual-down{color:var(--red);font-weight:700}
 .finnhub-empty{text-align:center;padding:30px;color:var(--gray-400);font-size:14px}
-.finnhub-row.hidden{display:none}
 
-.country-flag{font-size:16px;margin-right:4px}
+/* Quotes grid */
+.finnhub-quotes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.fh-quote{
+  padding:18px;border:1px solid var(--gray-200);border-radius:var(--radius);
+  background:var(--white);transition:var(--transition);
+}
+.fh-quote:hover{box-shadow:var(--shadow);border-color:var(--blue)}
+.fh-quote-name{font-size:13px;color:var(--gray-500);margin-bottom:4px}
+.fh-quote-price{font-size:22px;font-weight:800;color:var(--navy)}
+.fh-quote-change{font-size:13px;font-weight:700;margin-top:4px}
+.fh-quote-change.up{color:var(--green)}
+.fh-quote-change.down{color:var(--red)}
+.fh-quote-detail{font-size:11px;color:var(--gray-400);margin-top:6px}
+
+/* News */
+.finnhub-news{display:flex;flex-direction:column;gap:10px}
+.fh-news{
+  display:flex;gap:14px;padding:16px;border:1px solid var(--gray-200);
+  border-radius:var(--radius);background:var(--white);
+  transition:var(--transition);cursor:pointer;text-decoration:none;color:inherit;
+}
+.fh-news:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.fh-news-img{
+  width:80px;height:60px;border-radius:8px;object-fit:cover;flex-shrink:0;
+  background:var(--gray-100);
+}
+.fh-news-title{font-size:14px;font-weight:600;color:var(--navy);line-height:1.4;margin-bottom:4px}
+.fh-news-meta{font-size:11px;color:var(--gray-500)}
+@media(max-width:640px){
+  .finnhub-quotes{grid-template-columns:1fr 1fr}
+  .fh-news-img{width:60px;height:45px}
+  .fh-news-title{font-size:13px}
+}
 @media(max-width:640px){
   .finnhub-key-row{flex-direction:column}
   .finnhub-key-input{min-width:100%}
@@ -1821,7 +1834,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <h2 class="section-title">Finnhub API 연결</h2>
     <div class="finnhub-key-wrap">
       <div class="finnhub-key-row">
-        <input class="finnhub-key-input" id="finnhubKey" type="password" placeholder="Finnhub API Key 입력" value="">
+        <input class="finnhub-key-input" id="finnhubKey" type="password" placeholder="Finnhub API Key 입력" value="d79ino1r01qqpmhgtu4gd79ino1r01qqpmhgtu50">
         <button class="finnhub-key-btn" onclick="saveFinnhubKey()">저장</button>
         <button class="finnhub-key-test" onclick="testFinnhubKey()">연결 테스트</button>
       </div>
@@ -1829,24 +1842,22 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
   </div>
 
-  <!-- Finnhub Economic Data -->
+  <!-- Finnhub 실시간 시세 -->
   <div class="section">
-    <h2 class="section-title">실시간 경제지표 데이터</h2>
+    <h2 class="section-title">실시간 주요 시세</h2>
+    <div class="finnhub-loading" id="finnhubLoading" style="display:none">시세 로딩 중...</div>
+    <div class="finnhub-quotes" id="finnhubQuotes"></div>
+    <div class="finnhub-empty" id="finnhubEmpty">API 키를 입력하고 "연결 테스트"를 클릭하면 시세가 표시됩니다</div>
+  </div>
+
+  <!-- Finnhub 시장 뉴스 -->
+  <div class="section">
+    <h2 class="section-title">시장 뉴스</h2>
+    <div class="finnhub-news" id="finnhubNews"></div>
+  </div>
+
+  <div class="section">
     <div class="callout"><div class="callout-label">매매 원칙 (Ch.7)</div><p>주요 경제지표 발표 직전에는 절대 매매하지 마세요. 발표 후 시장 방향이 잡힌 뒤 진입하세요.</p></div>
-    <div class="finnhub-filters">
-      <button class="chart-cat active" onclick="filterEcon(this,'all')">전체</button>
-      <button class="chart-cat" onclick="filterEcon(this,'high')">높은 영향</button>
-      <button class="chart-cat" onclick="filterEcon(this,'medium')">중간 영향</button>
-      <button class="chart-cat" onclick="filterEcon(this,'low')">낮은 영향</button>
-    </div>
-    <div class="finnhub-loading" id="finnhubLoading" style="display:none">데이터 로딩 중...</div>
-    <div class="finnhub-table-wrap">
-      <table class="finnhub-table">
-        <thead><tr><th>시간</th><th>국가</th><th>지표</th><th>영향</th><th>예상</th><th>실제</th><th>이전</th></tr></thead>
-        <tbody id="finnhubBody"></tbody>
-      </table>
-    </div>
-    <div class="finnhub-empty" id="finnhubEmpty">API 키를 입력하고 "연결 테스트"를 클릭하면 데이터가 표시됩니다</div>
   </div>
 
   <!-- TradingView Fallback -->
@@ -2344,11 +2355,10 @@ function goToPage(pageId, btnClass) {
 function goToCalendar(){
   goToPage('chCalendar','tool-btn');
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
-  // Restore saved API key
-  const savedKey = localStorage.getItem('finnhubKey');
+  const savedKey = localStorage.getItem('finnhubKey') || document.getElementById('finnhubKey').value;
   if(savedKey){
     document.getElementById('finnhubKey').value = savedKey;
-    if(!document.getElementById('finnhubBody').innerHTML) loadEconomicCalendar(savedKey);
+    if(!document.getElementById('finnhubQuotes').innerHTML) loadFinnhubData(savedKey);
   }
 }
 function goToJournal(){goToPage('chJournal','');document.querySelectorAll('.tool-btn')[1].classList.add('active');renderJournal()}
@@ -2501,61 +2511,66 @@ function testFinnhubKey(){
   status.textContent = '연결 테스트 중...';
   status.className = 'finnhub-key-status';
   localStorage.setItem('finnhubKey', key);
-  loadEconomicCalendar(key);
+  loadFinnhubData(key);
 }
 
-function loadEconomicCalendar(apiKey){
+const FH_SYMBOLS = [
+  {symbol:'AAPL',name:'Apple'},
+  {symbol:'TSLA',name:'Tesla'},
+  {symbol:'NVDA',name:'Nvidia'},
+  {symbol:'MSFT',name:'Microsoft'},
+  {symbol:'AMZN',name:'Amazon'},
+  {symbol:'GOOG',name:'Google'}
+];
+
+function loadFinnhubData(apiKey){
   const loading = document.getElementById('finnhubLoading');
   const empty = document.getElementById('finnhubEmpty');
   const status = document.getElementById('finnhubStatus');
   loading.style.display = '';
   empty.style.display = 'none';
 
-  const today = new Date();
-  const from = today.toISOString().slice(0,10);
-  const to = new Date(today.getTime() + 7*86400000).toISOString().slice(0,10);
+  // Load quotes
+  const quotePromises = FH_SYMBOLS.map(s =>
+    fetch('https://finnhub.io/api/v1/quote?symbol='+s.symbol+'&token='+apiKey)
+      .then(r=>r.json()).then(d=>({...d, name:s.name, symbol:s.symbol}))
+  );
 
-  fetch('https://finnhub.io/api/v1/calendar/economic?from='+from+'&to='+to+'&token='+apiKey)
-    .then(r=>{
-      if(!r.ok) throw new Error('API Error: '+r.status);
-      return r.json();
-    })
-    .then(data=>{
-      loading.style.display = 'none';
-      if(!data.economicCalendar || data.economicCalendar.length===0){
-        empty.style.display='';empty.textContent='이번 주 예정된 경제지표가 없습니다';return;
-      }
-      status.textContent = '✅ 연결 성공! '+data.economicCalendar.length+'개 지표 로드됨';
-      status.className = 'finnhub-key-status success';
-      renderEconomicData(data.economicCalendar);
-    })
-    .catch(err=>{
-      loading.style.display='none';empty.style.display='';
-      empty.textContent='API 오류: 키를 확인해주세요';
-      status.textContent = '❌ 연결 실패: '+err.message;
-      status.className = 'finnhub-key-status error';
-    });
-}
-
-function renderEconomicData(events){
-  const body = document.getElementById('finnhubBody');
-  document.getElementById('finnhubEmpty').style.display='none';
-  const flags = {'US':'🇺🇸','EU':'🇪🇺','GB':'🇬🇧','JP':'🇯🇵','CN':'🇨🇳','KR':'🇰🇷','CA':'🇨🇦','AU':'🇦🇺','DE':'🇩🇪','FR':'🇫🇷','CH':'🇨🇭'};
-  body.innerHTML = events.map(e => {
-    const imp = e.impact==='high'?'impact-high':e.impact==='medium'?'impact-medium':'impact-low';
-    const impL = e.impact==='high'?'🔴 높음':e.impact==='medium'?'🟡 중간':'⚪ 낮음';
-    const ac = e.actual>e.estimate?'econ-actual-up':e.actual<e.estimate?'econ-actual-down':'';
-    return '<tr class="finnhub-row" data-impact="'+(e.impact||'low')+'"><td>'+(e.time||'--:--')+'</td><td><span class="country-flag">'+(flags[e.country]||'🌐')+'</span>'+e.country+'</td><td><strong>'+e.event+'</strong></td><td class="'+imp+'">'+impL+'</td><td>'+(e.estimate!==null?e.estimate:'--')+'</td><td class="'+ac+'">'+(e.actual!==null?e.actual:'대기중')+'</td><td>'+(e.prev!==null?e.prev:'--')+'</td></tr>';
-  }).join('');
-}
-
-function filterEcon(btn, level){
-  document.querySelectorAll('.finnhub-filters .chart-cat').forEach(c=>c.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.finnhub-row').forEach(row=>{
-    if(level==='all') row.classList.remove('hidden');
-    else row.classList.toggle('hidden', row.dataset.impact!==level);
+  Promise.all(quotePromises).then(quotes=>{
+    loading.style.display='none';
+    if(quotes[0].error){
+      status.textContent='❌ API 키 오류';status.className='finnhub-key-status error';
+      empty.style.display='';empty.textContent='API 키를 확인해주세요';return;
+    }
+    status.textContent='✅ 연결 성공! 실시간 시세 로드됨';
+    status.className='finnhub-key-status success';
+    const grid=document.getElementById('finnhubQuotes');
+    grid.innerHTML=quotes.map(q=>{
+      const upDown=q.d>=0?'up':'down';
+      const arrow=q.d>=0?'▲':'▼';
+      return '<div class="fh-quote"><div class="fh-quote-name">'+q.name+' ('+q.symbol+')</div>'+
+        '<div class="fh-quote-price">$'+q.c.toFixed(2)+'</div>'+
+        '<div class="fh-quote-change '+upDown+'">'+arrow+' '+Math.abs(q.d).toFixed(2)+' ('+q.dp.toFixed(2)+'%)</div>'+
+        '<div class="fh-quote-detail">H: $'+q.h.toFixed(2)+' · L: $'+q.l.toFixed(2)+'</div></div>';
+    }).join('');
+  }).catch(err=>{
+    loading.style.display='none';empty.style.display='';
+    status.textContent='❌ 연결 실패: '+err.message;status.className='finnhub-key-status error';
   });
+
+  // Load news
+  fetch('https://finnhub.io/api/v1/news?category=general&token='+apiKey)
+    .then(r=>r.json()).then(news=>{
+      const container=document.getElementById('finnhubNews');
+      container.innerHTML=news.slice(0,8).map(n=>{
+        const date=new Date(n.datetime*1000);
+        const timeStr=date.toLocaleDateString('ko-KR')+' '+date.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+        return '<a class="fh-news" href="'+n.url+'" target="_blank" rel="noopener">'+
+          (n.image?'<img class="fh-news-img" src="'+n.image+'" alt="" onerror="this.style.display=\'none\'">':'')+
+          '<div><div class="fh-news-title">'+n.headline+'</div>'+
+          '<div class="fh-news-meta">'+n.source+' · '+timeStr+'</div></div></a>';
+      }).join('');
+    }).catch(()=>{});
 }
 
 // ===== CHART CONTROLS =====
