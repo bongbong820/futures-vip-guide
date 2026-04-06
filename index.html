@@ -619,9 +619,80 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .tool-btn.active{background:var(--blue-light)}
 .tool-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
 
-/* ===== CALENDAR & FINNHUB ===== */
-.calendar-widget{width:100%;height:500px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--gray-200)}
-@media(max-width:640px){.calendar-widget{height:400px}}
+/* ===== ECONOMIC CALENDAR ===== */
+.econ-date-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.econ-date-tab{
+  padding:8px 18px;border:1px solid var(--gray-200);border-radius:10px;
+  background:var(--white);color:var(--gray-600);font-size:13px;font-weight:600;
+  cursor:pointer;transition:var(--transition);font-family:var(--font);
+  -webkit-tap-highlight-color:transparent;
+}
+.econ-date-tab:hover{border-color:var(--blue);color:var(--blue)}
+.econ-date-tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.econ-date-tab .tab-day{font-weight:800;display:block;font-size:11px;color:inherit;opacity:.7}
+
+.econ-filters{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.econ-filter-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.econ-filter-label{font-size:12px;font-weight:700;color:var(--gray-400);margin-right:4px}
+.econ-fbtn{
+  padding:5px 12px;border:1px solid var(--gray-200);border-radius:20px;
+  background:var(--white);color:var(--gray-600);font-size:12px;font-weight:600;
+  cursor:pointer;transition:var(--transition);font-family:var(--font);
+}
+.econ-fbtn:hover{border-color:var(--blue);color:var(--blue)}
+.econ-fbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Skeleton */
+.econ-skeleton{display:flex;flex-direction:column;gap:10px}
+.econ-skel-row{display:flex;gap:10px;align-items:center;padding:14px 16px;border-radius:10px;background:var(--white);border:1px solid var(--gray-200)}
+.skel-block{border-radius:6px;background:var(--gray-200);animation:skelPulse 1.2s infinite ease-in-out}
+.skel-time{width:50px;height:16px}
+.skel-flag{width:24px;height:16px}
+.skel-title{flex:1;height:16px}
+.skel-dot{width:16px;height:16px;border-radius:50%}
+.skel-val{width:50px;height:16px}
+@keyframes skelPulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* Event List */
+.econ-list{display:flex;flex-direction:column;gap:6px}
+.econ-event{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:var(--radius-sm);
+  background:var(--white);border:1px solid var(--gray-200);
+  border-left:4px solid transparent;transition:var(--transition);
+}
+.econ-event:hover{box-shadow:var(--shadow)}
+.econ-event.impact-high{border-left-color:var(--red)}
+.econ-event.impact-medium{border-left-color:var(--orange)}
+.econ-event.impact-low{border-left-color:var(--gray-300)}
+.econ-event.impact-holiday{border-left-color:var(--gray-300);opacity:.5}
+.econ-event.upcoming{animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
+.econ-event.hidden{display:none}
+
+.econ-time{width:52px;font-size:13px;font-weight:700;color:var(--navy);flex-shrink:0;text-align:center}
+.econ-flag{font-size:18px;flex-shrink:0}
+.econ-info{flex:1;min-width:0}
+.econ-title{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.econ-country-tag{font-size:10px;color:var(--gray-500);font-weight:500}
+.econ-impact-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.econ-impact-dot.high{background:var(--red)}
+.econ-impact-dot.medium{background:var(--orange)}
+.econ-impact-dot.low{background:var(--gray-400)}
+.econ-vals{display:flex;gap:8px;flex-shrink:0}
+.econ-val{text-align:center;min-width:52px}
+.econ-val-label{font-size:9px;color:var(--gray-400);text-transform:uppercase;font-weight:700}
+.econ-val-num{font-size:13px;font-weight:700;color:var(--gray-700)}
+.econ-val-num.actual-up{color:var(--green)}
+.econ-val-num.actual-down{color:var(--red)}
+.econ-empty{text-align:center;padding:40px;color:var(--gray-400);font-size:14px}
+
+@media(max-width:640px){
+  .econ-event{flex-wrap:wrap;gap:8px;padding:12px}
+  .econ-vals{width:100%;justify-content:space-around;padding-top:8px;border-top:1px solid var(--gray-100)}
+  .econ-time{width:auto;text-align:left}
+  .econ-filters{flex-direction:column;gap:8px}
+}
 
 .finnhub-key-wrap{margin-bottom:16px}
 .finnhub-key-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
@@ -1823,49 +1894,68 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="chapter-hero">
     <div class="chapter-hero-num" style="font-size:40px">&#128197;</div>
     <div>
-      <div class="chapter-label">Economic Calendar — Finnhub API</div>
+      <div class="chapter-label">Economic Calendar</div>
       <h1 class="chapter-title">경제지표 캘린더</h1>
-      <p class="chapter-desc">Finnhub API로 실시간 경제지표 데이터를 확인하세요. 발표 직전 매매는 금지입니다.</p>
+      <p class="chapter-desc">주요 경제지표 발표 일정을 실시간으로 확인하세요. 발표 직전 매매는 금지입니다.</p>
     </div>
-  </div>
-
-  <!-- Finnhub API Key -->
-  <div class="section">
-    <h2 class="section-title">Finnhub API 연결</h2>
-    <div class="finnhub-key-wrap">
-      <div class="finnhub-key-row">
-        <input class="finnhub-key-input" id="finnhubKey" type="password" placeholder="Finnhub API Key 입력" value="d79ino1r01qqpmhgtu4gd79ino1r01qqpmhgtu50">
-        <button class="finnhub-key-btn" onclick="saveFinnhubKey()">저장</button>
-        <button class="finnhub-key-test" onclick="testFinnhubKey()">연결 테스트</button>
-      </div>
-      <div class="finnhub-key-status" id="finnhubStatus">API 키를 입력하세요 · <a href="https://finnhub.io/register" target="_blank" style="color:var(--blue)">무료 키 발급받기</a></div>
-    </div>
-  </div>
-
-  <!-- Finnhub 실시간 시세 -->
-  <div class="section">
-    <h2 class="section-title">실시간 주요 시세</h2>
-    <div class="finnhub-loading" id="finnhubLoading" style="display:none">시세 로딩 중...</div>
-    <div class="finnhub-quotes" id="finnhubQuotes"></div>
-    <div class="finnhub-empty" id="finnhubEmpty">API 키를 입력하고 "연결 테스트"를 클릭하면 시세가 표시됩니다</div>
-  </div>
-
-  <!-- Finnhub 시장 뉴스 -->
-  <div class="section">
-    <h2 class="section-title">시장 뉴스</h2>
-    <div class="finnhub-news" id="finnhubNews"></div>
   </div>
 
   <div class="section">
     <div class="callout"><div class="callout-label">매매 원칙 (Ch.7)</div><p>주요 경제지표 발표 직전에는 절대 매매하지 마세요. 발표 후 시장 방향이 잡힌 뒤 진입하세요.</p></div>
+
+    <!-- Date Tabs -->
+    <div class="econ-date-tabs" id="econDateTabs"></div>
+
+    <!-- Filters -->
+    <div class="econ-filters">
+      <div class="econ-filter-group">
+        <span class="econ-filter-label">중요도</span>
+        <button class="econ-fbtn active" data-filter="impact" data-val="all" onclick="setEconFilter(this,'impact','all')">전체</button>
+        <button class="econ-fbtn" data-filter="impact" data-val="High" onclick="setEconFilter(this,'impact','High')">&#128308; 높음만</button>
+      </div>
+      <div class="econ-filter-group">
+        <span class="econ-filter-label">국가</span>
+        <button class="econ-fbtn active" data-filter="country" data-val="all" onclick="setEconFilter(this,'country','all')">전체</button>
+        <button class="econ-fbtn" data-filter="country" data-val="USD" onclick="setEconFilter(this,'country','USD')">&#127482;&#127480; 미국</button>
+        <button class="econ-fbtn" data-filter="country" data-val="KRW" onclick="setEconFilter(this,'country','KRW')">&#127472;&#127479; 한국</button>
+        <button class="econ-fbtn" data-filter="country" data-val="EUR" onclick="setEconFilter(this,'country','EUR')">&#127466;&#127482; 유로</button>
+        <button class="econ-fbtn" data-filter="country" data-val="JPY" onclick="setEconFilter(this,'country','JPY')">&#127471;&#127477; 일본</button>
+        <button class="econ-fbtn" data-filter="country" data-val="GBP" onclick="setEconFilter(this,'country','GBP')">&#127468;&#127463; 영국</button>
+      </div>
+    </div>
+
+    <!-- Skeleton / Loading -->
+    <div class="econ-skeleton" id="econSkeleton">
+      <div class="econ-skel-row"><div class="skel-block skel-time"></div><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-dot"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+      <div class="econ-skel-row"><div class="skel-block skel-time"></div><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-dot"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+      <div class="econ-skel-row"><div class="skel-block skel-time"></div><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-dot"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+      <div class="econ-skel-row"><div class="skel-block skel-time"></div><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-dot"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+      <div class="econ-skel-row"><div class="skel-block skel-time"></div><div class="skel-block skel-flag"></div><div class="skel-block skel-title"></div><div class="skel-block skel-dot"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div><div class="skel-block skel-val"></div></div>
+    </div>
+
+    <!-- Events List -->
+    <div class="econ-list" id="econList" style="display:none"></div>
+    <div class="econ-empty" id="econEmpty" style="display:none">해당 날짜에 예정된 경제지표가 없습니다</div>
   </div>
 
-  <!-- TradingView Fallback -->
+  <!-- Finnhub 시세 + 뉴스 (기존 유지) -->
   <div class="section">
-    <h2 class="section-title">TradingView 캘린더</h2>
-    <div class="calendar-widget">
-      <iframe src="https://s.tradingview.com/embed-widget/events/?locale=kr&colorTheme=dark&isTransparent=false&width=100%25&height=100%25&importanceFilter=-1%2C0%2C1" style="width:100%;height:100%;border:none" allowfullscreen></iframe>
+    <h2 class="section-title">Finnhub 실시간 시세</h2>
+    <div class="finnhub-key-wrap">
+      <div class="finnhub-key-row">
+        <input class="finnhub-key-input" id="finnhubKey" type="password" placeholder="Finnhub API Key" value="d79ino1r01qqpmhgtu4gd79ino1r01qqpmhgtu50">
+        <button class="finnhub-key-btn" onclick="saveFinnhubKey()">저장</button>
+        <button class="finnhub-key-test" onclick="testFinnhubKey()">연결 테스트</button>
+      </div>
+      <div class="finnhub-key-status" id="finnhubStatus"></div>
     </div>
+    <div class="finnhub-loading" id="finnhubLoading" style="display:none">시세 로딩 중...</div>
+    <div class="finnhub-quotes" id="finnhubQuotes"></div>
+    <div class="finnhub-empty" id="finnhubEmpty" style="display:none"></div>
+  </div>
+  <div class="section">
+    <h2 class="section-title">시장 뉴스</h2>
+    <div class="finnhub-news" id="finnhubNews"></div>
   </div>
 </div>
 
@@ -2355,6 +2445,7 @@ function goToPage(pageId, btnClass) {
 function goToCalendar(){
   goToPage('chCalendar','tool-btn');
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
+  initEconCalendar();
   const savedKey = localStorage.getItem('finnhubKey') || document.getElementById('finnhubKey').value;
   if(savedKey){
     document.getElementById('finnhubKey').value = savedKey;
@@ -2491,6 +2582,128 @@ function initBookmarks(){
     sec.style.position='relative';
     sec.appendChild(btn);
   });
+}
+
+// ===== ECONOMIC CALENDAR =====
+let econData = [];
+let econFilters = { impact:'all', country:'all' };
+let econSelectedDate = '';
+
+function initEconCalendar(){
+  // Build date tabs: yesterday, today, tomorrow + 2 more days
+  const tabs = document.getElementById('econDateTabs');
+  const dayNames = ['일','월','화','수','목','금','토'];
+  const labels = ['어제','오늘','내일'];
+  tabs.innerHTML = '';
+  for(let i=-1; i<=3; i++){
+    const d = new Date(); d.setDate(d.getDate()+i);
+    const dateStr = d.toISOString().slice(0,10);
+    const label = i<2 ? labels[i+1] : (d.getMonth()+1)+'/'+d.getDate();
+    const btn = document.createElement('button');
+    btn.className = 'econ-date-tab' + (i===0?' active':'');
+    btn.innerHTML = '<span class="tab-day">'+dayNames[d.getDay()]+'</span>'+label;
+    btn.onclick = () => { selectEconDate(dateStr, btn); };
+    btn.dataset.date = dateStr;
+    tabs.appendChild(btn);
+  }
+  econSelectedDate = new Date().toISOString().slice(0,10);
+  loadEconData();
+}
+
+function selectEconDate(dateStr, btn){
+  document.querySelectorAll('.econ-date-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  econSelectedDate = dateStr;
+  renderEconEvents();
+}
+
+function loadEconData(){
+  document.getElementById('econSkeleton').style.display='';
+  document.getElementById('econList').style.display='none';
+  document.getElementById('econEmpty').style.display='none';
+
+  fetch('https://nfs.faireconomy.media/ff_calendar_thisweek.json')
+    .then(r=>r.json())
+    .then(data=>{
+      econData = data;
+      document.getElementById('econSkeleton').style.display='none';
+      renderEconEvents();
+    })
+    .catch(()=>{
+      document.getElementById('econSkeleton').style.display='none';
+      document.getElementById('econEmpty').style.display='';
+      document.getElementById('econEmpty').textContent='데이터 로딩 실패. 새로고침 해주세요.';
+    });
+}
+
+const COUNTRY_FLAGS = {'USD':'🇺🇸','EUR':'🇪🇺','GBP':'🇬🇧','JPY':'🇯🇵','CNY':'🇨🇳','KRW':'🇰🇷','CAD':'🇨🇦','AUD':'🇦🇺','NZD':'🇳🇿','CHF':'🇨🇭','All':'🌐'};
+
+function renderEconEvents(){
+  const list = document.getElementById('econList');
+  const empty = document.getElementById('econEmpty');
+  const now = new Date();
+
+  // Filter by selected date
+  let filtered = econData.filter(e=>{
+    const d = new Date(e.date);
+    const kst = new Date(d.getTime() + 13*3600000); // EST+13=KST
+    return kst.toISOString().slice(0,10) === econSelectedDate;
+  });
+
+  // Apply filters
+  if(econFilters.impact!=='all') filtered = filtered.filter(e=>e.impact===econFilters.impact);
+  if(econFilters.country!=='all') filtered = filtered.filter(e=>e.country===econFilters.country);
+
+  if(filtered.length===0){
+    list.style.display='none';empty.style.display='';
+    empty.textContent='해당 조건에 맞는 경제지표가 없습니다';
+    return;
+  }
+
+  empty.style.display='none';
+  list.style.display='';
+
+  list.innerHTML = filtered.map(e=>{
+    const d = new Date(e.date);
+    const kst = new Date(d.getTime() + 13*3600000);
+    const timeStr = kst.getHours().toString().padStart(2,'0')+':'+kst.getMinutes().toString().padStart(2,'0');
+    const flag = COUNTRY_FLAGS[e.country]||'🌐';
+    const impact = e.impact||'Low';
+    const impactClass = impact==='High'?'high':impact==='Medium'?'medium':impact==='Holiday'?'holiday':'low';
+
+    // Upcoming check (within 30min)
+    const diffMin = (d.getTime() - now.getTime())/60000;
+    const isUpcoming = diffMin > 0 && diffMin <= 30;
+
+    // Actual vs Forecast
+    const actual = e.actual||'';
+    const forecast = e.forecast||'';
+    const prev = e.previous||'';
+    let actualClass = '';
+    if(actual && forecast){
+      const a = parseFloat(actual.replace(/[%,]/g,''));
+      const f = parseFloat(forecast.replace(/[%,]/g,''));
+      if(!isNaN(a)&&!isNaN(f)){actualClass = a>f?'actual-up':a<f?'actual-down':''}
+    }
+
+    return '<div class="econ-event impact-'+impactClass+(isUpcoming?' upcoming':'')+'" data-impact="'+impact+'" data-country="'+e.country+'">'+
+      '<div class="econ-time">'+timeStr+'</div>'+
+      '<div class="econ-flag">'+flag+'</div>'+
+      '<div class="econ-info"><div class="econ-title">'+e.title+'</div><div class="econ-country-tag">'+e.country+'</div></div>'+
+      '<div class="econ-impact-dot '+impactClass+'" title="'+impact+'"></div>'+
+      '<div class="econ-vals">'+
+        '<div class="econ-val"><div class="econ-val-label">예측</div><div class="econ-val-num">'+(forecast||'—')+'</div></div>'+
+        '<div class="econ-val"><div class="econ-val-label">실제</div><div class="econ-val-num '+actualClass+'">'+(actual||'—')+'</div></div>'+
+        '<div class="econ-val"><div class="econ-val-label">이전</div><div class="econ-val-num">'+(prev||'—')+'</div></div>'+
+      '</div></div>';
+  }).join('');
+}
+
+function setEconFilter(btn, type, val){
+  document.querySelectorAll('.econ-fbtn[data-filter="'+type+'"]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  econFilters[type] = val;
+  renderEconEvents();
 }
 
 // ===== FINNHUB API =====
