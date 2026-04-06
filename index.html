@@ -1649,13 +1649,9 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="chapter-num" style="background:var(--blue);color:#fff;font-size:13px">&#128197;</div>
     <div><span class="chapter-btn-title">경제지표 캘린더</span><span class="chapter-btn-sub">CPI · NFP · FOMC 일정</span></div>
   </button>
-  <button class="chapter-btn tool-btn" onclick="goToJournal()">
-    <div class="chapter-num" style="background:var(--navy);color:#fff;font-size:13px">&#128212;</div>
-    <div><span class="chapter-btn-title">매매 일지</span><span class="chapter-btn-sub">진입 · 손절 · 결과 기록</span></div>
-  </button>
   <button class="chapter-btn tool-btn" onclick="goToCalc()">
     <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128178;</div>
-    <div><span class="chapter-btn-title">증거금 & 손익 계산기</span><span class="chapter-btn-sub">NQ · ES · CL · GC</span></div>
+    <div><span class="chapter-btn-title">계산기 & 매매일지</span><span class="chapter-btn-sub">증거금 · 손익 · 매매기록</span></div>
   </button>
   <button class="chapter-btn tool-btn" onclick="goToGlossary()">
     <div class="chapter-num" style="background:var(--gray-600);color:#fff;font-size:13px">&#128214;</div>
@@ -2234,36 +2230,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 <!-- JOURNAL PAGE -->
-<div class="chapter-page" id="chJournal">
-  <div class="chapter-hero">
-    <div class="chapter-hero-num" style="font-size:40px">&#128212;</div>
-    <div>
-      <div class="chapter-label">Trading Journal</div>
-      <h2 class="chapter-title">매매 일지</h2>
-      <p class="chapter-desc">매매 기록을 남기고 복기하세요. 데이터는 브라우저에 저장됩니다.</p>
-    </div>
-  </div>
-  <div class="section">
-    <div class="journal-stats" id="journalStats"></div>
-    <h2 class="section-title">새 매매 기록</h2>
-    <div class="journal-form" id="journalForm">
-      <div><label class="journal-label">날짜</label><input class="journal-input" type="date" id="jDate"></div>
-      <div><label class="journal-label">종목</label><input class="journal-input" type="text" id="jSymbol" placeholder="예: ES, NQ, BTCUSDT"></div>
-      <div><label class="journal-label">방향</label><select class="journal-select" id="jSide"><option value="Long">Long (매수)</option><option value="Short">Short (매도)</option></select></div>
-      <div><label class="journal-label">결과</label><select class="journal-select" id="jResult"><option value="profit">수익</option><option value="loss">손실</option><option value="breakeven">본전</option></select></div>
-      <div><label class="journal-label">진입가</label><input class="journal-input" type="number" id="jEntry" placeholder="진입 가격" step="any"></div>
-      <div><label class="journal-label">청산가</label><input class="journal-input" type="number" id="jExit" placeholder="청산 가격" step="any"></div>
-      <div class="journal-form-full"><label class="journal-label">메모 / 복기</label><input class="journal-input" type="text" id="jMemo" placeholder="이번 매매에서 배운 점, 실수한 점"></div>
-      <div class="journal-form-full" style="display:flex;gap:8px">
-        <button class="journal-submit" onclick="addJournal()">기록 저장</button>
-        <button class="journal-clear" onclick="clearJournal()">전체 삭제</button>
-      </div>
-    </div>
-    <h2 class="section-title">매매 기록</h2>
-    <div style="overflow-x:auto"><table class="journal-table"><thead><tr><th>날짜</th><th>종목</th><th>방향</th><th>진입</th><th>청산</th><th>결과</th><th>메모</th><th></th></tr></thead><tbody id="journalBody"></tbody></table></div>
-    <div class="journal-empty" id="journalEmpty">아직 기록이 없습니다. 위 양식으로 첫 매매를 기록해보세요.</div>
-  </div>
-</div>
+<!-- Journal page removed - merged into calculator -->
 
 <!-- CALCULATOR PAGE -->
 <div class="chapter-page" id="chCalc">
@@ -2354,6 +2321,32 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 매매 일지 (계산기 안) -->
+  <div class="section">
+    <h2 class="section-title">매매 일지</h2>
+    <p class="prose">매매 기록을 남기고 복기하세요. 데이터는 브라우저에 저장됩니다.</p>
+    <div class="journal-stats" id="journalStats"></div>
+    <div class="calc-divider" style="margin:16px 0"></div>
+    <div class="calc-row-label" style="margin-bottom:10px">새 매매 기록</div>
+    <div class="journal-form" id="journalForm">
+      <div><label class="journal-label">날짜</label><input class="journal-input" type="date" id="jDate"></div>
+      <div><label class="journal-label">종목</label><input class="journal-input" type="text" id="jSymbol" placeholder="예: ES, NQ, BTCUSDT"></div>
+      <div><label class="journal-label">방향</label><select class="journal-select" id="jSide"><option value="Long">Long (매수)</option><option value="Short">Short (매도)</option></select></div>
+      <div><label class="journal-label">결과</label><select class="journal-select" id="jResult"><option value="profit">수익</option><option value="loss">손실</option><option value="breakeven">본전</option></select></div>
+      <div><label class="journal-label">진입가</label><input class="journal-input" type="number" id="jEntry" placeholder="진입 가격" step="any"></div>
+      <div><label class="journal-label">청산가</label><input class="journal-input" type="number" id="jExit" placeholder="청산 가격" step="any"></div>
+      <div class="journal-form-full"><label class="journal-label">메모 / 복기</label><input class="journal-input" type="text" id="jMemo" placeholder="이번 매매에서 배운 점, 실수한 점"></div>
+      <div class="journal-form-full" style="display:flex;gap:8px">
+        <button class="journal-submit" onclick="addJournal()">기록 저장</button>
+        <button class="journal-clear" onclick="clearJournal()">전체 삭제</button>
+      </div>
+    </div>
+    <div class="calc-divider" style="margin:16px 0"></div>
+    <div class="calc-row-label" style="margin-bottom:10px">매매 기록</div>
+    <div style="overflow-x:auto"><table class="journal-table"><thead><tr><th>날짜</th><th>종목</th><th>방향</th><th>진입</th><th>청산</th><th>결과</th><th>메모</th><th></th></tr></thead><tbody id="journalBody"></tbody></table></div>
+    <div class="journal-empty" id="journalEmpty">아직 기록이 없습니다. 위 양식으로 첫 매매를 기록해보세요.</div>
   </div>
 </div>
 
@@ -2826,8 +2819,8 @@ function goToCalendar(){
   document.querySelectorAll('.tool-btn')[0].classList.add('active');
   initEconCalendar();
 }
-function goToJournal(){goToPage('chJournal','');document.querySelectorAll('.tool-btn')[1].classList.add('active');renderJournal()}
-function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[3].classList.add('active');renderGlossary()}
+function goToJournal(){goToCalc()}
+function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
 
 // ===== JOURNAL =====
 function getJournalData(){return JSON.parse(localStorage.getItem('tradingJournal')||'[]')}
@@ -2933,9 +2926,8 @@ let calcDir='long';
 
 function goToCalc(){
   goToPage('chCalc','');
-  // tool-btn index: calendar=0, journal=1, calc=2, glossary=3
-  document.querySelectorAll('.tool-btn')[2].classList.add('active');
-  calcUpdate();
+  document.querySelectorAll('.tool-btn')[1].classList.add('active');
+  calcUpdate();renderJournal();
 }
 
 function setCalcDir(dir){
