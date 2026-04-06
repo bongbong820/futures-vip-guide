@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Audit Report — futures-vip-guide</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,'Pretendard',sans-serif;background:#0D1117;color:#C9D1D9;line-height:1.6;padding:24px}
+.container{max-width:1000px;margin:0 auto}
+h1{font-size:28px;font-weight:800;color:#F0F6FC;margin-bottom:8px}
+.subtitle{font-size:14px;color:#8B949E;margin-bottom:32px}
+.stats{display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap}
+.stat{flex:1;min-width:140px;padding:20px;border-radius:12px;text-align:center}
+.stat-num{font-size:36px;font-weight:900}
+.stat-label{font-size:12px;font-weight:600;color:#8B949E;margin-top:4px}
+.stat.total{background:#161B22;border:1px solid #30363D}.stat.total .stat-num{color:#F0F6FC}
+.stat.critical{background:#1C1017;border:1px solid #F85149}.stat.critical .stat-num{color:#F85149}
+.stat.warning{background:#1C1A10;border:1px solid #D29922}.stat.warning .stat-num{color:#D29922}
+.stat.info{background:#0D1A2D;border:1px solid #58A6FF}.stat.info .stat-num{color:#58A6FF}
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;padding:12px 16px;border-radius:8px 8px 0 0;margin-bottom:0}
+.section-title.critical{background:#F85149;color:#FFF}
+.section-title.warning{background:#D29922;color:#FFF}
+.section-title.info{background:#58A6FF;color:#FFF}
+table{width:100%;border-collapse:collapse;margin-bottom:4px}
+th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#8B949E;background:#161B22;border-bottom:1px solid #30363D;text-transform:uppercase;letter-spacing:.5px}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid #21262D;vertical-align:top}
+tr:hover td{background:#161B22}
+.file{color:#58A6FF;font-weight:600;white-space:nowrap}
+.line{color:#D29922;font-family:monospace;white-space:nowrap}
+.cause{color:#C9D1D9}
+.fix{color:#7EE787;font-size:12px}
+code{background:#1C2128;padding:2px 6px;border-radius:4px;font-size:12px;color:#F0F6FC}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px}
+.badge-break{background:#F85149;color:#FFF}
+.badge-security{background:#DA3633;color:#FFF}
+.badge-xss{background:#A371F7;color:#FFF}
+.badge-perf{background:#3FB950;color:#FFF}
+.badge-compat{background:#58A6FF;color:#FFF}
+.footer{text-align:center;padding:32px;color:#484F58;font-size:12px;border-top:1px solid #21262D;margin-top:40px}
+@media(max-width:640px){body{padding:12px}td,th{padding:8px;font-size:12px}.stat{min-width:100px;padding:14px}.stat-num{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Code Audit Report</h1>
+<div class="subtitle">bongbong820/futures-vip-guide &mdash; 감사일: 2026-04-06 &mdash; 파일: index.html (3238줄), manifest.json, sw.js</div>
+
+<div class="stats">
+  <div class="stat total"><div class="stat-num">28</div><div class="stat-label">총 이슈</div></div>
+  <div class="stat critical"><div class="stat-num">5</div><div class="stat-label">CRITICAL</div></div>
+  <div class="stat warning"><div class="stat-num">12</div><div class="stat-label">WARNING</div></div>
+  <div class="stat info"><div class="stat-num">11</div><div class="stat-label">INFO</div></div>
+</div>
+
+<!-- CRITICAL -->
+<div class="section">
+<div class="section-title critical">CRITICAL &mdash; 즉시 수정 필요 (5건)</div>
+<table>
+<thead><tr><th>파일</th><th>줄</th><th>원인</th><th>해결방법</th></tr></thead>
+<tbody>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~3053</td>
+  <td class="cause">RapidAPI 키가 클라이언트 JS에 하드코딩됨 <span class="badge badge-security">보안</span><br><code>const RAPIDAPI_KEY='02303fa...'</code><br>누구나 소스 보기로 키를 탈취 가능. 악용 시 요금 청구 위험</td>
+  <td class="fix">서버리스 함수(Vercel/Netlify Functions)를 프록시로 두고, API 키는 환경변수에 저장. 프론트엔드에서는 프록시 호출</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2283</td>
+  <td class="cause">VIP 비밀번호가 평문으로 노출 <span class="badge badge-security">보안</span><br><code>const VIP_PASSWORD = '1111'</code><br>개발자 도구 → Sources 탭에서 바로 확인 가능</td>
+  <td class="fix">서버 사이드 인증으로 전환하거나, 최소한 비밀번호를 해시(SHA-256)로 저장하고 입력값을 해시 비교</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2886, 3020, 3147</td>
+  <td class="cause">API 응답 데이터를 innerHTML로 직접 삽입 <span class="badge badge-xss">XSS</span><br>Finnhub 뉴스, Yahoo 시세, 경제지표 데이터를 innerHTML에 직접 삽입. 악의적 데이터로 XSS 공격 가능</td>
+  <td class="fix"><code>textContent</code> 또는 <code>createElement</code> 사용. 또는 삽입 전 HTML 엔티티 이스케이프 함수 적용: <code>&amp;lt; &amp;gt; &amp;quot;</code></td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2958</td>
+  <td class="cause">삭제된 DOM 요소 참조 <span class="badge badge-break">기능파손</span><br><code>loadEarnings()</code> 함수가 <code>earningsSkeleton</code>, <code>earningsList</code>, <code>earningsEmpty</code>, <code>earningsDateTabs</code> 등 존재하지 않는 요소를 참조. 실적 캘린더 HTML은 삭제했으나 JS는 남아있음</td>
+  <td class="fix">earnings calendar 관련 JS 함수 전체 삭제 (2936~3033줄): <code>loadEarnings()</code>, <code>buildEarningsDateTabs()</code>, <code>selectEarningsDate()</code>, <code>renderEarnings()</code></td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~3108~3156</td>
+  <td class="cause">Finnhub 함수가 삭제된 DOM 참조 <span class="badge badge-break">기능파손</span><br><code>loadFinnhubData()</code>가 <code>finnhubLoading</code>, <code>finnhubEmpty</code>, <code>finnhubNews</code>, <code>finnhubStatus</code> 등 삭제된 요소 참조. HTML은 교체했으나 JS가 남아있음</td>
+  <td class="fix">Finnhub 관련 레거시 함수 삭제: <code>saveFinnhubKey()</code>, <code>testFinnhubKey()</code>, <code>loadFinnhubData()</code> 및 관련 상수</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- WARNING -->
+<div class="section">
+<div class="section-title warning">WARNING &mdash; 잠재적 문제 (12건)</div>
+<table>
+<thead><tr><th>파일</th><th>줄</th><th>원인</th><th>해결방법</th></tr></thead>
+<tbody>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2480</td>
+  <td class="cause">사이드바 도구 버튼 인덱스 하드코딩<br><code>document.querySelectorAll('.tool-btn')[0]</code>로 특정 버튼 선택. 버튼 순서가 바뀌면 잘못된 버튼이 active됨</td>
+  <td class="fix">각 버튼에 고유 ID를 부여하고 <code>getElementById</code> 사용</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2793, 2800</td>
+  <td class="cause">setInterval 타이머 누적 (메모리 누수)<br><code>initEconCalendar()</code>가 호출될 때마다 <code>setInterval</code>이 새로 생성되지만 이전 인터벌이 제거되지 않음. 페이지 이동 반복 시 타이머 누적</td>
+  <td class="fix">인터벌 ID를 변수에 저장하고, 함수 시작 시 <code>clearInterval()</code> 호출</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2810</td>
+  <td class="cause">잘못된 시간대 변환 (EST→KST)<br><code>+13*3600000</code>으로 KST 변환하지만 EDT(서머타임) 기간에는 +13이 맞으나 EST 기간에는 +14여야 함. 11월~3월 사이 1시간 오차 발생</td>
+  <td class="fix"><code>toLocaleString('ko-KR', {timeZone:'Asia/Seoul'})</code> 사용하여 정확한 KST 변환</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2750</td>
+  <td class="cause">매매 일지 XSS 취약점<br>localStorage에서 불러온 데이터를 innerHTML로 삽입. 악의적 메모 입력 시 스크립트 실행 가능</td>
+  <td class="fix">일지 데이터 렌더링 시 HTML 이스케이프 함수 적용</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2690</td>
+  <td class="cause">북마크 버튼 class 오류<br><code>'bookmark-btn'+(localStorage...?'saved':'')</code>에서 공백이 누락. <code>'bookmark-btnsaved'</code>가 됨</td>
+  <td class="fix"><code>'bookmark-btn' + (saved ? ' saved' : '')</code>로 공백 추가</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">다수</td>
+  <td class="cause">fetch 오류 처리 미흡<br>여러 fetch 호출에서 네트워크 오류, JSON 파싱 오류, HTTP 에러 코드(4xx/5xx) 처리가 불완전</td>
+  <td class="fix">모든 fetch에 <code>.then(r=>{if(!r.ok)throw new Error(r.status)}).catch()</code> 패턴 적용</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2670</td>
+  <td class="cause">IntersectionObserver 누적<br><code>initScrollReveal()</code>이 챕터 전환마다 호출되면서 새 Observer가 생성되지만 이전 것이 해제되지 않음</td>
+  <td class="fix">Observer를 전역 변수에 저장하고, 재호출 시 <code>observer.disconnect()</code> 후 재생성</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~1640, 1847</td>
+  <td class="cause">숨겨진 iframe이 즉시 로딩<br>TradingView 차트 iframe과 티커 iframe이 <code>display:none</code> 상태에서도 즉시 로딩 시작. 초기 로딩 시간과 대역폭 낭비</td>
+  <td class="fix">iframe의 <code>src</code>를 <code>data-src</code>에 저장하고, 해당 페이지 진입 시 <code>src</code>에 할당 (lazy load)</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~2600</td>
+  <td class="cause">goToChart()에서 mobileNav 미복원<br>차트 페이지 이동 시 모바일 하단 네비게이션 prev 버튼 onclick이 <code>goTo(7)</code>로 고정됨</td>
+  <td class="fix">각 페이지별 올바른 이전/다음 네비게이션 설정</td>
+</tr>
+<tr>
+  <td class="file">sw.js</td>
+  <td class="line">전체</td>
+  <td class="cause">Service Worker 오류 처리 없음<br>캐시 실패, fetch 실패 시 대체 로직 없음</td>
+  <td class="fix">fetch 실패 시 캐시 폴백, 캐시 저장 실패 시 무시 로직 추가</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~700~780</td>
+  <td class="cause">Old CSS 잔재<br><code>.econ-date-tab</code>, <code>.econ-event</code> 등 V1/V2 캘린더 CSS가 삭제되지 않고 남아있음</td>
+  <td class="fix">사용되지 않는 CSS 클래스 전체 삭제</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">전체</td>
+  <td class="cause">단일 HTML 파일 3200줄+<br>CSS, JS가 모두 인라인으로 포함되어 유지보수 극히 어려움</td>
+  <td class="fix">style.css, app.js로 분리하여 외부 파일로 로드</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<!-- INFO -->
+<div class="section">
+<div class="section-title info">INFO &mdash; 개선 권장 (11건)</div>
+<table>
+<thead><tr><th>파일</th><th>줄</th><th>원인</th><th>해결방법</th></tr></thead>
+<tbody>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">7</td>
+  <td class="cause">Pretendard 폰트 렌더 블로킹<br>웹폰트가 <code>&lt;link&gt;</code>로 로드되어 초기 렌더링 차단</td>
+  <td class="fix"><code>rel="preload" as="style"</code> 또는 <code>font-display: swap</code> 추가</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">다수</td>
+  <td class="cause">다중 <code>&lt;h1&gt;</code> 태그<br>각 챕터마다 h1이 있어 SEO/접근성 경고</td>
+  <td class="fix">메인 타이틀만 h1, 챕터 타이틀은 h2로 변경</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">다수</td>
+  <td class="cause">아이콘 버튼에 ARIA 라벨 없음<br>햄버거 메뉴, 다크모드 토글, 북마크 버튼 등에 접근성 라벨 없음</td>
+  <td class="fix"><code>aria-label="메뉴 열기"</code> 등 추가</td>
+</tr>
+<tr>
+  <td class="file">manifest.json</td>
+  <td class="line">전체</td>
+  <td class="cause">PWA 아이콘이 SVG data URI<br>일부 브라우저/OS에서 인식 실패. 래스터 이미지(PNG 192x192, 512x512) 필요</td>
+  <td class="fix">PNG 아이콘 파일 생성 후 manifest에 추가</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~3050</td>
+  <td class="cause">사용되지 않는 함수/변수<br><code>loadTvChart()</code>, <code>chartLoaded</code>, <code>mobileChartLoaded</code> 등 레거시 코드 잔재</td>
+  <td class="fix">미사용 코드 삭제</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~622</td>
+  <td class="cause">/* OLD - remove later */ 주석이 있는 미사용 CSS<br>V1 캘린더 관련 CSS가 주석과 함께 남아있음</td>
+  <td class="fix">해당 CSS 블록 삭제</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">전체</td>
+  <td class="cause">CSS에 vendor prefix 없음<br><code>backdrop-filter</code> 등 일부 속성에 <code>-webkit-</code> prefix 필요</td>
+  <td class="fix"><code>-webkit-backdrop-filter</code> 추가 또는 autoprefixer 사용</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">전체</td>
+  <td class="cause">모든 이미지/아이콘이 이모지<br>일부 기기에서 이모지 렌더링이 다르게 보임</td>
+  <td class="fix">중요한 아이콘은 SVG로 교체 권장</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">~980</td>
+  <td class="cause">Dark mode 토글에 prefers-color-scheme 미지원<br>시스템 다크모드 설정을 따르지 않음</td>
+  <td class="fix"><code>@media (prefers-color-scheme: dark)</code>로 초기 테마 자동 설정</td>
+</tr>
+<tr>
+  <td class="file">index.html</td>
+  <td class="line">다수</td>
+  <td class="cause">onclick 인라인 핸들러 사용<br>모든 이벤트가 HTML 인라인 onclick으로 바인딩됨</td>
+  <td class="fix">JS에서 <code>addEventListener</code>로 이벤트 바인딩 (관심사 분리)</td>
+</tr>
+<tr>
+  <td class="file">sw.js</td>
+  <td class="line">2</td>
+  <td class="cause">Service Worker 캐시 범위 제한<br>index.html만 캐시하고 외부 리소스(폰트, TradingView 등) 미캐시</td>
+  <td class="fix">Network First 전략으로 변경하거나, 주요 리소스 추가 캐시</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="footer">
+  Generated by Code Audit &mdash; 2026-04-06 &mdash; github.com/bongbong820/futures-vip-guide
+</div>
+
+</div>
+</body>
+</html>
