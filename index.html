@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1B2A4A">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VIP Guide">
 <title>해외선물 핵심 키워드 마스터 가이드 — VIP Edition</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
@@ -602,6 +606,130 @@ a{text-decoration:none;color:inherit}
   cursor:pointer;font-family:var(--font);flex-shrink:0;
 }
 
+/* ===== TICKER ===== */
+.ticker-wrap{
+  position:sticky;top:60px;z-index:98;
+  background:var(--white);border-bottom:1px solid var(--gray-200);
+  height:46px;overflow:hidden;
+}
+body.dark .ticker-wrap{background:var(--gray-50)}
+@media(max-width:640px){.ticker-wrap{top:52px}}
+
+/* ===== TOOL BUTTONS ===== */
+.tool-btn.active{background:var(--blue-light)}
+.tool-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
+
+/* ===== CALENDAR ===== */
+.calendar-widget{width:100%;height:500px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--gray-200)}
+@media(max-width:640px){.calendar-widget{height:400px}}
+
+/* ===== JOURNAL ===== */
+.journal-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.journal-form-full{grid-column:1/-1}
+.journal-input,.journal-select{
+  width:100%;padding:10px 14px;border:1px solid var(--gray-200);
+  border-radius:10px;font-size:14px;background:var(--white);
+  color:var(--gray-900);font-family:var(--font);outline:none;
+}
+.journal-input:focus,.journal-select:focus{border-color:var(--blue)}
+.journal-label{font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:4px;display:block}
+.journal-submit{
+  padding:12px 24px;border:none;border-radius:10px;
+  background:var(--blue);color:#fff;font-size:14px;font-weight:700;
+  cursor:pointer;font-family:var(--font);transition:var(--transition);
+}
+.journal-submit:hover{background:var(--navy)}
+.journal-clear{
+  padding:12px 24px;border:1px solid var(--gray-300);border-radius:10px;
+  background:var(--white);color:var(--gray-600);font-size:14px;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:var(--transition);
+}
+.journal-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}
+.journal-table th{
+  background:var(--navy);color:#fff;padding:10px 12px;text-align:left;
+  font-size:12px;font-weight:700;white-space:nowrap;
+}
+.journal-table td{
+  padding:10px 12px;border-bottom:1px solid var(--gray-100);
+  background:var(--white);color:var(--gray-700);
+}
+.journal-table .profit{color:var(--green);font-weight:700}
+.journal-table .loss{color:var(--red);font-weight:700}
+.journal-del{
+  background:none;border:none;color:var(--red);cursor:pointer;
+  font-size:16px;padding:2px 6px;
+}
+.journal-empty{text-align:center;padding:40px;color:var(--gray-400);font-size:14px}
+.journal-stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.journal-stat{
+  flex:1;min-width:100px;padding:14px;border-radius:var(--radius);
+  background:var(--white);border:1px solid var(--gray-200);text-align:center;
+}
+.journal-stat-num{font-size:20px;font-weight:800;color:var(--navy)}
+.journal-stat-label{font-size:11px;color:var(--gray-500);margin-top:2px}
+@media(max-width:640px){
+  .journal-form{grid-template-columns:1fr}
+  .journal-table{font-size:12px}
+  .journal-table th,.journal-table td{padding:8px 8px}
+}
+
+/* ===== GLOSSARY ===== */
+.glossary-search{
+  width:100%;padding:12px 18px;border:1px solid var(--gray-200);
+  border-radius:12px;font-size:15px;background:var(--white);
+  color:var(--gray-900);font-family:var(--font);outline:none;
+  margin-bottom:16px;
+}
+.glossary-search:focus{border-color:var(--blue)}
+.glossary-list{display:flex;flex-direction:column;gap:8px}
+.glossary-item{
+  padding:16px 20px;border:1px solid var(--gray-200);
+  border-radius:var(--radius-sm);background:var(--white);
+  transition:var(--transition);
+}
+.glossary-item:hover{border-color:var(--blue)}
+.glossary-item.hidden{display:none}
+.glossary-term{font-size:15px;font-weight:700;color:var(--navy)}
+.glossary-en{font-size:12px;color:var(--gray-500);margin-left:6px;font-weight:400}
+.glossary-def{font-size:13px;color:var(--gray-600);margin-top:4px;line-height:1.6}
+.glossary-tag{
+  display:inline-block;font-size:10px;font-weight:700;
+  padding:2px 8px;border-radius:10px;margin-top:6px;
+  background:var(--blue-light);color:var(--blue);
+}
+.glossary-count{font-size:13px;color:var(--gray-400);margin-bottom:12px}
+
+/* ===== BOOKMARK ===== */
+.bookmark-btn{
+  position:absolute;top:12px;right:12px;
+  width:32px;height:32px;border:none;border-radius:50%;
+  background:var(--gray-100);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);opacity:.5;
+  -webkit-tap-highlight-color:transparent;
+}
+.bookmark-btn:hover{opacity:1}
+.bookmark-btn.saved{opacity:1;background:var(--orange-light);color:var(--orange)}
+.section{position:relative}
+
+/* PDF */
+.pdf-btn{
+  display:flex;align-items:center;gap:4px;
+  padding:6px 12px;border:1px solid var(--gray-200);border-radius:8px;
+  background:var(--white);color:var(--gray-600);font-size:12px;font-weight:600;
+  cursor:pointer;transition:var(--transition);font-family:var(--font);
+  margin-left:auto;white-space:nowrap;
+}
+.pdf-btn:hover{border-color:var(--blue);color:var(--blue)}
+@media print{
+  .header,.sidebar,.mobile-bottom-nav,.chapter-nav-bottom,
+  .scroll-top,.ticker-wrap,.progress-wrap,.bookmark-btn,.pdf-btn{display:none !important}
+  .layout{display:block !important}
+  .main{padding:0 !important}
+  .chapter-page{display:block !important;page-break-after:always}
+  body{background:#fff !important;color:#000 !important}
+}
+
 /* ===== QUIZ ===== */
 .quiz-btn .quiz-num{background:var(--green);color:#fff;font-size:13px}
 .quiz-btn.active{background:var(--green-light)}
@@ -1030,10 +1158,16 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
     <div class="header-badge">VIP MEMBER</div>
     <div class="header-right">선물로 500억 번 트레이더 · 7 챕터 완성</div>
+    <button class="pdf-btn" onclick="window.print()" title="PDF 저장">&#128438; PDF</button>
     <button class="dark-toggle" onclick="toggleDark()" title="다크모드">🌙</button>
   </div>
 </header>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+
+<!-- Ticker Tape -->
+<div class="ticker-wrap" id="tickerWrap" style="display:none">
+  <iframe src="https://s.tradingview.com/embed-widget/ticker-tape/?locale=kr&symbols=%5B%7B%22proName%22%3A%22CME_MINI%3AES1!%22%2C%22title%22%3A%22S%26P500%22%7D%2C%7B%22proName%22%3A%22CME_MINI%3ANQ1!%22%2C%22title%22%3A%22Nasdaq%22%7D%2C%7B%22proName%22%3A%22COMEX%3AGC1!%22%2C%22title%22%3A%22Gold%22%7D%2C%7B%22proName%22%3A%22NYMEX%3ACL1!%22%2C%22title%22%3A%22Oil%22%7D%2C%7B%22proName%22%3A%22BINANCE%3ABTCUSDT%22%2C%22title%22%3A%22BTC%22%7D%2C%7B%22proName%22%3A%22BINANCE%3AETHUSDT%22%2C%22title%22%3A%22ETH%22%7D%2C%7B%22proName%22%3A%22FX%3AUSDKRW%22%2C%22title%22%3A%22USD%2FKRW%22%7D%5D&showSymbolLogo=true&colorTheme=light&isTransparent=true&displayMode=adaptive" style="width:100%;height:46px;border:none;display:block" allowfullscreen></iframe>
+</div>
 
 <div class="progress-wrap" id="progressWrap" style="display:none">
   <div class="progress-fill" id="progressFill" style="width:14.28%"></div>
@@ -1077,11 +1211,24 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
   </button>
 
+  <div class="sidebar-label" style="margin-top:16px">도구</div>
+
   <button class="chapter-btn quiz-btn" onclick="goToQuiz()">
     <div class="chapter-num quiz-num">&#128221;</div>
     <div><span class="chapter-btn-title">실력 점검 퀴즈</span><span class="chapter-btn-sub" id="quizLastScore">10문제 · 챕터 1~7 기반</span></div>
   </button>
-
+  <button class="chapter-btn tool-btn" onclick="goToCalendar()">
+    <div class="chapter-num" style="background:var(--blue);color:#fff;font-size:13px">&#128197;</div>
+    <div><span class="chapter-btn-title">경제지표 캘린더</span><span class="chapter-btn-sub">CPI · NFP · FOMC 일정</span></div>
+  </button>
+  <button class="chapter-btn tool-btn" onclick="goToJournal()">
+    <div class="chapter-num" style="background:var(--navy);color:#fff;font-size:13px">&#128212;</div>
+    <div><span class="chapter-btn-title">매매 일지</span><span class="chapter-btn-sub">진입 · 손절 · 결과 기록</span></div>
+  </button>
+  <button class="chapter-btn tool-btn" onclick="goToGlossary()">
+    <div class="chapter-num" style="background:var(--gray-600);color:#fff;font-size:13px">&#128214;</div>
+    <div><span class="chapter-btn-title">용어 사전</span><span class="chapter-btn-sub">50+ 트레이딩 용어</span></div>
+  </button>
   <button class="chapter-btn chart-btn" onclick="goToChart()">
     <div class="chapter-num chart-num">&#128200;</div>
     <div><span class="chapter-btn-title">차트 보기</span><span class="chapter-btn-sub">BINANCE · BTCUSDT · 실시간</span></div>
@@ -1606,6 +1753,73 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
+<!-- CALENDAR PAGE -->
+<div class="chapter-page" id="chCalendar">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128197;</div>
+    <div>
+      <div class="chapter-label">Economic Calendar</div>
+      <h1 class="chapter-title">경제지표 캘린더</h1>
+      <p class="chapter-desc">CPI, NFP, FOMC 등 주요 경제지표 발표 일정을 확인하세요. 발표 직전 매매는 금지입니다.</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="callout"><div class="callout-label">매매 원칙 (Ch.7)</div><p>주요 경제지표 발표 직전에는 절대 매매하지 마세요. 발표 후 시장 방향이 잡힌 뒤 진입하세요.</p></div>
+    <div class="calendar-widget">
+      <iframe src="https://s.tradingview.com/embed-widget/events/?locale=kr&colorTheme=dark&isTransparent=false&width=100%25&height=100%25&importanceFilter=-1%2C0%2C1" style="width:100%;height:100%;border:none" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- JOURNAL PAGE -->
+<div class="chapter-page" id="chJournal">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128212;</div>
+    <div>
+      <div class="chapter-label">Trading Journal</div>
+      <h1 class="chapter-title">매매 일지</h1>
+      <p class="chapter-desc">매매 기록을 남기고 복기하세요. 데이터는 브라우저에 저장됩니다.</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="journal-stats" id="journalStats"></div>
+    <h2 class="section-title">새 매매 기록</h2>
+    <div class="journal-form" id="journalForm">
+      <div><label class="journal-label">날짜</label><input class="journal-input" type="date" id="jDate"></div>
+      <div><label class="journal-label">종목</label><input class="journal-input" type="text" id="jSymbol" placeholder="예: ES, NQ, BTCUSDT"></div>
+      <div><label class="journal-label">방향</label><select class="journal-select" id="jSide"><option value="Long">Long (매수)</option><option value="Short">Short (매도)</option></select></div>
+      <div><label class="journal-label">결과</label><select class="journal-select" id="jResult"><option value="profit">수익</option><option value="loss">손실</option><option value="breakeven">본전</option></select></div>
+      <div><label class="journal-label">진입가</label><input class="journal-input" type="number" id="jEntry" placeholder="진입 가격" step="any"></div>
+      <div><label class="journal-label">청산가</label><input class="journal-input" type="number" id="jExit" placeholder="청산 가격" step="any"></div>
+      <div class="journal-form-full"><label class="journal-label">메모 / 복기</label><input class="journal-input" type="text" id="jMemo" placeholder="이번 매매에서 배운 점, 실수한 점"></div>
+      <div class="journal-form-full" style="display:flex;gap:8px">
+        <button class="journal-submit" onclick="addJournal()">기록 저장</button>
+        <button class="journal-clear" onclick="clearJournal()">전체 삭제</button>
+      </div>
+    </div>
+    <h2 class="section-title">매매 기록</h2>
+    <div style="overflow-x:auto"><table class="journal-table"><thead><tr><th>날짜</th><th>종목</th><th>방향</th><th>진입</th><th>청산</th><th>결과</th><th>메모</th><th></th></tr></thead><tbody id="journalBody"></tbody></table></div>
+    <div class="journal-empty" id="journalEmpty">아직 기록이 없습니다. 위 양식으로 첫 매매를 기록해보세요.</div>
+  </div>
+</div>
+
+<!-- GLOSSARY PAGE -->
+<div class="chapter-page" id="chGlossary">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128214;</div>
+    <div>
+      <div class="chapter-label">Trading Glossary</div>
+      <h1 class="chapter-title">용어 사전</h1>
+      <p class="chapter-desc">해외선물·암호화폐 트레이딩에 필요한 핵심 용어를 정리했습니다.</p>
+    </div>
+  </div>
+  <div class="section">
+    <input class="glossary-search" id="glossarySearch" type="text" placeholder="용어 검색 (한글 또는 영어)" oninput="filterGlossary()">
+    <div class="glossary-count" id="glossaryCount"></div>
+    <div class="glossary-list" id="glossaryList"></div>
+  </div>
+</div>
+
 <!-- CHART PAGE -->
 <div class="chapter-page" id="chChart">
   <div class="chapter-hero">
@@ -1737,9 +1951,9 @@ if (localStorage.getItem('vipAuth') === 'true') {
 function startGuide() {
   document.getElementById('landingPage').style.display = 'none';
   document.getElementById('mainHeader').style.display = '';
+  document.getElementById('tickerWrap').style.display = '';
   document.getElementById('progressWrap').style.display = '';
   document.getElementById('mainLayout').style.display = '';
-  // Restore mobile nav display (CSS controls actual visibility)
   document.getElementById('mobileNav').style.display = '';
 
   const saved = localStorage.getItem('lastChapter');
@@ -1748,8 +1962,9 @@ function startGuide() {
   } else {
     goTo(1);
   }
-  // Init scroll reveal
+  // Init scroll reveal & bookmarks
   initScrollReveal();
+  initBookmarks();
 }
 
 // ===== CHAPTER NAVIGATION =====
@@ -2029,6 +2244,149 @@ function retryWrong() {
   if(last){const el=document.getElementById('quizLastScore');if(el)el.textContent='지난 점수: '+last}
 })();
 
+// ===== PAGE NAVIGATION (Calendar, Journal, Glossary) =====
+function goToPage(pageId, btnClass) {
+  document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if(btnClass){document.querySelectorAll('.'+btnClass).forEach(b=>b.classList.add('active'))}
+  document.getElementById('progressFill').style.width = '100%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  closeSidebar();
+}
+function goToCalendar(){goToPage('chCalendar','tool-btn');document.querySelectorAll('.tool-btn')[0].classList.add('active')}
+function goToJournal(){goToPage('chJournal','');document.querySelectorAll('.tool-btn')[1].classList.add('active');renderJournal()}
+function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
+
+// ===== JOURNAL =====
+function getJournalData(){return JSON.parse(localStorage.getItem('tradingJournal')||'[]')}
+function saveJournalData(d){localStorage.setItem('tradingJournal',JSON.stringify(d))}
+
+function addJournal(){
+  const d=getJournalData();
+  const entry={
+    date:document.getElementById('jDate').value||new Date().toISOString().slice(0,10),
+    symbol:document.getElementById('jSymbol').value||'-',
+    side:document.getElementById('jSide').value,
+    entry:document.getElementById('jEntry').value||'-',
+    exit:document.getElementById('jExit').value||'-',
+    result:document.getElementById('jResult').value,
+    memo:document.getElementById('jMemo').value||''
+  };
+  d.unshift(entry);saveJournalData(d);renderJournal();
+  ['jSymbol','jEntry','jExit','jMemo'].forEach(id=>document.getElementById(id).value='');
+  showToast('매매 기록이 저장되었습니다','',null);
+}
+
+function deleteJournal(i){const d=getJournalData();d.splice(i,1);saveJournalData(d);renderJournal()}
+function clearJournal(){if(confirm('모든 매매 기록을 삭제하시겠습니까?')){localStorage.removeItem('tradingJournal');renderJournal()}}
+
+function renderJournal(){
+  const d=getJournalData();
+  const body=document.getElementById('journalBody');
+  const empty=document.getElementById('journalEmpty');
+  if(!body)return;
+  if(d.length===0){body.innerHTML='';empty.style.display='';document.getElementById('journalStats').innerHTML='';return}
+  empty.style.display='none';
+  const wins=d.filter(e=>e.result==='profit').length;
+  const losses=d.filter(e=>e.result==='loss').length;
+  const wr=d.length>0?Math.round((wins/d.length)*100):0;
+  document.getElementById('journalStats').innerHTML=
+    '<div class="journal-stat"><div class="journal-stat-num">'+d.length+'</div><div class="journal-stat-label">총 매매</div></div>'+
+    '<div class="journal-stat"><div class="journal-stat-num" style="color:var(--green)">'+wins+'</div><div class="journal-stat-label">수익</div></div>'+
+    '<div class="journal-stat"><div class="journal-stat-num" style="color:var(--red)">'+losses+'</div><div class="journal-stat-label">손실</div></div>'+
+    '<div class="journal-stat"><div class="journal-stat-num" style="color:var(--blue)">'+wr+'%</div><div class="journal-stat-label">승률</div></div>';
+  body.innerHTML=d.map((e,i)=>
+    '<tr><td>'+e.date+'</td><td><strong>'+e.symbol+'</strong></td><td>'+e.side+'</td><td>'+e.entry+'</td><td>'+e.exit+'</td><td class="'+(e.result==='profit'?'profit':e.result==='loss'?'loss':'')+'">'+(e.result==='profit'?'수익':e.result==='loss'?'손실':'본전')+'</td><td>'+e.memo+'</td><td><button class="journal-del" onclick="deleteJournal('+i+')">&#10005;</button></td></tr>'
+  ).join('');
+}
+
+// ===== GLOSSARY =====
+const glossaryData=[
+  {term:"손절",en:"Stop-Loss",def:"사전에 정한 가격에서 포지션을 청산하여 더 큰 손실을 방지하는 것",tag:"리스크"},
+  {term:"정배열",en:"Bullish Alignment",def:"단기 이동평균선이 장기 이동평균선 위에 위치한 강세 배열",tag:"기술적분석"},
+  {term:"역배열",en:"Bearish Alignment",def:"단기 이동평균선이 장기 이동평균선 아래에 위치한 약세 배열",tag:"기술적분석"},
+  {term:"골든크로스",en:"Golden Cross",def:"단기 이동평균선이 장기 이동평균선을 아래에서 위로 교차하는 매수 신호",tag:"기술적분석"},
+  {term:"데드크로스",en:"Dead Cross",def:"단기 이동평균선이 장기 이동평균선을 위에서 아래로 교차하는 매도 신호",tag:"기술적분석"},
+  {term:"볼륨 스파이크",en:"Volume Spike",def:"거래량이 갑자기 급증하는 현상. 추세 전환이나 강한 방향성의 신호",tag:"기술적분석"},
+  {term:"마진콜",en:"Margin Call",def:"증거금이 부족하여 추가 입금 또는 강제 청산이 발생하는 상황",tag:"리스크"},
+  {term:"레버리지",en:"Leverage",def:"증거금 대비 더 큰 금액을 거래할 수 있는 배율. 수익과 손실을 동시에 확대",tag:"리스크"},
+  {term:"포지션 사이징",en:"Position Sizing",def:"전체 자금 대비 한 번 매매에 투입하는 금액/계약 수를 조절하는 것",tag:"리스크"},
+  {term:"추세 추종",en:"Trend Following",def:"현재 시장 추세 방향으로만 매매하는 전략. 초보자에게 가장 안전",tag:"전략"},
+  {term:"역매매",en:"Counter-Trend Trading",def:"현재 추세와 반대 방향으로 진입하는 고위험 매매",tag:"전략"},
+  {term:"FOMO",en:"Fear Of Missing Out",def:"기회를 놓칠까 두려워 충동적으로 매매에 진입하는 심리",tag:"심리"},
+  {term:"물타기",en:"Averaging Down",def:"손실 중인 포지션에 추가 매수하여 평균 단가를 낮추는 위험한 행동",tag:"리스크"},
+  {term:"Bull Trap",en:"Bull Trap",def:"전고점 돌파처럼 보이지만 빠르게 하락 반전하는 가짜 돌파",tag:"패턴"},
+  {term:"Bear Trap",en:"Bear Trap",def:"전저점 이탈처럼 보이지만 빠르게 상승 반전하는 가짜 이탈",tag:"패턴"},
+  {term:"Fakeout",en:"Fakeout",def:"지지선/저항선 돌파 후 되돌아오는 가짜 움직임",tag:"패턴"},
+  {term:"Pullback",en:"Pullback",def:"추세 방향으로의 일시적 되돌림. 진입 기회가 되는 구간",tag:"전략"},
+  {term:"기준캔들",en:"Signal Candle",def:"추세 전환이나 강한 방향성을 알리는 장대봉 캔들",tag:"기술적분석"},
+  {term:"R:R 비율",en:"Risk-Reward Ratio",def:"리스크(손절폭) 대비 기대 수익의 비율. 최소 1:2 이상 권장",tag:"전략"},
+  {term:"지지선",en:"Support",def:"가격이 하락할 때 매수세가 집중되어 하락을 멈추는 가격대",tag:"기술적분석"},
+  {term:"저항선",en:"Resistance",def:"가격이 상승할 때 매도세가 집중되어 상승을 멈추는 가격대",tag:"기술적분석"},
+  {term:"이동평균선",en:"Moving Average (MA)",def:"일정 기간 가격의 평균을 연결한 선. 추세 판단의 기본 지표",tag:"기술적분석"},
+  {term:"수렴",en:"Convergence",def:"이동평균선들이 좁아지는 구간. 큰 움직임을 예고",tag:"기술적분석"},
+  {term:"발산",en:"Divergence",def:"이동평균선들이 벌어지는 구간. 추세가 강하게 진행 중",tag:"기술적분석"},
+  {term:"다중 시간대 분석",en:"Multi-Timeframe Analysis",def:"일봉→1시간봉→5분봉 순서로 대추세부터 소추세를 분석하는 방법",tag:"전략"},
+  {term:"손실 회피 편향",en:"Loss Aversion",def:"수익의 기쁨보다 손실의 고통을 더 크게 느끼는 심리적 편향",tag:"심리"},
+  {term:"복기",en:"Review",def:"매매 후 진입/청산 판단을 돌아보고 개선점을 찾는 과정",tag:"심리"},
+  {term:"추격매매",en:"Chasing",def:"이미 크게 움직인 후 늦게 진입하는 위험한 매매",tag:"심리"},
+  {term:"희망 홀딩",en:"Hope Trade",def:"손실 중에 반등을 기대하며 손절하지 않고 버티는 행동",tag:"심리"},
+  {term:"CPI",en:"Consumer Price Index",def:"소비자물가지수. 인플레이션 판단의 핵심 지표",tag:"경제지표"},
+  {term:"NFP",en:"Non-Farm Payrolls",def:"비농업 고용지표. 미국 고용시장 건강을 나타내는 핵심 지표",tag:"경제지표"},
+  {term:"FOMC",en:"Federal Open Market Committee",def:"미국 연방공개시장위원회. 금리 결정 기관",tag:"경제지표"},
+  {term:"증거금",en:"Margin",def:"선물 거래 시 담보로 필요한 최소 자금",tag:"리스크"},
+  {term:"익절",en:"Take Profit",def:"수익이 난 상태에서 포지션을 청산하여 이익을 확정하는 것",tag:"전략"},
+  {term:"장대봉",en:"Large Body Candle",def:"캔들의 몸통이 길고 꼬리가 짧은 강한 방향성 캔들",tag:"기술적분석"},
+  {term:"횡보장",en:"Range Market",def:"가격이 일정 범위 안에서 오르내리며 추세가 없는 시장",tag:"기술적분석"},
+  {term:"추세장",en:"Trending Market",def:"가격이 한 방향으로 지속적으로 움직이는 시장",tag:"기술적분석"},
+  {term:"매물 소화",en:"Absorption",def:"대량 매도 물량을 소화하고 가격이 유지되는 현상",tag:"패턴"},
+  {term:"Over-trading",en:"Over-trading",def:"과도하게 많은 횟수로 매매하는 것. 수수료와 심리적 피로 누적",tag:"심리"}
+];
+
+function renderGlossary(){
+  const list=document.getElementById('glossaryList');
+  if(!list)return;
+  list.innerHTML=glossaryData.map(g=>
+    '<div class="glossary-item" data-search="'+g.term+' '+g.en+' '+g.def+'">'+
+    '<div><span class="glossary-term">'+g.term+'</span><span class="glossary-en">'+g.en+'</span></div>'+
+    '<div class="glossary-def">'+g.def+'</div>'+
+    '<span class="glossary-tag">'+g.tag+'</span></div>'
+  ).join('');
+  document.getElementById('glossaryCount').textContent='총 '+glossaryData.length+'개 용어';
+}
+
+function filterGlossary(){
+  const q=document.getElementById('glossarySearch').value.toLowerCase();
+  let count=0;
+  document.querySelectorAll('.glossary-item').forEach(el=>{
+    const match=el.dataset.search.toLowerCase().includes(q);
+    el.classList.toggle('hidden',!match);
+    if(match)count++;
+  });
+  document.getElementById('glossaryCount').textContent=q?count+'개 검색 결과':'총 '+glossaryData.length+'개 용어';
+}
+
+// ===== BOOKMARK =====
+function initBookmarks(){
+  document.querySelectorAll('.section').forEach((sec,i)=>{
+    const chPage=sec.closest('.chapter-page');
+    if(!chPage||chPage.id.startsWith('ch')===false)return;
+    const key='bm_'+chPage.id+'_'+i;
+    const btn=document.createElement('button');
+    btn.className='bookmark-btn'+(localStorage.getItem(key)?'saved':'');
+    btn.innerHTML=localStorage.getItem(key)?'&#9733;':'&#9734;';
+    btn.title='북마크';
+    btn.onclick=function(e){
+      e.stopPropagation();
+      if(localStorage.getItem(key)){localStorage.removeItem(key);this.classList.remove('saved');this.innerHTML='&#9734;'}
+      else{localStorage.setItem(key,'1');this.classList.add('saved');this.innerHTML='&#9733;';showToast('북마크 저장!','',null)}
+    };
+    sec.style.position='relative';
+    sec.appendChild(btn);
+  });
+}
+
 // ===== CHART CONTROLS =====
 // Default filter: futures only
 document.querySelectorAll('.chart-sym').forEach(s => {
@@ -2104,6 +2462,9 @@ function showToast(msg, btnText, btnAction) {
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 6000);
 }
+
+// ===== PWA =====
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
