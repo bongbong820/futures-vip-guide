@@ -11,6 +11,7 @@
 <title>해외선물 핵심 키워드 마스터 가이드 — VIP Edition</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet" crossorigin>
+<link rel="stylesheet" href="features.css">
 <style>
 /* ===== FONT ===== */
 @supports (font-variation-settings: normal) {
@@ -1665,6 +1666,24 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div><span class="chapter-btn-title">차트 보기</span><span class="chapter-btn-sub">BINANCE · BTCUSDT · 실시간</span></div>
   </button>
 
+  <div class="sidebar-label" style="margin-top:16px" id="sidebarMemberLabel" style="display:none">회원 전용</div>
+  <button class="chapter-btn dash-btn" id="sidebarDashBtn" onclick="goToDashboard()" style="display:none">
+    <div class="chapter-num" style="background:var(--orange);color:#fff;font-size:13px">&#127968;</div>
+    <div><span class="chapter-btn-title">내 대시보드</span><span class="chapter-btn-sub">맞춤 위젯 홈화면</span></div>
+  </button>
+  <button class="chapter-btn lb-btn" onclick="goToLeaderboard()">
+    <div class="chapter-num" style="background:#FFD700;color:#fff;font-size:13px">&#127942;</div>
+    <div><span class="chapter-btn-title">리더보드</span><span class="chapter-btn-sub">출석 · 퀴즈 · 연속 랭킹</span></div>
+  </button>
+  <button class="chapter-btn newquiz-btn" onclick="goToNewQuiz()">
+    <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128221;</div>
+    <div><span class="chapter-btn-title">트레이딩 퀴즈</span><span class="chapter-btn-sub">OX · 4지선다 · 30초 타이머</span></div>
+  </button>
+  <button class="chapter-btn achv-btn" onclick="goToAchievements()">
+    <div class="chapter-num" style="background:var(--red);color:#fff;font-size:13px">&#127919;</div>
+    <div><span class="chapter-btn-title">도전 과제</span><span class="chapter-btn-sub">15개 뱃지 수집</span></div>
+  </button>
+
   <div class="sidebar-footer">
     <div class="trainer-card">
       <div class="trainer-tag">EXPERT GUIDE</div>
@@ -2466,6 +2485,117 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
+<!-- DASHBOARD PAGE -->
+<div class="chapter-page" id="chDashboard">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#127968;</div>
+    <div>
+      <div class="chapter-label">My Dashboard</div>
+      <h2 class="chapter-title">내 대시보드</h2>
+      <p class="chapter-desc">원하는 위젯을 골라 나만의 홈화면을 만드세요.</p>
+    </div>
+  </div>
+  <div style="text-align:right;padding:0 0 12px"><button class="db-edit-btn" id="dbEditBtn" onclick="dbToggleEdit()">대시보드 편집</button></div>
+  <div class="db-edit-panel" id="dbEditPanel" style="display:none">
+    <div class="db-edit-title">위젯 선택</div>
+    <div class="db-edit-grid" id="dbEditGrid"></div>
+    <div style="text-align:center;margin-top:12px"><button class="db-save-btn" onclick="dbSave()">저장</button></div>
+  </div>
+  <div class="db-grid" id="dbGrid">
+    <div class="db-login-msg" id="dbLoginMsg" style="display:none">
+      <div style="font-size:40px;margin-bottom:12px">🔒</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px">로그인이 필요한 기능입니다</div>
+      <button class="g-login-btn" onclick="gSignIn()" style="margin:0 auto">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        구글 로그인
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD PAGE -->
+<div class="chapter-page" id="chLeaderboard">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#127942;</div>
+    <div>
+      <div class="chapter-label">Leaderboard</div>
+      <h2 class="chapter-title">리더보드</h2>
+      <p class="chapter-desc">VIP 회원들의 활동 랭킹을 확인하세요.</p>
+    </div>
+  </div>
+  <div class="lb-perfect" id="lbPerfect" style="display:none">
+    <div class="lb-perfect-title">🏆 이달의 개근왕</div>
+    <div class="lb-perfect-list" id="lbPerfectList"></div>
+  </div>
+  <div class="lb-tabs">
+    <button class="lb-tab active" onclick="lbSetTab(this,'attendance')">📅 출석 랭킹</button>
+    <button class="lb-tab" onclick="lbSetTab(this,'quiz')">📝 퀴즈 랭킹</button>
+    <button class="lb-tab" onclick="lbSetTab(this,'streak')">🔥 연속 출석</button>
+  </div>
+  <div id="lbBody"><div class="ec4-state"><div class="ec4-spinner"></div><br>로딩중...</div></div>
+  <div class="lb-myrank" id="lbMyRank" style="display:none"></div>
+</div>
+
+<!-- NEW QUIZ PAGE -->
+<div class="chapter-page" id="chNewQuiz">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128221;</div>
+    <div>
+      <div class="chapter-label">Trading Quiz</div>
+      <h2 class="chapter-title">트레이딩 퀴즈</h2>
+      <p class="chapter-desc">실력을 테스트하고 랭킹에 도전하세요. 하루 3회 응시 가능!</p>
+    </div>
+  </div>
+  <div class="nq-info" id="nqInfo">
+    <div class="nq-info-row"><span>오늘 응시</span><span id="nqAttempts">0 / 3회</span></div>
+    <div class="nq-info-row"><span>최고 점수</span><span id="nqBest">— / 20</span></div>
+    <button class="nq-start-btn" id="nqStartBtn" onclick="nqStart()">퀴즈 시작하기</button>
+  </div>
+  <div class="nq-game" id="nqGame" style="display:none">
+    <div class="nq-topbar">
+      <div class="nq-progress-bar"><div class="nq-progress-fill" id="nqProgFill"></div></div>
+      <div class="nq-topbar-info"><span id="nqCount">1/20</span><span class="nq-timer" id="nqTimer">30</span></div>
+    </div>
+    <div class="nq-cat" id="nqCat"></div>
+    <div class="nq-question" id="nqQuestion"></div>
+    <div class="nq-options" id="nqOptions"></div>
+    <div class="nq-feedback" id="nqFeedback" style="display:none"></div>
+    <button class="nq-next-btn" id="nqNextBtn" onclick="nqNext()" style="display:none">다음 문제 →</button>
+  </div>
+  <div class="nq-result" id="nqResult" style="display:none"></div>
+</div>
+
+<!-- ACHIEVEMENTS PAGE -->
+<div class="chapter-page" id="chAchievements">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#127919;</div>
+    <div>
+      <div class="chapter-label">Achievements</div>
+      <h2 class="chapter-title">도전 과제</h2>
+      <p class="chapter-desc">15개의 뱃지를 모두 수집해보세요!</p>
+    </div>
+  </div>
+  <div class="achv-progress" id="achvProgress"></div>
+  <div class="achv-tabs">
+    <button class="achv-tab active" onclick="achvSetTab(this,'all')">전체</button>
+    <button class="achv-tab" onclick="achvSetTab(this,'attendance')">출석</button>
+    <button class="achv-tab" onclick="achvSetTab(this,'quiz')">퀴즈</button>
+    <button class="achv-tab" onclick="achvSetTab(this,'level')">레벨</button>
+    <button class="achv-tab" onclick="achvSetTab(this,'activity')">활동</button>
+  </div>
+  <div class="achv-grid" id="achvGrid"></div>
+</div>
+
+<!-- Achievement Popup -->
+<div class="achv-popup-overlay" id="achvPopup" style="display:none">
+  <div class="achv-popup-box">
+    <div class="achv-popup-icon" id="achvPopupIcon"></div>
+    <div class="achv-popup-title">도전 과제 달성! 🎉</div>
+    <div class="achv-popup-name" id="achvPopupName"></div>
+    <div class="lvlup-particles" id="achvParticles"></div>
+  </div>
+</div>
+
 </main>
 </div>
 
@@ -2840,6 +2970,11 @@ function goToCalendar(){
 }
 function goToJournal(){goToCalc()}
 function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.tool-btn')[2].classList.add('active');renderGlossary()}
+// New feature pages (logic in features.js module)
+function goToDashboard(){goToPage('chDashboard','dash-btn');if(window.dbRender)window.dbRender()}
+function goToLeaderboard(){goToPage('chLeaderboard','lb-btn');if(window.lbLoad)window.lbLoad()}
+function goToNewQuiz(){goToPage('chNewQuiz','newquiz-btn');if(window.nqLoadInfo)window.nqLoadInfo()}
+function goToAchievements(){goToPage('chAchievements','achv-btn');if(window.achvRender)window.achvRender()}
 
 // ===== JOURNAL =====
 function getJournalData(){return JSON.parse(localStorage.getItem('tradingJournal')||'[]')}
@@ -4150,5 +4285,6 @@ function attUpdateNavLevel(data){
   }
 }
 </script>
+<script type="module" src="features.js"></script>
 </body>
 </html>
