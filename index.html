@@ -3430,6 +3430,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 .att-level-bronze{background:rgba(205,127,50,.2);color:#CD7F32}
 .att-level-silver{background:rgba(192,192,192,.2);color:#e0e0e0}
 .att-level-gold{background:rgba(255,215,0,.2);color:#FFD700}
+.att-level-master{background:rgba(255,107,53,.2);color:#FF6B35}
 .att-title{font-size:18px;font-weight:800;margin-bottom:4px}
 .att-sub{font-size:13px;color:rgba(255,255,255,.7)}
 .att-broken{color:#FF6B6B;font-size:12px;margin-top:6px}
@@ -3892,6 +3893,8 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const provider=new GoogleAuthProvider();
 
+const MASTER_EMAIL='dlwnqhdrl9508@gmail.com';
+const MASTER_LEVEL={id:'master',name:'마스터',icon:'👑',color:'#FF6B35',desc:'사이트 관리자'};
 const LEVELS=[
   {id:'bronze',name:'브론즈',icon:'🥉',color:'#CD7F32',min:1,desc:'트레이더의 첫 걸음'},
   {id:'silver',name:'실버',icon:'🥈',color:'#C0C0C0',min:15,desc:'꾸준한 트레이더'},
@@ -3901,6 +3904,7 @@ const MILESTONES={7:'1주일 연속! 🔥 대단해요!',14:'2주일 연속! �
 
 let attViewMonth,attViewYear;
 let _attPopupShownThisSession=false;
+let _currentUserEmail=null;
 
 // KST today/yesterday
 function attToday(){
@@ -3912,6 +3916,7 @@ function attYesterday(){
   return kst.toISOString().slice(0,10);
 }
 function attGetLevel(totalDays){
+  if(_currentUserEmail===MASTER_EMAIL)return MASTER_LEVEL;
   for(let i=LEVELS.length-1;i>=0;i--){if(totalDays>=LEVELS[i].min)return LEVELS[i]}
   return LEVELS[0];
 }
@@ -3922,6 +3927,7 @@ window.gSignIn=async function(){
 };
 window.gSignOut=async function(){
   try{
+    _currentUserEmail=null;
     await fbSignOut(auth);
     document.getElementById('gLoginBtn').style.display='flex';
     document.getElementById('gProfile').style.display='none';
@@ -3934,10 +3940,12 @@ window.gSignOut=async function(){
 // ===== Auth State =====
 onAuthStateChanged(auth,async(user)=>{
   if(!user){
+    _currentUserEmail=null;
     document.getElementById('gLoginBtn').style.display='flex';
     document.getElementById('gProfile').style.display='none';
     return;
   }
+  _currentUserEmail=user.email||'';
   // Show profile
   document.getElementById('gLoginBtn').style.display='none';
   document.getElementById('gProfile').style.display='flex';
