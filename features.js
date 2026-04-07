@@ -18,8 +18,7 @@ function onFeaturesReady(){
   // Show member-only sidebar items when logged in
   auth.onAuthStateChanged(u=>{
     const show=u?'block':'none';
-    const el=document.getElementById('sidebarDashBtn');if(el)el.style.display=show;
-    const lbl=document.getElementById('sidebarMemberLabel');if(lbl)lbl.style.display=show;
+    // Member-only sidebar items removed; dropdown handles these now
   });
 }
 
