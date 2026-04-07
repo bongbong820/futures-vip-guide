@@ -3377,7 +3377,403 @@ function showToast(msg, btnText, btnAction) {
 
 // ===== PWA =====
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+
+// ===== ATTENDANCE & LEVEL SYSTEM =====
+const ATT_KEY = 'vip_user_data';
+const LEVELS = [
+  { id:'bronze', name:'브론즈', icon:'🥉', color:'#CD7F32', min:1, desc:'트레이더의 첫 걸음' },
+  { id:'silver', name:'실버',  icon:'🥈', color:'#C0C0C0', min:15, desc:'꾸준한 트레이더' },
+  { id:'gold',   name:'골드',  icon:'🥇', color:'#FFD700', min:30, desc:'베테랑 트레이더' }
+];
+const MILESTONES = {7:'1주일 연속! 🔥 대단해요!',14:'2주일 연속! 💪 진짜 트레이더!',30:'한 달 연속! 🏆 전설의 시작!'};
+
+let attViewMonth, attViewYear;
+
+function attLoad(){
+  const raw = localStorage.getItem(ATT_KEY);
+  if(raw) try{return JSON.parse(raw)}catch(e){}
+  return {attendance_dates:[],streak_current:0,streak_best:0,total_days:0,level:'bronze',last_visit:null,last_popup_shown:null};
+}
+function attSave(d){localStorage.setItem(ATT_KEY,JSON.stringify(d))}
+function attToday(){return new Date().toLocaleDateString('en-CA')} // YYYY-MM-DD
+function attYesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toLocaleDateString('en-CA')}
+
+function attGetLevel(totalDays){
+  for(let i=LEVELS.length-1;i>=0;i--){if(totalDays>=LEVELS[i].min)return LEVELS[i]}
+  return LEVELS[0];
+}
+
+function attCheckin(){
+  const data = attLoad();
+  const today = attToday();
+
+  // Already checked in today
+  if(data.attendance_dates.includes(today)){
+    attUpdateBadges(data);
+    return;
+  }
+
+  const oldLevel = attGetLevel(data.total_days);
+
+  // Add today
+  data.attendance_dates.push(today);
+  data.total_days = data.attendance_dates.length;
+
+  // Calculate streak
+  let streakBroken = false;
+  if(data.last_visit === attYesterday()){
+    data.streak_current++;
+  } else if(data.last_visit === today){
+    // same day, do nothing
+  } else {
+    if(data.last_visit && data.streak_current > 1) streakBroken = true;
+    data.streak_current = 1;
+  }
+  if(data.streak_current > data.streak_best) data.streak_best = data.streak_current;
+  data.last_visit = today;
+
+  // Level check
+  const newLevel = attGetLevel(data.total_days);
+  data.level = newLevel.id;
+  const leveledUp = newLevel.id !== oldLevel.id && data.total_days > 1;
+
+  attSave(data);
+
+  // Show popup only once per day
+  if(data.last_popup_shown === today){
+    attUpdateBadges(data);
+    return;
+  }
+  data.last_popup_shown = today;
+  attSave(data);
+
+  // Level-up effect
+  if(leveledUp){
+    attShowLevelUp(newLevel, ()=>attShowPopup(data, streakBroken));
+  } else {
+    attShowPopup(data, streakBroken);
+  }
+  attUpdateBadges(data);
+}
+
+function attShowPopup(data, streakBroken){
+  const lvl = attGetLevel(data.total_days);
+
+  // Level badge
+  const badge = document.getElementById('attLevelBadge');
+  badge.className = 'att-level-badge att-level-'+lvl.id;
+  badge.textContent = lvl.icon+' '+lvl.name+' · '+lvl.desc;
+
+  // Title & subtitle
+  document.getElementById('attTitle').textContent = '오늘도 출석하셨군요! 🎉';
+  document.getElementById('attSub').textContent = '연속 '+data.streak_current+'일째 접속 중';
+
+  // Streak broken message
+  const brokenEl = document.getElementById('attBroken');
+  if(streakBroken){
+    brokenEl.textContent = '아쉽게도 연속이 끊겼어요 😢 오늘부터 다시 시작!';
+    brokenEl.style.display = 'block';
+    document.getElementById('attSub').textContent = '오늘부터 새로운 시작!';
+  } else {
+    brokenEl.style.display = 'none';
+  }
+
+  // Milestone
+  const msEl = document.getElementById('attMilestone');
+  if(MILESTONES[data.streak_current]){
+    msEl.textContent = MILESTONES[data.streak_current];
+    msEl.style.display = 'block';
+  } else {
+    msEl.style.display = 'none';
+  }
+
+  // Stats
+  document.getElementById('attStreak').textContent = data.streak_current;
+  document.getElementById('attBest').textContent = data.streak_best;
+  // This month count
+  const thisMonth = attToday().slice(0,7);
+  const monthCount = data.attendance_dates.filter(d=>d.startsWith(thisMonth)).length;
+  document.getElementById('attMonth').textContent = monthCount;
+
+  // Progress bar
+  attRenderProgress(data, lvl);
+
+  // Calendar
+  const now = new Date();
+  attViewMonth = now.getMonth();
+  attViewYear = now.getFullYear();
+  attRenderCal(data);
+
+  // Show
+  const overlay = document.getElementById('attOverlay');
+  overlay.classList.add('show');
+}
+
+function attClose(){
+  document.getElementById('attOverlay').classList.remove('show');
+}
+
+function attRenderProgress(data, lvl){
+  const progWrap = document.getElementById('attProgress');
+  const label = document.getElementById('attProgLabel');
+  const count = document.getElementById('attProgCount');
+  const fill = document.getElementById('attProgFill');
+
+  if(lvl.id === 'gold'){
+    label.textContent = '최고 등급 달성! 🏆';
+    count.textContent = '';
+    fill.style.width = '100%';
+    fill.className = 'att-progress-fill gold';
+  } else {
+    const nextIdx = LEVELS.findIndex(l=>l.id===lvl.id)+1;
+    const next = LEVELS[nextIdx];
+    const pct = Math.min(100, Math.round(data.total_days/next.min*100));
+    label.textContent = next.icon+' '+next.name+'까지';
+    count.textContent = data.total_days+'/'+next.min+'일';
+    fill.style.width = pct+'%';
+    fill.className = 'att-progress-fill '+lvl.id;
+  }
+}
+
+function attRenderCal(data){
+  const grid = document.getElementById('attCalGrid');
+  const title = document.getElementById('attCalTitle');
+  const now = new Date();
+
+  title.textContent = attViewYear+'년 '+(attViewMonth+1)+'월';
+
+  // Disable next if current month
+  document.getElementById('attNext').disabled = (attViewYear===now.getFullYear() && attViewMonth===now.getMonth());
+
+  const firstDay = new Date(attViewYear, attViewMonth, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(attViewYear, attViewMonth+1, 0).getDate();
+  const todayStr = attToday();
+  const monthStr = attViewYear+'-'+String(attViewMonth+1).padStart(2,'0');
+
+  let html = ['일','월','화','수','목','금','토'].map(d=>'<div class="att-cal-dow">'+d+'</div>').join('');
+
+  // Empty cells before 1st
+  for(let i=0;i<firstDay;i++) html+='<div class="att-cal-day empty"></div>';
+
+  for(let d=1;d<=daysInMonth;d++){
+    const ds = monthStr+'-'+String(d).padStart(2,'0');
+    const isChecked = data.attendance_dates.includes(ds);
+    const isToday = ds === todayStr;
+    let cls = 'att-cal-day';
+    if(isChecked) cls+=' checked';
+    if(isToday) cls+=' today';
+    html+='<div class="'+cls+'">'+d+'</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function attNavMonth(dir){
+  attViewMonth += dir;
+  if(attViewMonth<0){attViewMonth=11;attViewYear--}
+  if(attViewMonth>11){attViewMonth=0;attViewYear++}
+  attRenderCal(attLoad());
+}
+
+function attShowLevelUp(level, callback){
+  const overlay = document.getElementById('lvlupOverlay');
+  document.getElementById('lvlupIcon').textContent = level.icon;
+  document.getElementById('lvlupText').textContent = '레벨업! '+level.icon+' '+level.name+' 달성!';
+  document.getElementById('lvlupSub').textContent = level.desc;
+
+  // Particles
+  const pc = document.getElementById('lvlupParticles');
+  pc.innerHTML = '';
+  for(let i=0;i<30;i++){
+    const p = document.createElement('div');
+    p.className = 'lvlup-particle';
+    p.style.left = Math.random()*100+'%';
+    p.style.top = '-10px';
+    p.style.background = level.color;
+    p.style.animationDelay = Math.random()*1+'s';
+    p.style.width = (4+Math.random()*8)+'px';
+    p.style.height = p.style.width;
+    pc.appendChild(p);
+  }
+
+  overlay.classList.add('show');
+  setTimeout(()=>{overlay.classList.remove('show');if(callback)callback()},2500);
+}
+
+function attUpdateBadges(data){
+  const lvl = attGetLevel(data.total_days);
+
+  // Nav badge
+  let navBadge = document.getElementById('navLevelBadge');
+  if(!navBadge){
+    navBadge = document.createElement('span');
+    navBadge.id = 'navLevelBadge';
+    const headerRight = document.querySelector('.header-right');
+    if(headerRight) headerRight.appendChild(navBadge);
+  }
+  navBadge.className = 'nav-level-badge nav-level-'+lvl.id;
+  navBadge.textContent = lvl.icon+' '+lvl.name+' | 출석 '+data.total_days+'일';
+
+  // AI chat header badge
+  let aiBadgeLvl = document.getElementById('aiChatLevel');
+  if(!aiBadgeLvl){
+    aiBadgeLvl = document.createElement('span');
+    aiBadgeLvl.id = 'aiChatLevel';
+    aiBadgeLvl.className = 'ai-chat-level';
+    const aiName = document.querySelector('.ai-chat-hd-name');
+    if(aiName) aiName.appendChild(aiBadgeLvl);
+  }
+  aiBadgeLvl.style.background = lvl.color+'22';
+  aiBadgeLvl.style.color = lvl.color;
+  aiBadgeLvl.textContent = lvl.icon+' '+lvl.name;
+}
+
+// Hook into login flow
+(function attInit(){
+  // If already authed, check in
+  if(localStorage.getItem('vipAuth')==='true'){
+    setTimeout(attCheckin, 800);
+  }
+  // Also hook into checkPw success
+  const origCheckPw = window.checkPw;
+  window.checkPw = async function(){
+    await origCheckPw();
+    if(localStorage.getItem('vipAuth')==='true'){
+      setTimeout(attCheckin, 1200);
+    }
+  };
+})()
 </script>
+
+<!-- ===== ATTENDANCE & LEVEL SYSTEM ===== -->
+<style>
+/* Attendance Popup Overlay */
+.att-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.att-overlay.show{display:flex;opacity:1}
+.att-popup{background:var(--white);border-radius:20px;width:400px;max-width:95vw;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden;transform:translateY(-40px);opacity:0;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s;max-height:90vh;overflow-y:auto}
+.att-overlay.show .att-popup{transform:translateY(0);opacity:1}
+
+/* Header */
+.att-hd{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;padding:24px 20px 18px;position:relative}
+.att-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.att-close:hover{background:rgba(255,255,255,.3)}
+.att-level-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:10px}
+.att-level-bronze{background:rgba(205,127,50,.2);color:#CD7F32}
+.att-level-silver{background:rgba(192,192,192,.2);color:#e0e0e0}
+.att-level-gold{background:rgba(255,215,0,.2);color:#FFD700}
+.att-title{font-size:18px;font-weight:800;margin-bottom:4px}
+.att-sub{font-size:13px;color:rgba(255,255,255,.7)}
+.att-broken{color:#FF6B6B;font-size:12px;margin-top:6px}
+
+/* Calendar */
+.att-cal{padding:16px 20px}
+.att-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.att-cal-title{font-size:15px;font-weight:700;color:var(--navy)}
+.att-cal-btn{background:var(--gray-100);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--gray-600);display:flex;align-items:center;justify-content:center;transition:all .15s}
+.att-cal-btn:hover:not(:disabled){background:var(--blue-light);color:var(--blue)}
+.att-cal-btn:disabled{opacity:.3;cursor:default}
+.att-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.att-cal-dow{font-size:11px;font-weight:600;color:var(--gray-400);padding:6px 0}
+.att-cal-day{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:13px;color:var(--gray-600);margin:0 auto;position:relative}
+.att-cal-day.empty{visibility:hidden}
+.att-cal-day.checked{background:var(--blue);color:#fff;font-weight:700}
+.att-cal-day.today{box-shadow:0 0 0 2px var(--blue);font-weight:700;color:var(--blue)}
+.att-cal-day.today.checked{color:#fff;animation:attPulse 2s infinite}
+@keyframes attPulse{0%,100%{box-shadow:0 0 0 2px var(--blue)}50%{box-shadow:0 0 0 5px rgba(49,130,246,.3)}}
+
+/* Stats */
+.att-stats{padding:0 20px 16px;display:flex;gap:8px}
+.att-stat{flex:1;background:var(--gray-50);border-radius:12px;padding:12px;text-align:center}
+.att-stat-num{font-size:20px;font-weight:800;color:var(--navy)}
+.att-stat-label{font-size:11px;color:var(--gray-500);margin-top:2px}
+
+/* Milestone */
+.att-milestone{margin:0 20px 12px;padding:12px 16px;border-radius:12px;background:linear-gradient(135deg,#FFF3ED,#FFE8D6);text-align:center;font-size:14px;font-weight:700;color:var(--orange-dark)}
+
+/* Progress bar */
+.att-progress{padding:0 20px 20px}
+.att-progress-label{font-size:12px;color:var(--gray-500);margin-bottom:6px;display:flex;justify-content:space-between}
+.att-progress-bar{height:8px;background:var(--gray-100);border-radius:8px;overflow:hidden}
+.att-progress-fill{height:100%;border-radius:8px;transition:width .6s ease}
+.att-progress-fill.bronze{background:#CD7F32}
+.att-progress-fill.silver{background:#C0C0C0}
+.att-progress-fill.gold{background:#FFD700}
+
+/* Confirm button */
+.att-confirm{display:block;width:calc(100% - 40px);margin:0 20px 20px;padding:12px;border:none;border-radius:12px;background:var(--blue);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:background .15s}
+.att-confirm:hover{background:var(--navy)}
+
+/* Level-up overlay */
+.lvlup-overlay{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+.lvlup-overlay.show{display:flex}
+.lvlup-box{text-align:center;animation:lvlupIn .6s cubic-bezier(.34,1.56,.64,1)}
+.lvlup-icon{font-size:64px;margin-bottom:8px}
+.lvlup-text{font-size:24px;font-weight:900;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.3)}
+.lvlup-sub{font-size:14px;color:rgba(255,255,255,.8);margin-top:4px}
+@keyframes lvlupIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* Particles */
+.lvlup-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lvlup-particle{position:absolute;width:8px;height:8px;border-radius:50%;animation:particleFall 1.5s ease-out forwards}
+@keyframes particleFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(120vh) rotate(720deg);opacity:0}}
+
+/* Nav badge */
+.nav-level-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-left:8px;vertical-align:middle}
+.nav-level-bronze{background:rgba(205,127,50,.12);color:#CD7F32}
+.nav-level-silver{background:rgba(192,192,192,.15);color:#888}
+.nav-level-gold{background:rgba(255,215,0,.15);color:#B8860B}
+
+/* AI chat level badge */
+.ai-chat-level{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;display:inline-block}
+
+@media(max-width:640px){
+  .att-popup{width:100%;max-width:100%;border-radius:16px 16px 0 0;max-height:85vh;position:fixed;bottom:0}
+  .att-overlay.show{align-items:flex-end}
+  .att-stats{flex-wrap:wrap}
+  .att-stat{min-width:calc(50% - 4px)}
+}
+</style>
+
+<!-- Attendance Popup -->
+<div class="att-overlay" id="attOverlay" onclick="if(event.target===this)attClose()">
+  <div class="att-popup">
+    <div class="att-hd">
+      <button class="att-close" onclick="attClose()">&#x2715;</button>
+      <div class="att-level-badge" id="attLevelBadge"></div>
+      <div class="att-title" id="attTitle"></div>
+      <div class="att-sub" id="attSub"></div>
+      <div class="att-broken" id="attBroken" style="display:none"></div>
+    </div>
+    <div class="att-cal">
+      <div class="att-cal-nav">
+        <button class="att-cal-btn" id="attPrev" onclick="attNavMonth(-1)">&#9664;</button>
+        <div class="att-cal-title" id="attCalTitle"></div>
+        <button class="att-cal-btn" id="attNext" onclick="attNavMonth(1)" disabled>&#9654;</button>
+      </div>
+      <div class="att-cal-grid" id="attCalGrid"></div>
+    </div>
+    <div class="att-stats">
+      <div class="att-stat"><div class="att-stat-num" id="attStreak">0</div><div class="att-stat-label">연속 접속</div></div>
+      <div class="att-stat"><div class="att-stat-num" id="attBest">0</div><div class="att-stat-label">최고 기록</div></div>
+      <div class="att-stat"><div class="att-stat-num" id="attMonth">0</div><div class="att-stat-label">이번달 출석</div></div>
+    </div>
+    <div class="att-milestone" id="attMilestone" style="display:none"></div>
+    <div class="att-progress" id="attProgress">
+      <div class="att-progress-label"><span id="attProgLabel"></span><span id="attProgCount"></span></div>
+      <div class="att-progress-bar"><div class="att-progress-fill" id="attProgFill"></div></div>
+    </div>
+    <button class="att-confirm" onclick="attClose()">확인</button>
+  </div>
+</div>
+
+<!-- Level-up Overlay -->
+<div class="lvlup-overlay" id="lvlupOverlay">
+  <div class="lvlup-particles" id="lvlupParticles"></div>
+  <div class="lvlup-box">
+    <div class="lvlup-icon" id="lvlupIcon"></div>
+    <div class="lvlup-text" id="lvlupText"></div>
+    <div class="lvlup-sub" id="lvlupSub"></div>
+  </div>
+</div>
 
 <!-- ===== AI CHAT WIDGET ===== -->
 <style>
