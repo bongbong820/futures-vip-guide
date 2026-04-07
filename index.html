@@ -1585,11 +1585,24 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
         <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         구글 로그인
       </button>
-      <div class="g-profile" id="gProfile" style="display:none">
+      <div class="g-profile" id="gProfile" style="display:none" onclick="gDropToggle(event)">
         <img class="g-profile-photo" id="gPhoto" src="" alt="">
         <span class="g-profile-name" id="gName"></span>
         <span class="g-profile-level" id="gLevel"></span>
-        <button class="g-logout-btn" id="gLogoutBtn" onclick="gSignOut()" title="로그아웃">&#x2715;</button>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gray-400);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <!-- Profile Dropdown -->
+      <div class="g-dropdown" id="gDropdown">
+        <div class="g-drop-header">
+          <div class="g-drop-name" id="gDropName">이름</div>
+          <div class="g-drop-level" id="gDropLevel"></div>
+        </div>
+        <div class="g-drop-divider"></div>
+        <button class="g-drop-item" onclick="goToDashboard();gDropClose()">🏠 내 대시보드</button>
+        <button class="g-drop-item" onclick="goToLeaderboard();gDropClose()">🏆 리더보드</button>
+        <button class="g-drop-item" onclick="goToAchievements();gDropClose()">🎯 도전과제</button>
+        <div class="g-drop-divider"></div>
+        <button class="g-drop-item g-drop-logout" onclick="gSignOut();gDropClose()">🚪 로그아웃</button>
       </div>
     </div>
   </div>
@@ -1645,9 +1658,9 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 
   <div class="sidebar-label" style="margin-top:16px">도구</div>
 
-  <button class="chapter-btn quiz-btn" onclick="goToQuiz()">
+  <button class="chapter-btn quiz-btn" onclick="goToUnifiedQuiz()">
     <div class="chapter-num quiz-num">&#128221;</div>
-    <div><span class="chapter-btn-title">실력 점검 퀴즈</span><span class="chapter-btn-sub" id="quizLastScore">10문제 · 챕터 1~7 기반</span></div>
+    <div><span class="chapter-btn-title">퀴즈</span><span class="chapter-btn-sub">트레이딩 · 실력점검</span></div>
   </button>
   <button class="chapter-btn tool-btn" onclick="goToCalendar()">
     <div class="chapter-num" style="background:var(--blue);color:#fff;font-size:13px">&#128197;</div>
@@ -1674,10 +1687,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <button class="chapter-btn lb-btn" onclick="goToLeaderboard()">
     <div class="chapter-num" style="background:#FFD700;color:#fff;font-size:13px">&#127942;</div>
     <div><span class="chapter-btn-title">리더보드</span><span class="chapter-btn-sub">출석 · 퀴즈 · 연속 랭킹</span></div>
-  </button>
-  <button class="chapter-btn newquiz-btn" onclick="goToNewQuiz()">
-    <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128221;</div>
-    <div><span class="chapter-btn-title">트레이딩 퀴즈</span><span class="chapter-btn-sub">OX · 4지선다 · 30초 타이머</span></div>
   </button>
   <button class="chapter-btn achv-btn" onclick="goToAchievements()">
     <div class="chapter-num" style="background:var(--red);color:#fff;font-size:13px">&#127919;</div>
@@ -2178,28 +2187,53 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 <!-- QUIZ PAGE -->
-<div class="chapter-page" id="chQuiz">
+<!-- UNIFIED QUIZ PAGE -->
+<div class="chapter-page" id="chUnifiedQuiz">
   <div class="chapter-hero">
     <div class="chapter-hero-num" style="font-size:40px">&#128221;</div>
     <div>
-      <div class="chapter-label">Knowledge Check</div>
-      <h2 class="chapter-title">실력 점검 퀴즈</h2>
-      <p class="chapter-desc">챕터 1~7에서 배운 내용을 확인해보세요. 총 10문제, 4지선다 객관식입니다.</p>
+      <div class="chapter-label">Quiz</div>
+      <h2 class="chapter-title">퀴즈</h2>
+      <p class="chapter-desc">트레이딩 실력을 테스트하고 점수를 기록하세요.</p>
     </div>
   </div>
 
-  <div class="section">
-    <div class="quiz-progress">
-      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
-      <div class="quiz-progress-text" id="quizProgressText">1 / 10</div>
-    </div>
-    <div id="quizBody"></div>
+  <!-- Quiz Sub Tabs -->
+  <div class="uq-tabs">
+    <button class="uq-tab active" onclick="uqSwitchTab(this,'uqTrading')">📝 트레이딩 퀴즈</button>
+    <button class="uq-tab" onclick="uqSwitchTab(this,'uqKnowledge')">📚 실력 점검</button>
   </div>
 
-  <div class="chapter-nav-bottom">
-    <button class="nav-btn" onclick="goTo(7)">← Chapter 7</button>
-    <div></div>
-    <button class="nav-btn" onclick="goToChart()">차트 보기 →</button>
+  <!-- Tab 1: Trading Quiz (New Quiz) -->
+  <div class="uq-panel" id="uqTrading">
+    <div class="nq-info" id="nqInfo">
+      <div class="nq-info-row"><span>오늘 응시</span><span id="nqAttempts">0 / 3회</span></div>
+      <div class="nq-info-row"><span>최고 점수</span><span id="nqBest">— / 20</span></div>
+      <button class="nq-start-btn" id="nqStartBtn" onclick="nqStart()">퀴즈 시작하기</button>
+    </div>
+    <div class="nq-game" id="nqGame" style="display:none">
+      <div class="nq-topbar">
+        <div class="nq-progress-bar"><div class="nq-progress-fill" id="nqProgFill"></div></div>
+        <div class="nq-topbar-info"><span id="nqCount">1/20</span><span class="nq-timer" id="nqTimer">30</span></div>
+      </div>
+      <div class="nq-cat" id="nqCat"></div>
+      <div class="nq-question" id="nqQuestion"></div>
+      <div class="nq-options" id="nqOptions"></div>
+      <div class="nq-feedback" id="nqFeedback" style="display:none"></div>
+      <button class="nq-next-btn" id="nqNextBtn" onclick="nqNext()" style="display:none">다음 문제 →</button>
+    </div>
+    <div class="nq-result" id="nqResult" style="display:none"></div>
+  </div>
+
+  <!-- Tab 2: Knowledge Check (Original Quiz) -->
+  <div class="uq-panel" id="uqKnowledge" style="display:none">
+    <div class="section">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:10%"></div></div>
+        <div class="quiz-progress-text" id="quizProgressText">1 / 10</div>
+      </div>
+      <div id="quizBody"></div>
+    </div>
   </div>
 </div>
 
@@ -2536,34 +2570,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="lb-myrank" id="lbMyRank" style="display:none"></div>
 </div>
 
-<!-- NEW QUIZ PAGE -->
-<div class="chapter-page" id="chNewQuiz">
-  <div class="chapter-hero">
-    <div class="chapter-hero-num" style="font-size:40px">&#128221;</div>
-    <div>
-      <div class="chapter-label">Trading Quiz</div>
-      <h2 class="chapter-title">트레이딩 퀴즈</h2>
-      <p class="chapter-desc">실력을 테스트하고 랭킹에 도전하세요. 하루 3회 응시 가능!</p>
-    </div>
-  </div>
-  <div class="nq-info" id="nqInfo">
-    <div class="nq-info-row"><span>오늘 응시</span><span id="nqAttempts">0 / 3회</span></div>
-    <div class="nq-info-row"><span>최고 점수</span><span id="nqBest">— / 20</span></div>
-    <button class="nq-start-btn" id="nqStartBtn" onclick="nqStart()">퀴즈 시작하기</button>
-  </div>
-  <div class="nq-game" id="nqGame" style="display:none">
-    <div class="nq-topbar">
-      <div class="nq-progress-bar"><div class="nq-progress-fill" id="nqProgFill"></div></div>
-      <div class="nq-topbar-info"><span id="nqCount">1/20</span><span class="nq-timer" id="nqTimer">30</span></div>
-    </div>
-    <div class="nq-cat" id="nqCat"></div>
-    <div class="nq-question" id="nqQuestion"></div>
-    <div class="nq-options" id="nqOptions"></div>
-    <div class="nq-feedback" id="nqFeedback" style="display:none"></div>
-    <button class="nq-next-btn" id="nqNextBtn" onclick="nqNext()" style="display:none">다음 문제 →</button>
-  </div>
-  <div class="nq-result" id="nqResult" style="display:none"></div>
-</div>
 
 <!-- ACHIEVEMENTS PAGE -->
 <div class="chapter-page" id="chAchievements">
@@ -2833,21 +2839,9 @@ const quizData = [
 let quizState = { current:0, score:0, answers:[], wrongOnly:false, order:[] };
 
 function goToQuiz() {
-  document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('chQuiz').classList.add('active');
-  document.querySelector('.quiz-btn').classList.add('active');
-  document.getElementById('progressFill').style.width = '100%';
-  window.scrollTo({ top:0, behavior:'smooth' });
-  closeSidebar();
-  // Reset quiz
-  quizState = { current:0, score:0, answers:[], wrongOnly:false, order:shuffleArray([...Array(quizData.length).keys()]) };
-  renderQuiz();
-  // Mobile nav
-  const mobPrev = document.getElementById('mobPrev');
-  const mobNext = document.getElementById('mobNext');
-  if(mobPrev){mobPrev.disabled=false;mobPrev.onclick=()=>goTo(7)}
-  if(mobNext){mobNext.textContent='차트 →';mobNext.disabled=false;mobNext.onclick=()=>goToChart()}
+  // Redirect to unified quiz page, knowledge tab
+  goToUnifiedQuiz();
+  setTimeout(()=>{document.querySelectorAll('.uq-tab')[1].click()},100);
 }
 
 function shuffleArray(arr) {
@@ -2973,7 +2967,46 @@ function goToGlossary(){goToPage('chGlossary','');document.querySelectorAll('.to
 // New feature pages (logic in features.js module)
 function goToDashboard(){goToPage('chDashboard','dash-btn');if(window.dbRender)window.dbRender()}
 function goToLeaderboard(){goToPage('chLeaderboard','lb-btn');if(window.lbLoad)window.lbLoad()}
-function goToNewQuiz(){goToPage('chNewQuiz','newquiz-btn');if(window.nqLoadInfo)window.nqLoadInfo()}
+function goToNewQuiz(){goToUnifiedQuiz()}
+// Unified Quiz
+function goToUnifiedQuiz(){
+  goToPage('chUnifiedQuiz','quiz-btn');
+  // Default to trading quiz tab
+  document.querySelectorAll('.uq-tab')[0].click();
+  if(window.nqLoadInfo)window.nqLoadInfo();
+}
+function uqSwitchTab(btn,panelId){
+  document.querySelectorAll('.uq-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.uq-panel').forEach(p=>p.style.display='none');
+  document.getElementById(panelId).style.display='block';
+  if(panelId==='uqKnowledge'){goToQuizInternal()}
+  if(panelId==='uqTrading'&&window.nqLoadInfo){window.nqLoadInfo()}
+}
+function goToQuizInternal(){
+  // Reset original quiz
+  quizState={current:0,score:0,answers:[],wrongOnly:false,order:[]};
+  const order=Array.from({length:quizData.length},(_,i)=>i);
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+  quizState.order=order;
+  renderQuiz();
+}
+// Profile dropdown
+function gDropToggle(e){
+  e.stopPropagation();
+  const dd=document.getElementById('gDropdown');
+  dd.classList.toggle('open');
+  // Update dropdown info
+  const name=document.getElementById('gName').textContent;
+  const level=document.getElementById('gLevel').textContent;
+  document.getElementById('gDropName').textContent=name;
+  document.getElementById('gDropLevel').textContent=level;
+}
+function gDropClose(){document.getElementById('gDropdown').classList.remove('open')}
+document.addEventListener('click',function(e){
+  const dd=document.getElementById('gDropdown');
+  if(dd&&!dd.contains(e.target)&&!e.target.closest('.g-profile'))gDropClose();
+})
 function goToAchievements(){goToPage('chAchievements','achv-btn');if(window.achvRender)window.achvRender()}
 
 // ===== JOURNAL =====

@@ -249,7 +249,7 @@ async function lbLoad(){
 // ========== NEW QUIZ ==========
 let nqState={current:0,score:0,questions:[],answers:[],timer:null,timeLeft:30};
 
-window.goToNewQuiz=function(){goToPage('chNewQuiz','newquiz-btn');nqLoadInfo()};
+window.goToNewQuiz=function(){if(window.goToUnifiedQuiz)window.goToUnifiedQuiz();else{goToPage('chUnifiedQuiz','quiz-btn');nqLoadInfo()}};
 
 async function nqLoadInfo(){
   document.getElementById('nqGame').style.display='none';

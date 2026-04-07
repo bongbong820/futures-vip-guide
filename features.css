@@ -1,3 +1,29 @@
+/* ===== PROFILE DROPDOWN ===== */
+.g-profile{cursor:pointer;position:relative}
+.g-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:220px;background:var(--white);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid var(--gray-200);z-index:9999;display:none;overflow:hidden}
+.g-dropdown.open{display:block;animation:gDropIn .2s ease}
+@keyframes gDropIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.g-drop-header{padding:14px 16px}
+.g-drop-name{font-size:14px;font-weight:700;color:var(--navy)}
+.g-drop-level{font-size:12px;color:var(--gray-500);margin-top:2px}
+.g-drop-divider{height:1px;background:var(--gray-200)}
+.g-drop-item{display:block;width:100%;text-align:left;padding:11px 16px;border:none;background:none;font-size:13px;font-weight:600;color:var(--gray-700);cursor:pointer;font-family:var(--font);transition:background .12s}
+.g-drop-item:hover{background:var(--gray-50)}
+.g-drop-logout{color:var(--red)}
+.g-drop-logout:hover{background:var(--red-light)}
+@media(max-width:640px){
+  .g-dropdown{position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;border-radius:16px 16px 0 0;max-height:60vh}
+  .g-dropdown.open{animation:gDropSlide .3s ease}
+  @keyframes gDropSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
+}
+
+/* ===== UNIFIED QUIZ TABS ===== */
+.uq-tabs{display:flex;gap:6px;margin-bottom:20px}
+.uq-tab{flex:1;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;background:var(--gray-100);color:var(--gray-600);font-family:var(--font);transition:all .15s;text-align:center}
+.uq-tab:hover{background:var(--blue-light);color:var(--blue)}
+.uq-tab.active{background:var(--blue);color:#fff}
+.uq-panel{min-height:200px}
+
 /* ===== DASHBOARD ===== */
 .db-edit-btn{background:var(--blue);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font)}
 .db-edit-btn:hover{background:var(--navy)}
