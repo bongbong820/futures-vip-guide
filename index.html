@@ -1579,6 +1579,18 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="header-right">선물로 500억 번 트레이더 · 7 챕터 완성</div>
     <button class="pdf-btn" onclick="window.print()" title="PDF 저장">&#128438; PDF</button>
     <button class="dark-toggle" onclick="toggleDark()" title="다크모드" aria-label="다크모드 전환">🌙</button>
+    <div class="g-auth-wrap" id="gAuthWrap">
+      <button class="g-login-btn" id="gLoginBtn" onclick="gSignIn()">
+        <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        구글 로그인
+      </button>
+      <div class="g-profile" id="gProfile" style="display:none">
+        <img class="g-profile-photo" id="gPhoto" src="" alt="">
+        <span class="g-profile-name" id="gName"></span>
+        <span class="g-profile-level" id="gLevel"></span>
+        <button class="g-logout-btn" id="gLogoutBtn" onclick="gSignOut()" title="로그아웃">&#x2715;</button>
+      </div>
+    </div>
   </div>
 </header>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
@@ -3378,274 +3390,32 @@ function showToast(msg, btnText, btnAction) {
 // ===== PWA =====
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 
-// ===== ATTENDANCE & LEVEL SYSTEM =====
-const ATT_KEY = 'vip_user_data';
-const LEVELS = [
-  { id:'bronze', name:'브론즈', icon:'🥉', color:'#CD7F32', min:1, desc:'트레이더의 첫 걸음' },
-  { id:'silver', name:'실버',  icon:'🥈', color:'#C0C0C0', min:15, desc:'꾸준한 트레이더' },
-  { id:'gold',   name:'골드',  icon:'🥇', color:'#FFD700', min:30, desc:'베테랑 트레이더' }
-];
-const MILESTONES = {7:'1주일 연속! 🔥 대단해요!',14:'2주일 연속! 💪 진짜 트레이더!',30:'한 달 연속! 🏆 전설의 시작!'};
-
-let attViewMonth, attViewYear;
-
-function attLoad(){
-  const raw = localStorage.getItem(ATT_KEY);
-  if(raw) try{return JSON.parse(raw)}catch(e){}
-  return {attendance_dates:[],streak_current:0,streak_best:0,total_days:0,level:'bronze',last_visit:null,last_popup_shown:null};
-}
-function attSave(d){localStorage.setItem(ATT_KEY,JSON.stringify(d))}
-function attToday(){return new Date().toLocaleDateString('en-CA')} // YYYY-MM-DD
-function attYesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toLocaleDateString('en-CA')}
-
-function attGetLevel(totalDays){
-  for(let i=LEVELS.length-1;i>=0;i--){if(totalDays>=LEVELS[i].min)return LEVELS[i]}
-  return LEVELS[0];
-}
-
-function attCheckin(){
-  const data = attLoad();
-  const today = attToday();
-
-  // Already checked in today
-  if(data.attendance_dates.includes(today)){
-    attUpdateBadges(data);
-    return;
-  }
-
-  const oldLevel = attGetLevel(data.total_days);
-
-  // Add today
-  data.attendance_dates.push(today);
-  data.total_days = data.attendance_dates.length;
-
-  // Calculate streak
-  let streakBroken = false;
-  if(data.last_visit === attYesterday()){
-    data.streak_current++;
-  } else if(data.last_visit === today){
-    // same day, do nothing
-  } else {
-    if(data.last_visit && data.streak_current > 1) streakBroken = true;
-    data.streak_current = 1;
-  }
-  if(data.streak_current > data.streak_best) data.streak_best = data.streak_current;
-  data.last_visit = today;
-
-  // Level check
-  const newLevel = attGetLevel(data.total_days);
-  data.level = newLevel.id;
-  const leveledUp = newLevel.id !== oldLevel.id && data.total_days > 1;
-
-  attSave(data);
-
-  // Show popup only once per day
-  if(data.last_popup_shown === today){
-    attUpdateBadges(data);
-    return;
-  }
-  data.last_popup_shown = today;
-  attSave(data);
-
-  // Level-up effect
-  if(leveledUp){
-    attShowLevelUp(newLevel, ()=>attShowPopup(data, streakBroken));
-  } else {
-    attShowPopup(data, streakBroken);
-  }
-  attUpdateBadges(data);
-}
-
-function attShowPopup(data, streakBroken){
-  const lvl = attGetLevel(data.total_days);
-
-  // Level badge
-  const badge = document.getElementById('attLevelBadge');
-  badge.className = 'att-level-badge att-level-'+lvl.id;
-  badge.textContent = lvl.icon+' '+lvl.name+' · '+lvl.desc;
-
-  // Title & subtitle
-  document.getElementById('attTitle').textContent = '오늘도 출석하셨군요! 🎉';
-  document.getElementById('attSub').textContent = '연속 '+data.streak_current+'일째 접속 중';
-
-  // Streak broken message
-  const brokenEl = document.getElementById('attBroken');
-  if(streakBroken){
-    brokenEl.textContent = '아쉽게도 연속이 끊겼어요 😢 오늘부터 다시 시작!';
-    brokenEl.style.display = 'block';
-    document.getElementById('attSub').textContent = '오늘부터 새로운 시작!';
-  } else {
-    brokenEl.style.display = 'none';
-  }
-
-  // Milestone
-  const msEl = document.getElementById('attMilestone');
-  if(MILESTONES[data.streak_current]){
-    msEl.textContent = MILESTONES[data.streak_current];
-    msEl.style.display = 'block';
-  } else {
-    msEl.style.display = 'none';
-  }
-
-  // Stats
-  document.getElementById('attStreak').textContent = data.streak_current;
-  document.getElementById('attBest').textContent = data.streak_best;
-  // This month count
-  const thisMonth = attToday().slice(0,7);
-  const monthCount = data.attendance_dates.filter(d=>d.startsWith(thisMonth)).length;
-  document.getElementById('attMonth').textContent = monthCount;
-
-  // Progress bar
-  attRenderProgress(data, lvl);
-
-  // Calendar
-  const now = new Date();
-  attViewMonth = now.getMonth();
-  attViewYear = now.getFullYear();
-  attRenderCal(data);
-
-  // Show
-  const overlay = document.getElementById('attOverlay');
-  overlay.classList.add('show');
-}
-
-function attClose(){
-  document.getElementById('attOverlay').classList.remove('show');
-}
-
-function attRenderProgress(data, lvl){
-  const progWrap = document.getElementById('attProgress');
-  const label = document.getElementById('attProgLabel');
-  const count = document.getElementById('attProgCount');
-  const fill = document.getElementById('attProgFill');
-
-  if(lvl.id === 'gold'){
-    label.textContent = '최고 등급 달성! 🏆';
-    count.textContent = '';
-    fill.style.width = '100%';
-    fill.className = 'att-progress-fill gold';
-  } else {
-    const nextIdx = LEVELS.findIndex(l=>l.id===lvl.id)+1;
-    const next = LEVELS[nextIdx];
-    const pct = Math.min(100, Math.round(data.total_days/next.min*100));
-    label.textContent = next.icon+' '+next.name+'까지';
-    count.textContent = data.total_days+'/'+next.min+'일';
-    fill.style.width = pct+'%';
-    fill.className = 'att-progress-fill '+lvl.id;
-  }
-}
-
-function attRenderCal(data){
-  const grid = document.getElementById('attCalGrid');
-  const title = document.getElementById('attCalTitle');
-  const now = new Date();
-
-  title.textContent = attViewYear+'년 '+(attViewMonth+1)+'월';
-
-  // Disable next if current month
-  document.getElementById('attNext').disabled = (attViewYear===now.getFullYear() && attViewMonth===now.getMonth());
-
-  const firstDay = new Date(attViewYear, attViewMonth, 1).getDay(); // 0=Sun
-  const daysInMonth = new Date(attViewYear, attViewMonth+1, 0).getDate();
-  const todayStr = attToday();
-  const monthStr = attViewYear+'-'+String(attViewMonth+1).padStart(2,'0');
-
-  let html = ['일','월','화','수','목','금','토'].map(d=>'<div class="att-cal-dow">'+d+'</div>').join('');
-
-  // Empty cells before 1st
-  for(let i=0;i<firstDay;i++) html+='<div class="att-cal-day empty"></div>';
-
-  for(let d=1;d<=daysInMonth;d++){
-    const ds = monthStr+'-'+String(d).padStart(2,'0');
-    const isChecked = data.attendance_dates.includes(ds);
-    const isToday = ds === todayStr;
-    let cls = 'att-cal-day';
-    if(isChecked) cls+=' checked';
-    if(isToday) cls+=' today';
-    html+='<div class="'+cls+'">'+d+'</div>';
-  }
-  grid.innerHTML = html;
-}
-
-function attNavMonth(dir){
-  attViewMonth += dir;
-  if(attViewMonth<0){attViewMonth=11;attViewYear--}
-  if(attViewMonth>11){attViewMonth=0;attViewYear++}
-  attRenderCal(attLoad());
-}
-
-function attShowLevelUp(level, callback){
-  const overlay = document.getElementById('lvlupOverlay');
-  document.getElementById('lvlupIcon').textContent = level.icon;
-  document.getElementById('lvlupText').textContent = '레벨업! '+level.icon+' '+level.name+' 달성!';
-  document.getElementById('lvlupSub').textContent = level.desc;
-
-  // Particles
-  const pc = document.getElementById('lvlupParticles');
-  pc.innerHTML = '';
-  for(let i=0;i<30;i++){
-    const p = document.createElement('div');
-    p.className = 'lvlup-particle';
-    p.style.left = Math.random()*100+'%';
-    p.style.top = '-10px';
-    p.style.background = level.color;
-    p.style.animationDelay = Math.random()*1+'s';
-    p.style.width = (4+Math.random()*8)+'px';
-    p.style.height = p.style.width;
-    pc.appendChild(p);
-  }
-
-  overlay.classList.add('show');
-  setTimeout(()=>{overlay.classList.remove('show');if(callback)callback()},2500);
-}
-
-function attUpdateBadges(data){
-  const lvl = attGetLevel(data.total_days);
-
-  // Nav badge
-  let navBadge = document.getElementById('navLevelBadge');
-  if(!navBadge){
-    navBadge = document.createElement('span');
-    navBadge.id = 'navLevelBadge';
-    const headerRight = document.querySelector('.header-right');
-    if(headerRight) headerRight.appendChild(navBadge);
-  }
-  navBadge.className = 'nav-level-badge nav-level-'+lvl.id;
-  navBadge.textContent = lvl.icon+' '+lvl.name+' | 출석 '+data.total_days+'일';
-
-  // AI chat header badge
-  let aiBadgeLvl = document.getElementById('aiChatLevel');
-  if(!aiBadgeLvl){
-    aiBadgeLvl = document.createElement('span');
-    aiBadgeLvl.id = 'aiChatLevel';
-    aiBadgeLvl.className = 'ai-chat-level';
-    const aiName = document.querySelector('.ai-chat-hd-name');
-    if(aiName) aiName.appendChild(aiBadgeLvl);
-  }
-  aiBadgeLvl.style.background = lvl.color+'22';
-  aiBadgeLvl.style.color = lvl.color;
-  aiBadgeLvl.textContent = lvl.icon+' '+lvl.name;
-}
-
-// Hook into login flow
-(function attInit(){
-  // If already authed, check in
-  if(localStorage.getItem('vipAuth')==='true'){
-    setTimeout(attCheckin, 800);
-  }
-  // Also hook into checkPw success
-  const origCheckPw = window.checkPw;
-  window.checkPw = async function(){
-    await origCheckPw();
-    if(localStorage.getItem('vipAuth')==='true'){
-      setTimeout(attCheckin, 1200);
-    }
-  };
-})()
+// ===== ATTENDANCE & LEVEL SYSTEM (Firebase) =====
+// See Firebase module script below
 </script>
 
 <!-- ===== ATTENDANCE & LEVEL SYSTEM ===== -->
 <style>
+/* Google Auth */
+.g-auth-wrap{display:flex;align-items:center;margin-left:8px}
+.g-login-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--gray-200);border-radius:20px;background:var(--white);color:var(--gray-700);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.g-login-btn:hover{background:var(--gray-50);border-color:var(--gray-300);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.g-login-btn svg{flex-shrink:0}
+.g-profile{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 3px;border-radius:20px;background:var(--gray-50);border:1px solid var(--gray-200)}
+.g-profile-photo{width:26px;height:26px;border-radius:50%;object-fit:cover;border:1px solid var(--gray-200)}
+.g-profile-name{font-size:12px;font-weight:600;color:var(--navy);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g-profile-level{font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px}
+.g-logout-btn{background:none;border:none;color:var(--gray-400);font-size:12px;cursor:pointer;padding:2px 4px;line-height:1}
+.g-logout-btn:hover{color:var(--red)}
+@media(max-width:900px){
+  .g-auth-wrap{position:absolute;top:12px;right:52px}
+  .g-profile-name{max-width:50px}
+}
+@media(max-width:640px){
+  .g-login-btn{padding:5px 10px;font-size:11px}
+  .g-login-btn svg{width:14px;height:14px}
+}
+
 /* Attendance Popup Overlay */
 .att-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
 .att-overlay.show{display:flex;opacity:1}
@@ -4101,6 +3871,276 @@ document.getElementById('aiTa').addEventListener('keydown', function(e){
     aiSend();
   }
 });
+</script>
+
+<!-- ===== FIREBASE SDK ===== -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import{getAuth,signInWithPopup,signOut as fbSignOut,onAuthStateChanged,GoogleAuthProvider}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import{getFirestore,doc,getDoc,setDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyBidXZjhn0tF-hO8jdWpZWZSRjcaIYkc5Q",
+  authDomain:"futures-vip-guide.firebaseapp.com",
+  projectId:"futures-vip-guide",
+  storageBucket:"futures-vip-guide.firebasestorage.app",
+  messagingSenderId:"451671012585",
+  appId:"1:451671012585:web:4981d885659770f2866c78"
+};
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const provider=new GoogleAuthProvider();
+
+const LEVELS=[
+  {id:'bronze',name:'브론즈',icon:'🥉',color:'#CD7F32',min:1,desc:'트레이더의 첫 걸음'},
+  {id:'silver',name:'실버',icon:'🥈',color:'#C0C0C0',min:15,desc:'꾸준한 트레이더'},
+  {id:'gold',name:'골드',icon:'🥇',color:'#FFD700',min:30,desc:'베테랑 트레이더'}
+];
+const MILESTONES={7:'1주일 연속! 🔥 대단해요!',14:'2주일 연속! 💪 진짜 트레이더!',30:'한 달 연속! 🏆 전설의 시작!'};
+
+let attViewMonth,attViewYear;
+let _attPopupShownThisSession=false;
+
+// KST today/yesterday
+function attToday(){
+  const kst=new Date(Date.now()+9*3600000);
+  return kst.toISOString().slice(0,10);
+}
+function attYesterday(){
+  const kst=new Date(Date.now()+9*3600000-86400000);
+  return kst.toISOString().slice(0,10);
+}
+function attGetLevel(totalDays){
+  for(let i=LEVELS.length-1;i>=0;i--){if(totalDays>=LEVELS[i].min)return LEVELS[i]}
+  return LEVELS[0];
+}
+
+// ===== Google Sign In/Out =====
+window.gSignIn=async function(){
+  try{await signInWithPopup(auth,provider)}catch(e){console.error('Login error:',e)}
+};
+window.gSignOut=async function(){
+  try{
+    await fbSignOut(auth);
+    document.getElementById('gLoginBtn').style.display='flex';
+    document.getElementById('gProfile').style.display='none';
+    // Clear nav/chat badges
+    const nb=document.getElementById('navLevelBadge');if(nb)nb.remove();
+    const ab=document.getElementById('aiChatLevel');if(ab)ab.remove();
+  }catch(e){console.error('Logout error:',e)}
+};
+
+// ===== Auth State =====
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){
+    document.getElementById('gLoginBtn').style.display='flex';
+    document.getElementById('gProfile').style.display='none';
+    return;
+  }
+  // Show profile
+  document.getElementById('gLoginBtn').style.display='none';
+  document.getElementById('gProfile').style.display='flex';
+  document.getElementById('gPhoto').src=user.photoURL||'';
+  document.getElementById('gName').textContent=user.displayName||'User';
+
+  // Load/create Firestore user data
+  const ref=doc(db,'users',user.uid);
+  let snap=await getDoc(ref);
+  let data;
+
+  if(!snap.exists()){
+    data={
+      uid:user.uid,name:user.displayName||'',email:user.email||'',
+      photoURL:user.photoURL||'',
+      attendance_dates:[],streak_current:0,streak_best:0,
+      total_days:0,level:'bronze',last_visit:null,
+      created_at:serverTimestamp(),updated_at:serverTimestamp()
+    };
+    await setDoc(ref,data);
+  } else {
+    data=snap.data();
+  }
+
+  // Check in
+  const today=attToday();
+  const alreadyChecked=data.attendance_dates&&data.attendance_dates.includes(today);
+
+  if(!alreadyChecked){
+    const oldLevel=attGetLevel(data.total_days||0);
+    if(!data.attendance_dates)data.attendance_dates=[];
+    data.attendance_dates.push(today);
+    data.total_days=data.attendance_dates.length;
+
+    let streakBroken=false;
+    if(data.last_visit===attYesterday()){
+      data.streak_current=(data.streak_current||0)+1;
+    } else if(data.last_visit===today){
+      // same day
+    } else {
+      if(data.last_visit&&(data.streak_current||0)>1)streakBroken=true;
+      data.streak_current=1;
+    }
+    if(data.streak_current>data.streak_best)data.streak_best=data.streak_current;
+    data.last_visit=today;
+
+    const newLevel=attGetLevel(data.total_days);
+    data.level=newLevel.id;
+    const leveledUp=newLevel.id!==oldLevel.id&&data.total_days>1;
+
+    // Update Firestore
+    data.name=user.displayName||data.name;
+    data.photoURL=user.photoURL||data.photoURL;
+    data.updated_at=serverTimestamp();
+    await setDoc(ref,data,{merge:true});
+
+    attUpdateBadges(data);
+    attUpdateNavLevel(data);
+
+    // Show popup once per session
+    if(!_attPopupShownThisSession){
+      _attPopupShownThisSession=true;
+      if(leveledUp){
+        attShowLevelUp(newLevel,()=>attShowPopup(data,streakBroken));
+      } else {
+        attShowPopup(data,streakBroken);
+      }
+    }
+  } else {
+    attUpdateBadges(data);
+    attUpdateNavLevel(data);
+  }
+});
+
+// ===== Popup =====
+function attShowPopup(data,streakBroken){
+  const lvl=attGetLevel(data.total_days);
+  const badge=document.getElementById('attLevelBadge');
+  badge.className='att-level-badge att-level-'+lvl.id;
+  badge.textContent=lvl.icon+' '+lvl.name+' · '+lvl.desc;
+
+  document.getElementById('attTitle').textContent='오늘도 출석하셨군요! 🎉';
+  document.getElementById('attSub').textContent='연속 '+data.streak_current+'일째 접속 중';
+
+  const brokenEl=document.getElementById('attBroken');
+  if(streakBroken){
+    brokenEl.textContent='아쉽게도 연속이 끊겼어요 😢 오늘부터 다시 시작!';
+    brokenEl.style.display='block';
+    document.getElementById('attSub').textContent='오늘부터 새로운 시작!';
+  }else{brokenEl.style.display='none'}
+
+  const msEl=document.getElementById('attMilestone');
+  if(MILESTONES[data.streak_current]){msEl.textContent=MILESTONES[data.streak_current];msEl.style.display='block'}
+  else{msEl.style.display='none'}
+
+  document.getElementById('attStreak').textContent=data.streak_current;
+  document.getElementById('attBest').textContent=data.streak_best;
+  const thisMonth=attToday().slice(0,7);
+  document.getElementById('attMonth').textContent=(data.attendance_dates||[]).filter(d=>d.startsWith(thisMonth)).length;
+
+  attRenderProgress(data,lvl);
+  const now=new Date();
+  attViewMonth=now.getMonth();attViewYear=now.getFullYear();
+  attRenderCal(data);
+  document.getElementById('attOverlay').classList.add('show');
+}
+
+window.attClose=function(){document.getElementById('attOverlay').classList.remove('show')};
+
+function attRenderProgress(data,lvl){
+  const label=document.getElementById('attProgLabel');
+  const count=document.getElementById('attProgCount');
+  const fill=document.getElementById('attProgFill');
+  if(lvl.id==='gold'){
+    label.textContent='최고 등급 달성! 🏆';count.textContent='';
+    fill.style.width='100%';fill.className='att-progress-fill gold';
+  }else{
+    const nextIdx=LEVELS.findIndex(l=>l.id===lvl.id)+1;
+    const next=LEVELS[nextIdx];
+    const pct=Math.min(100,Math.round(data.total_days/next.min*100));
+    label.textContent=next.icon+' '+next.name+'까지';
+    count.textContent=data.total_days+'/'+next.min+'일';
+    fill.style.width=pct+'%';fill.className='att-progress-fill '+lvl.id;
+  }
+}
+
+function attRenderCal(data){
+  const grid=document.getElementById('attCalGrid');
+  const title=document.getElementById('attCalTitle');
+  const now=new Date();
+  title.textContent=attViewYear+'년 '+(attViewMonth+1)+'월';
+  document.getElementById('attNext').disabled=(attViewYear===now.getFullYear()&&attViewMonth===now.getMonth());
+  const firstDay=new Date(attViewYear,attViewMonth,1).getDay();
+  const daysInMonth=new Date(attViewYear,attViewMonth+1,0).getDate();
+  const todayStr=attToday();
+  const monthStr=attViewYear+'-'+String(attViewMonth+1).padStart(2,'0');
+  let html=['일','월','화','수','목','금','토'].map(d=>'<div class="att-cal-dow">'+d+'</div>').join('');
+  for(let i=0;i<firstDay;i++)html+='<div class="att-cal-day empty"></div>';
+  const dates=data.attendance_dates||[];
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=monthStr+'-'+String(d).padStart(2,'0');
+    let cls='att-cal-day';
+    if(dates.includes(ds))cls+=' checked';
+    if(ds===todayStr)cls+=' today';
+    html+='<div class="'+cls+'">'+d+'</div>';
+  }
+  grid.innerHTML=html;
+}
+
+window.attNavMonth=function(dir){
+  attViewMonth+=dir;
+  if(attViewMonth<0){attViewMonth=11;attViewYear--}
+  if(attViewMonth>11){attViewMonth=0;attViewYear++}
+  // Re-fetch data from Firestore for calendar
+  const user=auth.currentUser;
+  if(user){
+    getDoc(doc(db,'users',user.uid)).then(snap=>{
+      if(snap.exists())attRenderCal(snap.data());
+    });
+  }
+};
+
+function attShowLevelUp(level,callback){
+  const overlay=document.getElementById('lvlupOverlay');
+  document.getElementById('lvlupIcon').textContent=level.icon;
+  document.getElementById('lvlupText').textContent='레벨업! '+level.icon+' '+level.name+' 달성!';
+  document.getElementById('lvlupSub').textContent=level.desc;
+  const pc=document.getElementById('lvlupParticles');pc.innerHTML='';
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');p.className='lvlup-particle';
+    p.style.left=Math.random()*100+'%';p.style.top='-10px';
+    p.style.background=level.color;p.style.animationDelay=Math.random()*1+'s';
+    p.style.width=(4+Math.random()*8)+'px';p.style.height=p.style.width;
+    pc.appendChild(p);
+  }
+  overlay.classList.add('show');
+  setTimeout(()=>{overlay.classList.remove('show');if(callback)callback()},2500);
+}
+
+function attUpdateBadges(data){
+  const lvl=attGetLevel(data.total_days);
+  // AI chat header badge
+  let aiBadgeLvl=document.getElementById('aiChatLevel');
+  if(!aiBadgeLvl){
+    aiBadgeLvl=document.createElement('span');aiBadgeLvl.id='aiChatLevel';
+    aiBadgeLvl.className='ai-chat-level';
+    const aiName=document.querySelector('.ai-chat-hd-name');
+    if(aiName)aiName.appendChild(aiBadgeLvl);
+  }
+  aiBadgeLvl.style.background=lvl.color+'22';
+  aiBadgeLvl.style.color=lvl.color;
+  aiBadgeLvl.textContent=lvl.icon+' '+lvl.name;
+}
+
+function attUpdateNavLevel(data){
+  const lvl=attGetLevel(data.total_days);
+  const el=document.getElementById('gLevel');
+  if(el){
+    el.style.background=lvl.color+'22';
+    el.style.color=lvl.color;
+    el.textContent=lvl.icon+' '+lvl.name;
+  }
+}
 </script>
 </body>
 </html>
