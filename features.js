@@ -182,7 +182,11 @@ const DB_WIDGETS=[
   {id:'attendance',label:'📊 오늘의 출석 현황',render:dbRenderAttendance},
   {id:'quiz',label:'📝 퀴즈 오늘의 문제',render:()=>'<div class="db-widget-body"><button onclick="goToNewQuiz()" style="padding:6px 16px;border:none;border-radius:8px;background:var(--green);color:#fff;cursor:pointer;font-family:var(--font);font-weight:600;font-size:12px">퀴즈 풀기 →</button></div>'},
   {id:'level',label:'🎯 내 레벨 & 도전과제',render:dbRenderLevel},
-  {id:'feargreed',label:'😱 공포/탐욕 지수',render:()=>'<div class="db-widget-body" style="min-height:200px"><iframe src="https://s.tradingview.com/embed-widget/technical-analysis/?symbol=CRYPTO%3ABTCUSD&interval=1D&width=100%25&height=180&locale=kr&colorTheme=light&isTransparent=true" style="width:100%;height:180px;border:none"></iframe></div>'}
+  {id:'feargreed',label:'😱 공포/탐욕 지수',render:()=>{
+    const dark=document.body.classList.contains('dark');
+    const theme=dark?'dark':'light';
+    return`<div class="db-widget-body db-fg-body"><div class="db-fg-powered">Powered by TradingView</div><div class="db-fg-wrap"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js">{"interval":"1D","width":"100%","height":"200","symbol":"CRYPTO:BTCUSD","showIntervalTabs":false,"isTransparent":true,"locale":"kr","colorTheme":"${theme}"}<\/script></div></div></div>`;
+  }}
 ];
 
 async function dbRenderAttendance(){

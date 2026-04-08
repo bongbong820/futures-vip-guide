@@ -43,6 +43,11 @@
 .db-widget-hd{padding:14px 18px 0;font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px}
 .db-widget-body{padding:14px 18px 18px;font-size:13px;color:var(--gray-600)}
 .db-login-msg{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-500)}
+.db-fg-body{padding:0 !important;position:relative}
+.db-fg-powered{position:absolute;top:10px;right:14px;font-size:9px;color:var(--gray-400);z-index:1}
+.db-fg-wrap{height:200px;overflow:hidden;border-radius:0 0 16px 16px}
+.db-fg-wrap .tradingview-widget-container{width:100%;height:200px}
+.db-fg-wrap iframe{border:none !important}
 
 /* ===== LEADERBOARD ===== */
 .lb-perfect{background:linear-gradient(135deg,#FFF3ED,#FFE8D6);border-radius:16px;padding:18px 20px;margin-bottom:20px}
