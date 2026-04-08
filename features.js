@@ -197,7 +197,8 @@ const DB_WIDGETS=[
     const colors={'extreme-fear':'#EA3943','fear':'#FF6B35','neutral':'#F5A623','greed':'#93D900','extreme-greed':'#20C997'};
     const c=colors[cls];
     const deg=180*(val/100);
-    return`<div class="db-widget-body db-fg-card">
+    window._fgVal=val;window._fgLabel=label;window._fgCls=cls;
+    return`<div class="db-widget-body db-fg-card" onclick="fgOpenPopup()" style="cursor:pointer">
       <div class="db-fg-gauge"><svg viewBox="0 0 200 110" class="db-fg-svg">
         <path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#eee" stroke-width="14" stroke-linecap="round"/>
         <path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="${c}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deg*Math.PI*90/180} 999" class="db-fg-arc"/>
@@ -205,7 +206,7 @@ const DB_WIDGETS=[
       </svg>
       <div class="db-fg-val" style="color:${c}">${val}</div></div>
       <div class="db-fg-label" style="color:${c}">${label}</div>
-      <div class="db-fg-time">업데이트: 방금 전 · Alternative.me</div>
+      <div class="db-fg-time">클릭하여 자세히 보기 · Alternative.me</div>
     </div>`;
   }}
 ];
@@ -843,3 +844,74 @@ const _achvInterval=setInterval(()=>{
     clearInterval(_achvInterval);
   }catch(e){}
 },500);
+
+// ========== FEAR & GREED POPUP ==========
+const FG_ZONES=[
+  {cls:'extreme-fear',emoji:'🔴',name:'극도의 공포',range:'0 ~ 24',color:'#ef4444',
+   desc:'시장이 극도로 겁에 질려 있음. 역사적 매수 기회일 수 있음.'},
+  {cls:'fear',emoji:'🟠',name:'공포',range:'25 ~ 44',color:'#f97316',
+   desc:'투자자들이 불안해하는 상태. 저가 매수 기회 탐색.'},
+  {cls:'neutral',emoji:'🟡',name:'중립',range:'45 ~ 55',color:'#eab308',
+   desc:'시장이 균형 상태. 방향성 불분명.'},
+  {cls:'greed',emoji:'🟢',name:'탐욕',range:'56 ~ 74',color:'#84cc16',
+   desc:'투자자들이 낙관적. 과열 주의 시작.'},
+  {cls:'extreme-greed',emoji:'💚',name:'극도의 탐욕',range:'75 ~ 100',color:'#22c55e',
+   desc:'시장이 과열 상태. 조정 가능성 높음.'}
+];
+
+window.fgOpenPopup=function(){
+  let overlay=document.getElementById('fgPopupOverlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='fgPopupOverlay';
+    overlay.className='fg-overlay';
+    overlay.onclick=function(e){if(e.target===this)fgClosePopup()};
+    document.body.appendChild(overlay);
+  }
+  const val=window._fgVal||50;
+  const label=window._fgLabel||'중립';
+  const cls=window._fgCls||'neutral';
+  const zone=FG_ZONES.find(z=>z.cls===cls)||FG_ZONES[2];
+
+  overlay.innerHTML=`<div class="fg-popup">
+    <div class="fg-popup-hd">
+      <div class="fg-popup-title">공포/탐욕 지수란?</div>
+      <button class="fg-popup-close" onclick="fgClosePopup()">&#x2715;</button>
+    </div>
+    <div class="fg-popup-current" style="color:${zone.color}">
+      <span class="fg-popup-val">${val}</span>
+      <span class="fg-popup-label">${label}</span>
+    </div>
+    <div class="fg-popup-zones">${FG_ZONES.map(z=>{
+      const active=z.cls===cls;
+      return`<div class="fg-zone${active?' fg-zone-active':''}" style="border-left:4px solid ${z.color};${active?'background:'+z.color+'11;border:1.5px solid '+z.color+';border-left:4px solid '+z.color:''}">
+        <div class="fg-zone-top"><span>${z.emoji} ${z.name}</span><span class="fg-zone-range">${z.range}</span></div>
+        <div class="fg-zone-desc">${z.desc}</div>
+      </div>`;
+    }).join('')}</div>
+    <div class="fg-popup-quote">
+      <div class="fg-popup-quote-text">"남들이 탐욕스러울 때 두려워하고,<br>남들이 두려워할 때 탐욕스러워져라."</div>
+      <div class="fg-popup-quote-author">— 워렌 버핏</div>
+    </div>
+    <div class="fg-popup-accordion" onclick="this.classList.toggle('open')">
+      <div class="fg-popup-acc-title">지수는 어떻게 계산되나요? <span class="fg-acc-arrow">▾</span></div>
+      <div class="fg-popup-acc-body">
+        <div class="fg-acc-item"><span>변동성</span><span>25%</span></div>
+        <div class="fg-acc-item"><span>시장 모멘텀</span><span>25%</span></div>
+        <div class="fg-acc-item"><span>소셜 미디어 반응</span><span>15%</span></div>
+        <div class="fg-acc-item"><span>설문조사</span><span>15%</span></div>
+        <div class="fg-acc-item"><span>비트코인 도미넌스</span><span>10%</span></div>
+        <div class="fg-acc-item"><span>구글 트렌드</span><span>10%</span></div>
+        <div class="fg-acc-src">출처: Alternative.me</div>
+      </div>
+    </div>
+    <button class="fg-popup-confirm" onclick="fgClosePopup()">확인</button>
+  </div>`;
+  requestAnimationFrame(()=>overlay.classList.add('show'));
+};
+
+window.fgClosePopup=function(){
+  const o=document.getElementById('fgPopupOverlay');
+  if(o){o.classList.remove('show');setTimeout(()=>o.remove(),300)}
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')fgClosePopup()});
