@@ -182,10 +182,31 @@ const DB_WIDGETS=[
   {id:'attendance',label:'📊 오늘의 출석 현황',render:dbRenderAttendance},
   {id:'quiz',label:'📝 퀴즈 오늘의 문제',render:()=>'<div class="db-widget-body"><button onclick="goToNewQuiz()" style="padding:6px 16px;border:none;border-radius:8px;background:var(--green);color:#fff;cursor:pointer;font-family:var(--font);font-weight:600;font-size:12px">퀴즈 풀기 →</button></div>'},
   {id:'level',label:'🎯 내 레벨 & 도전과제',render:dbRenderLevel},
-  {id:'feargreed',label:'😱 공포/탐욕 지수',render:()=>{
-    const dark=document.body.classList.contains('dark');
-    const theme=dark?'dark':'light';
-    return`<div class="db-widget-body db-fg-body"><div class="db-fg-powered">Powered by TradingView</div><div class="db-fg-wrap"><div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js">{"interval":"1D","width":"100%","height":"200","symbol":"CRYPTO:BTCUSD","showIntervalTabs":false,"isTransparent":true,"locale":"kr","colorTheme":"${theme}"}<\/script></div></div></div>`;
+  {id:'feargreed',label:'😱 공포/탐욕 지수',render:async()=>{
+    let val=50,cls='neutral',label='중립';
+    try{
+      const r=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent('https://api.alternative.me/fng/?limit=1'));
+      const j=await r.json();const d=JSON.parse(j.contents);
+      val=parseInt(d.data[0].value);
+    }catch(e){/* fallback to 50 */}
+    if(val<=24){cls='extreme-fear';label='극도의 공포'}
+    else if(val<=44){cls='fear';label='공포'}
+    else if(val<=55){cls='neutral';label='중립'}
+    else if(val<=74){cls='greed';label='탐욕'}
+    else{cls='extreme-greed';label='극도의 탐욕'}
+    const colors={'extreme-fear':'#EA3943','fear':'#FF6B35','neutral':'#F5A623','greed':'#93D900','extreme-greed':'#20C997'};
+    const c=colors[cls];
+    const deg=180*(val/100);
+    return`<div class="db-widget-body db-fg-card">
+      <div class="db-fg-gauge"><svg viewBox="0 0 200 110" class="db-fg-svg">
+        <path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="#eee" stroke-width="14" stroke-linecap="round"/>
+        <path d="M10 100 A90 90 0 0 1 190 100" fill="none" stroke="${c}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${deg*Math.PI*90/180} 999" class="db-fg-arc"/>
+        <circle cx="${100+90*Math.cos(Math.PI*(1-val/100))}" cy="${100-90*Math.sin(Math.PI*(val/100))}" r="6" fill="${c}"/>
+      </svg>
+      <div class="db-fg-val" style="color:${c}">${val}</div></div>
+      <div class="db-fg-label" style="color:${c}">${label}</div>
+      <div class="db-fg-time">업데이트: 방금 전 · Alternative.me</div>
+    </div>`;
   }}
 ];
 

@@ -43,11 +43,13 @@
 .db-widget-hd{padding:14px 18px 0;font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px}
 .db-widget-body{padding:14px 18px 18px;font-size:13px;color:var(--gray-600)}
 .db-login-msg{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--gray-500)}
-.db-fg-body{padding:0 !important;position:relative}
-.db-fg-powered{position:absolute;top:10px;right:14px;font-size:9px;color:var(--gray-400);z-index:1}
-.db-fg-wrap{height:200px;overflow:hidden;border-radius:0 0 16px 16px}
-.db-fg-wrap .tradingview-widget-container{width:100%;height:200px}
-.db-fg-wrap iframe{border:none !important}
+.db-fg-card{text-align:center;padding:16px 18px 14px !important}
+.db-fg-gauge{position:relative;width:180px;margin:0 auto}
+.db-fg-svg{width:100%;display:block}
+.db-fg-arc{transition:stroke-dasharray .8s ease}
+.db-fg-val{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:36px;font-weight:900;line-height:1}
+.db-fg-label{font-size:16px;font-weight:800;margin-top:4px}
+.db-fg-time{font-size:10px;color:var(--gray-400);margin-top:8px}
 
 /* ===== LEADERBOARD ===== */
 .lb-perfect{background:linear-gradient(135deg,#FFF3ED,#FFE8D6);border-radius:16px;padding:18px 20px;margin-bottom:20px}
