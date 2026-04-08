@@ -48,24 +48,131 @@ const QUIZ_DATA=[
   {id:20,category:'고급',level:'gold',type:'ox',question:'백테스팅(Backtesting)은 과거 데이터로 전략을 검증하는 과정이다.',answer:true,explanation:'백테스팅은 과거 시장 데이터에 전략을 적용하여 성과를 검증하는 방법입니다.'}
 ];
 
-// ========== ACHIEVEMENTS DATA ==========
+// ========== ACHIEVEMENTS DATA (52 total) ==========
 const ACHV_DATA=[
-  {id:'first_login',icon:'🌱',title:'첫 발걸음',desc:'첫 로그인',category:'attendance'},
-  {id:'streak_7',icon:'📅',title:'일주일의 약속',desc:'7일 연속 출석',category:'attendance'},
-  {id:'streak_14',icon:'💪',title:'꾸준함의 힘',desc:'14일 연속 출석',category:'attendance'},
-  {id:'streak_30',icon:'🏆',title:'한 달의 기적',desc:'30일 연속 출석',category:'attendance'},
-  {id:'monthly_perfect',icon:'⭐',title:'이달의 개근왕',desc:'한 달 개근',category:'attendance'},
-  {id:'quiz_first',icon:'🎯',title:'첫 도전',desc:'퀴즈 첫 응시',category:'quiz'},
-  {id:'quiz_10',icon:'🧠',title:'트레이딩 입문',desc:'퀴즈 10점 이상',category:'quiz'},
-  {id:'quiz_15',icon:'💡',title:'날카로운 분석',desc:'퀴즈 15점 이상',category:'quiz'},
-  {id:'quiz_20',icon:'🔥',title:'퀴즈 마스터',desc:'퀴즈 만점 (20/20)',category:'quiz'},
-  {id:'quiz_10times',icon:'📚',title:'연구하는 트레이더',desc:'퀴즈 10회 응시',category:'quiz'},
-  {id:'level_bronze',icon:'🥉',title:'브론즈 달성',desc:'브론즈 레벨',category:'level'},
-  {id:'level_silver',icon:'🥈',title:'실버 달성',desc:'실버 레벨 달성',category:'level'},
-  {id:'level_gold',icon:'🥇',title:'골드 달성',desc:'골드 레벨 달성',category:'level'},
-  {id:'calc_10',icon:'🔢',title:'계산의 달인',desc:'계산기 10회 사용',category:'activity'},
-  {id:'ai_first',icon:'🤖',title:'AI와 대화',desc:'AI 채팅 첫 질문',category:'activity'}
+  // 출석 (10)
+  {id:'first_login',icon:'🌱',title:'첫 발걸음',desc:'첫 로그인',category:'attendance',diff:'easy'},
+  {id:'streak_7',icon:'📅',title:'일주일의 약속',desc:'7일 연속 출석',category:'attendance',diff:'easy'},
+  {id:'streak_14',icon:'💪',title:'꾸준함의 힘',desc:'14일 연속 출석',category:'attendance',diff:'medium'},
+  {id:'streak_30',icon:'🏆',title:'한 달의 기적',desc:'30일 연속 출석',category:'attendance',diff:'hard'},
+  {id:'monthly_perfect',icon:'⭐',title:'이달의 개근왕',desc:'한 달 개근',category:'attendance',diff:'hard'},
+  {id:'weekend_warrior',icon:'🌅',title:'주말 전사',desc:'토·일 연속 출석',category:'attendance',diff:'easy'},
+  {id:'monday_fighter',icon:'💼',title:'월요병 극복',desc:'월요일 4주 연속 출석',category:'attendance',diff:'easy'},
+  {id:'early_bird',icon:'🌄',title:'새벽 트레이더',desc:'오전 6시 이전 접속 3회',category:'attendance',diff:'easy'},
+  {id:'steady_month',icon:'📊',title:'꾸준한 한 달',desc:'한 달 20일 이상 출석',category:'attendance',diff:'medium'},
+  {id:'quarter_champ',icon:'👑',title:'분기 챔피언',desc:'3개월 연속 15일 이상 출석',category:'attendance',diff:'hard'},
+  // 퀴즈 (10)
+  {id:'quiz_first',icon:'🎯',title:'첫 도전',desc:'퀴즈 최초 완료',category:'quiz',diff:'easy'},
+  {id:'quiz_10',icon:'🧠',title:'트레이딩 입문',desc:'퀴즈 10점 이상',category:'quiz',diff:'easy'},
+  {id:'quiz_15',icon:'💡',title:'날카로운 분석',desc:'퀴즈 15점 이상',category:'quiz',diff:'medium'},
+  {id:'quiz_20',icon:'🔥',title:'퀴즈 마스터',desc:'퀴즈 만점 (20/20)',category:'quiz',diff:'hard'},
+  {id:'quiz_10times',icon:'📚',title:'연구하는 트레이더',desc:'퀴즈 10회 응시',category:'quiz',diff:'medium'},
+  {id:'quiz_streak7',icon:'📆',title:'연속 응시',desc:'7일 연속 퀴즈 응시',category:'quiz',diff:'medium'},
+  {id:'quiz_retry10',icon:'🔄',title:'오답 노트',desc:'틀린 문제 재도전 후 정답 10회',category:'quiz',diff:'medium'},
+  {id:'quiz_speed20',icon:'⚡',title:'스피드 퀴즈',desc:'타이머 10초 이내 정답 20회',category:'quiz',diff:'medium'},
+  {id:'quiz_allcat',icon:'📋',title:'카테고리 완파',desc:'모든 카테고리 응시',category:'quiz',diff:'medium'},
+  {id:'quiz_3perfect',icon:'🏅',title:'퀴즈 3연패',desc:'3일 연속 만점',category:'quiz',diff:'hard'},
+  // 계산기 (6)
+  {id:'calc_first',icon:'🔢',title:'첫 계산',desc:'계산기 최초 사용',category:'calculator',diff:'easy'},
+  {id:'calc_pnl5',icon:'💰',title:'손익 입문',desc:'손익 계산기 5회',category:'calculator',diff:'easy'},
+  {id:'calc_pos10',icon:'📐',title:'리스크 관리자',desc:'포지션 사이징 10회',category:'calculator',diff:'medium'},
+  {id:'calc_liq10',icon:'⚠️',title:'청산 경계',desc:'청산가 계산기 10회',category:'calculator',diff:'medium'},
+  {id:'calc_rr20',icon:'⚖️',title:'손익비 달인',desc:'손익비 계산기 20회',category:'calculator',diff:'medium'},
+  {id:'calc_master',icon:'🧮',title:'계산기 마스터',desc:'4종 계산기 각 10회 이상',category:'calculator',diff:'hard'},
+  // 용어사전 (5)
+  {id:'gl_first',icon:'🔍',title:'첫 검색',desc:'용어사전 최초 검색',category:'glossary',diff:'easy'},
+  {id:'gl_bm10',icon:'📌',title:'단어 수집가',desc:'북마크 10개',category:'glossary',diff:'easy'},
+  {id:'gl_view20',icon:'📖',title:'용어 탐험가',desc:'20개 항목 열람',category:'glossary',diff:'easy'},
+  {id:'gl_cat_done',icon:'📗',title:'카테고리 완독',desc:'한 카테고리 전체 열람',category:'glossary',diff:'medium'},
+  {id:'gl_all',icon:'🎓',title:'용어 박사',desc:'전체 항목 열람',category:'glossary',diff:'hard'},
+  // AI채팅 (5)
+  {id:'ai_first',icon:'🤖',title:'AI와 첫 대화',desc:'AI 최초 질문',category:'ai',diff:'easy'},
+  {id:'ai_10',icon:'💬',title:'AI 단골',desc:'AI 질문 10회',category:'ai',diff:'easy'},
+  {id:'ai_deep',icon:'🗣️',title:'깊은 대화',desc:'한 세션에 5회 이상 연속 질문',category:'ai',diff:'easy'},
+  {id:'ai_50',icon:'🧑‍💻',title:'AI 마니아',desc:'AI 질문 50회',category:'ai',diff:'medium'},
+  {id:'ai_100',icon:'🏅',title:'AI 전문가',desc:'AI 질문 100회',category:'ai',diff:'hard'},
+  // 차트 (2)
+  {id:'chart_first',icon:'📈',title:'차트 입문',desc:'차트 보기 첫 방문',category:'chart',diff:'easy'},
+  {id:'chart_10',icon:'📊',title:'차트 분석가',desc:'차트 10회 방문',category:'chart',diff:'medium'},
+  // 레벨 (3)
+  {id:'level_bronze',icon:'🥉',title:'브론즈 달성',desc:'브론즈 레벨',category:'level',diff:'easy'},
+  {id:'level_silver',icon:'🥈',title:'실버 달성',desc:'실버 레벨 달성',category:'level',diff:'medium'},
+  {id:'level_gold',icon:'🥇',title:'골드 달성',desc:'골드 레벨 달성',category:'level',diff:'hard'},
+  // 특별 (11)
+  {id:'vip_spirit',icon:'💎',title:'VIP 정신',desc:'모든 기능 최소 1회 사용',category:'special',diff:'easy'},
+  {id:'all_rounder',icon:'🌟',title:'올라운더',desc:'하루에 5가지 기능 모두 사용',category:'special',diff:'medium'},
+  {id:'mission_first',icon:'🎯',title:'3일 미션 완료',desc:'3일 미션 세트 첫 완료',category:'mission',diff:'easy'},
+  {id:'mission_5',icon:'🏅',title:'미션 달인',desc:'3일 미션 5세트 완료',category:'mission',diff:'medium'},
+  {id:'mission_10',icon:'🏆',title:'미션 마스터',desc:'3일 미션 10세트 완료',category:'mission',diff:'hard'},
+  {id:'legend_50',icon:'⭐',title:'전설의 트레이더',desc:'전체 과제 50% 달성',category:'special',diff:'hard'},
+  {id:'perfect_100',icon:'💫',title:'완벽한 트레이더',desc:'전체 과제 100% 달성',category:'special',diff:'vhard'}
 ];
+
+// ========== 3-DAY MISSION SETS (10 sets) ==========
+const MISSION_SETS=[
+  {name:'기초 탐험',tasks:[
+    {desc:'경제 캘린더 오늘 일정 확인',key:'visit_calendar'},
+    {desc:'용어사전 3개 항목 열람',key:'gl_view_3'},
+    {desc:'퀴즈 1회 응시',key:'quiz_attempt'},
+    {desc:'AI 채팅 질문 1회',key:'ai_chat_1'}
+  ]},
+  {name:'계산 연습',tasks:[
+    {desc:'손익 계산기 사용 2회',key:'calc_pnl_2'},
+    {desc:'계산기 다른 종류 1회',key:'calc_other'},
+    {desc:'퀴즈 정답 5개 이상',key:'quiz_correct_5'},
+    {desc:'AI 채팅 질문 1회',key:'ai_chat_1'}
+  ]},
+  {name:'뉴스 & 일정',tasks:[
+    {desc:'경제 캘린더 확인',key:'visit_calendar'},
+    {desc:'AI에게 시장 관련 질문',key:'ai_chat_1'},
+    {desc:'용어사전 검색 2회',key:'gl_search_2'},
+    {desc:'퀴즈 1회 응시',key:'quiz_attempt'}
+  ]},
+  {name:'퀴즈 집중',tasks:[
+    {desc:'퀴즈 2회 응시',key:'quiz_attempt_2'},
+    {desc:'퀴즈 정답률 70% 이상',key:'quiz_70pct'},
+    {desc:'AI에게 모르는 용어 질문',key:'ai_chat_1'},
+    {desc:'용어사전 5개 항목 열람',key:'gl_view_5'}
+  ]},
+  {name:'차트 & 분석',tasks:[
+    {desc:'차트 보기 페이지 방문',key:'visit_chart'},
+    {desc:'용어사전 기술적분석 5개 열람',key:'gl_view_5'},
+    {desc:'퀴즈 1회 응시',key:'quiz_attempt'},
+    {desc:'AI에게 차트 관련 질문',key:'ai_chat_1'}
+  ]},
+  {name:'매매 기록',tasks:[
+    {desc:'매매일지 페이지 방문',key:'visit_journal'},
+    {desc:'계산기 1회 사용',key:'calc_any'},
+    {desc:'퀴즈 1회 응시',key:'quiz_attempt'},
+    {desc:'AI에게 손절 관련 질문',key:'ai_chat_1'}
+  ]},
+  {name:'출석 챌린지',tasks:[
+    {desc:'3일 연속 출석 유지',key:'streak_3'},
+    {desc:'매일 퀴즈 1회씩 응시',key:'quiz_attempt'},
+    {desc:'AI 채팅 질문 1회',key:'ai_chat_1'},
+    {desc:'경제 캘린더 확인',key:'visit_calendar'}
+  ]},
+  {name:'용어 마스터',tasks:[
+    {desc:'용어사전 10개 항목 열람',key:'gl_view_10'},
+    {desc:'퀴즈 정답 5개 이상',key:'quiz_correct_5'},
+    {desc:'AI에게 용어 설명 요청',key:'ai_chat_1'},
+    {desc:'경제 캘린더 확인',key:'visit_calendar'}
+  ]},
+  {name:'경제지표 공부',tasks:[
+    {desc:'경제 캘린더 이번주 탭 확인',key:'visit_calendar_week'},
+    {desc:'AI에게 FOMC/CPI/NFP 질문',key:'ai_chat_3'},
+    {desc:'퀴즈 1회 응시',key:'quiz_attempt'},
+    {desc:'용어사전 3개 항목 열람',key:'gl_view_3'}
+  ]},
+  {name:'올라운더',tasks:[
+    {desc:'모든 사이드바 메뉴 1회씩 방문',key:'visit_all'},
+    {desc:'계산기 사용 1회',key:'calc_any'},
+    {desc:'퀴즈 1회 응시',key:'quiz_attempt'},
+    {desc:'AI와 3회 이상 대화',key:'ai_chat_3'}
+  ]}
+];
+
+const DIFF_LABELS={easy:'쉬움',medium:'보통',hard:'어려움',vhard:'매우 어려움'};
 
 // ========== DASHBOARD WIDGETS ==========
 const DB_WIDGETS=[
@@ -416,11 +523,19 @@ async function nqShowResult(){
 
 // ========== ACHIEVEMENTS ==========
 let _achvTab='all';
-window.goToAchievements=function(){goToPage('chAchievements','achv-btn');achvRender()};
+window.goToAchievements=function(){goToPage('chAchievements','achv-btn');achvRender();msRender()};
 window.achvSetTab=function(btn,tab){
   document.querySelectorAll('.achv-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');_achvTab=tab;achvRender();
 };
+
+function formatDate(d){
+  if(!d)return'미달성';
+  try{
+    const dt=typeof d==='string'?new Date(d):(d.toDate?d.toDate():new Date(d));
+    return dt.getFullYear()+'년 '+(dt.getMonth()+1)+'월 '+dt.getDate()+'일';
+  }catch(e){return String(d)}
+}
 
 async function achvRender(){
   const user=auth.currentUser;
@@ -434,18 +549,24 @@ async function achvRender(){
   achieved.forEach(a=>{if(a.achieved)achievedMap[a.id]=a});
   const total=Object.keys(achievedMap).length;
 
-  // Progress
   document.getElementById('achvProgress').innerHTML=`
     <div class="achv-progress-text">${total} / ${ACHV_DATA.length} 달성</div>
     <div class="achv-progress-bar"><div class="achv-progress-fill" style="width:${total/ACHV_DATA.length*100}%"></div></div>`;
 
-  // Grid
   const filtered=_achvTab==='all'?ACHV_DATA:ACHV_DATA.filter(a=>a.category===_achvTab);
-  document.getElementById('achvGrid').innerHTML=filtered.map(a=>{
+  // Sort: achieved first, then by difficulty
+  const sorted=[...filtered].sort((a,b)=>{
+    const aD=achievedMap[a.id]?0:1,bD=achievedMap[b.id]?0:1;
+    return aD-bD;
+  });
+
+  document.getElementById('achvGrid').innerHTML=sorted.map(a=>{
     const done=achievedMap[a.id];
     const cls=done?'achv-card':'achv-card locked';
-    const date=done&&done.achieved_at?'달성: '+(done.achieved_at.toDate?done.achieved_at.toDate().toLocaleDateString('ko-KR'):done.achieved_at):'미달성';
-    return`<div class="${cls}"><div class="achv-icon">${a.icon}</div><div class="achv-info"><div class="achv-name">${a.title}</div><div class="achv-desc">${a.desc}</div><div class="achv-date">${date}</div></div></div>`;
+    const date=done?'달성: '+formatDate(done.achieved_at):'미달성';
+    const diffCls=a.diff==='vhard'?'vhard':a.diff;
+    const diffLabel=DIFF_LABELS[a.diff]||'';
+    return`<div class="${cls}"><div class="achv-diff ${diffCls}">${diffLabel}</div><div class="achv-icon">${a.icon}</div><div class="achv-info"><div class="achv-name">${a.title}</div><div class="achv-desc">${a.desc}</div><div class="achv-date">${date}</div></div></div>`;
   }).join('');
 }
 
@@ -457,50 +578,99 @@ async function achvCheck(uid,extra){
   const userSnap=await getDoc(doc(db,'users',uid));
   const u=userSnap.exists()?userSnap.data():{};
   const newAchievements=[];
+  const ts=new Date().toISOString();
 
   function grant(id){
+    if(!ACHV_DATA.find(a=>a.id===id))return;
     if(achievedIds.has(id))return;
     newAchievements.push(id);
     achievements=achievements.filter(a=>a.id!==id);
-    achievements.push({id,achieved:true,achieved_at:new Date().toISOString()});
+    achievements.push({id,achieved:true,achieved_at:ts});
   }
 
-  // Check conditions
+  // Attendance
   grant('first_login');
-  if((u.streak_current||0)>=7)grant('streak_7');
-  if((u.streak_current||0)>=14)grant('streak_14');
-  if((u.streak_current||0)>=30)grant('streak_30');
-  if((u.total_days||0)>=1)grant('level_bronze');
-  if((u.total_days||0)>=15)grant('level_silver');
-  if((u.total_days||0)>=30)grant('level_gold');
+  const streak=u.streak_current||0;
+  if(streak>=7)grant('streak_7');
+  if(streak>=14)grant('streak_14');
+  if(streak>=30)grant('streak_30');
+  const totalDays=u.total_days||0;
 
-  // Monthly perfect
+  // Weekend warrior
+  const kstNow=new Date(Date.now()+9*3600000);
+  const dow=kstNow.getUTCDay();
+  const dates=u.attendance_dates||[];
+  if(dow===0){const sat=new Date(kstNow.getTime()-86400000).toISOString().slice(0,10);if(dates.includes(sat))grant('weekend_warrior')}
+
+  // Early bird
+  const earlyCount=parseInt(localStorage.getItem('earlyBirdCount')||'0');
+  if(kstNow.getUTCHours()<6){const c=earlyCount+1;localStorage.setItem('earlyBirdCount',String(c));if(c>=3)grant('early_bird')}
+
+  // Steady month (20+ days)
   const thisMonth=kstToday().slice(0,7);
-  const monthDates=(u.attendance_dates||[]).filter(d=>d.startsWith(thisMonth));
-  const dayOfMonth=new Date(Date.now()+9*3600000).getUTCDate();
+  const monthDates=dates.filter(d=>d.startsWith(thisMonth));
+  const dayOfMonth=kstNow.getUTCDate();
+  if(monthDates.length>=20)grant('steady_month');
   if(monthDates.length>=dayOfMonth&&dayOfMonth>=28)grant('monthly_perfect');
 
+  // Levels
+  if(totalDays>=1)grant('level_bronze');
+  if(totalDays>=15)grant('level_silver');
+  if(totalDays>=30)grant('level_gold');
+
   // Quiz
-  if(extra){
-    if(extra.quiz_attempts>=1)grant('quiz_first');
-    if(extra.quiz_score>=10)grant('quiz_10');
-    if(extra.quiz_score>=15)grant('quiz_15');
-    if(extra.quiz_score>=20)grant('quiz_20');
-    if(extra.quiz_attempts>=10)grant('quiz_10times');
-  }
+  const e=extra||{};
+  const qAttempts=e.quiz_attempts||0;
+  const qScore=e.quiz_score||0;
+  if(qAttempts>=1)grant('quiz_first');
+  if(qScore>=10)grant('quiz_10');
+  if(qScore>=15)grant('quiz_15');
+  if(qScore>=20)grant('quiz_20');
+  if(qAttempts>=10)grant('quiz_10times');
 
-  // Activity - calc usage
+  // Calculator
   const calcCount=parseInt(localStorage.getItem('calcUseCount')||'0');
-  if(calcCount>=10)grant('calc_10');
+  if(calcCount>=1)grant('calc_first');
+  if(calcCount>=5)grant('calc_pnl5');
+  if(calcCount>=10){grant('calc_pos10');grant('calc_liq10')}
+  if(calcCount>=20)grant('calc_rr20');
 
-  // Activity - AI chat
-  const aiUsed=localStorage.getItem('aiChatUsed');
-  if(aiUsed)grant('ai_first');
+  // AI chat
+  const aiCount=parseInt(localStorage.getItem('aiChatCount')||'0');
+  if(aiCount>=1)grant('ai_first');
+  if(aiCount>=10)grant('ai_10');
+  if(aiCount>=50)grant('ai_50');
+  if(aiCount>=100)grant('ai_100');
+  const aiSession=parseInt(localStorage.getItem('aiSessionCount')||'0');
+  if(aiSession>=5)grant('ai_deep');
+
+  // Glossary
+  const glViews=parseInt(localStorage.getItem('glViewCount')||'0');
+  const glSearches=parseInt(localStorage.getItem('glSearchCount')||'0');
+  if(glSearches>=1)grant('gl_first');
+  if(glViews>=20)grant('gl_view20');
+
+  // Chart
+  const chartVisits=parseInt(localStorage.getItem('chartVisitCount')||'0');
+  if(chartVisits>=1)grant('chart_first');
+  if(chartVisits>=10)grant('chart_10');
+
+  // Missions
+  const msSnap=await getDoc(doc(db,'users',uid,'missions','data'));
+  const msData=msSnap.exists()?msSnap.data():{};
+  const completedSets=(msData.completed_sets||[]).length;
+  if(completedSets>=1)grant('mission_first');
+  if(completedSets>=5)grant('mission_5');
+  if(completedSets>=10)grant('mission_10');
+
+  // Special: progress-based
+  const totalAchieved=achievements.filter(a=>a.achieved).length+newAchievements.length;
+  if(totalAchieved>=Math.ceil(ACHV_DATA.length*0.5))grant('legend_50');
+  if(totalAchieved>=ACHV_DATA.length-1)grant('perfect_100');
 
   // Save
   if(newAchievements.length){
     await setDoc(ref,{achievements,total_achieved:achievements.filter(a=>a.achieved).length,updated_at:serverTimestamp()},{merge:true});
-    // Show popup for first new achievement
     const achvDef=ACHV_DATA.find(a=>a.id===newAchievements[0]);
     if(achvDef)achvShowPopup(achvDef);
   }
@@ -523,24 +693,121 @@ function achvShowPopup(achv){
   setTimeout(()=>{popup.style.display='none'},3000);
 }
 
-// Hook: track calc usage
+// ========== 3-DAY MISSIONS ==========
+let _msTimer;
+async function msRender(){
+  const user=auth.currentUser;
+  const section=document.getElementById('msSection');
+  if(!user){section.style.display='none';return}
+  section.style.display='block';
+
+  const ref=doc(db,'users',user.uid,'missions','data');
+  const snap=await getDoc(ref);
+  let msData=snap.exists()?snap.data():{};
+  const today=kstToday();
+
+  // Initialize or rotate mission set
+  if(!msData.set_start_date||today>msData.set_end_date){
+    const setIdx=(msData.current_set!=null?(msData.current_set+1)%MISSION_SETS.length:0);
+    const endDate=new Date(Date.now()+9*3600000+3*86400000).toISOString().slice(0,10);
+    msData={
+      current_set:setIdx,set_start_date:today,set_end_date:endDate,
+      completed_tasks:new Array(MISSION_SETS[setIdx].tasks.length).fill(false),
+      completed_sets:msData.completed_sets||[],total_missions_completed:msData.total_missions_completed||0
+    };
+    await setDoc(ref,msData,{merge:true});
+  }
+
+  const set=MISSION_SETS[msData.current_set]||MISSION_SETS[0];
+  const tasks=msData.completed_tasks||new Array(set.tasks.length).fill(false);
+  const done=tasks.filter(Boolean).length;
+  const allDone=done===set.tasks.length;
+
+  document.getElementById('msTitle').textContent=`이번 3일 미션: ${set.name}`;
+  document.getElementById('msProgressText').textContent=`${done} / ${set.tasks.length} 완료`;
+  document.getElementById('msProgressFill').style.width=(done/set.tasks.length*100)+'%';
+
+  // Tasks
+  document.getElementById('msTasks').innerHTML=set.tasks.map((t,i)=>{
+    const isDone=tasks[i];
+    return`<div class="ms-task${isDone?' done':''}"><span class="ms-task-check">${isDone?'✅':'⬜'}</span>${t.desc}</div>`;
+  }).join('');
+
+  // Complete message
+  document.getElementById('msComplete').style.display=allDone?'block':'none';
+
+  // If all done and not yet recorded
+  if(allDone&&!(msData.completed_sets||[]).includes('set'+(msData.current_set+1))){
+    msData.completed_sets=(msData.completed_sets||[]);
+    msData.completed_sets.push('set'+(msData.current_set+1));
+    msData.total_missions_completed=(msData.total_missions_completed||0)+1;
+    await setDoc(ref,msData,{merge:true});
+    achvCheck(user.uid,{});
+  }
+
+  // Countdown
+  msCountdown(msData.set_end_date);
+}
+
+function msCountdown(endDate){
+  clearInterval(_msTimer);
+  const el=document.getElementById('msCountdown');
+  function tick(){
+    const end=new Date(endDate+'T23:59:59+09:00').getTime();
+    const diff=Math.max(0,end-Date.now());
+    if(diff<=0){el.textContent='시간 만료';clearInterval(_msTimer);return}
+    const h=Math.floor(diff/3600000);
+    const m=Math.floor((diff%3600000)/60000);
+    const s=Math.floor((diff%60000)/1000);
+    el.textContent=`남은 시간: ${h}시간 ${m}분 ${s}초`;
+  }
+  tick();_msTimer=setInterval(tick,1000);
+}
+
+// Track mission tasks via localStorage events
+function missionTrack(key){
+  const d=JSON.parse(localStorage.getItem('missionProgress')||'{}');
+  d[key]=(d[key]||0)+1;
+  localStorage.setItem('missionProgress',JSON.stringify(d));
+}
+
+// ========== ACTIVITY TRACKING HOOKS ==========
 const _origCalcUpdate=window.calcUpdate;
 if(_origCalcUpdate){
   window.calcUpdate=function(){
     _origCalcUpdate();
     const c=parseInt(localStorage.getItem('calcUseCount')||'0')+1;
     localStorage.setItem('calcUseCount',String(c));
+    missionTrack('calc_any');
   };
 }
 
-// Hook: track AI chat usage
 const _origAiSend=window.aiSend;
 if(typeof _origAiSend==='function'){
   window.aiSend=function(){
+    const c=parseInt(localStorage.getItem('aiChatCount')||'0')+1;
+    localStorage.setItem('aiChatCount',String(c));
+    const s=parseInt(localStorage.getItem('aiSessionCount')||'0')+1;
+    localStorage.setItem('aiSessionCount',String(s));
     localStorage.setItem('aiChatUsed','true');
+    missionTrack('ai_chat_1');
     return _origAiSend();
   };
 }
+
+// Track page visits
+function trackVisit(page){
+  const key=page+'VisitCount';
+  const c=parseInt(localStorage.getItem(key)||'0')+1;
+  localStorage.setItem(key,String(c));
+  missionTrack('visit_'+page);
+}
+const _origGoToCalendar=window.goToCalendar;
+if(_origGoToCalendar){window.goToCalendar=function(){_origGoToCalendar();trackVisit('calendar')}}
+const _origGoToChart=window.goToChart;
+if(_origGoToChart){window.goToChart=function(){_origGoToChart();trackVisit('chart')}}
+const _origGoToGlossary=window.goToGlossary;
+if(_origGoToGlossary){window.goToGlossary=function(){_origGoToGlossary();trackVisit('glossary')}}
 
 // Check achievements on auth state change
 const _achvInterval=setInterval(()=>{

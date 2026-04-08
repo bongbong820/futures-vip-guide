@@ -102,6 +102,22 @@
 .nq-result-btns{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
 .nq-result-btns button{padding:10px 24px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:var(--font)}
 
+/* ===== 3-DAY MISSIONS ===== */
+.ms-section{background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px;border:1.5px solid var(--blue)}
+.ms-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;flex-wrap:wrap;gap:8px}
+.ms-header-left{display:flex;align-items:center;gap:10px}
+.ms-header-icon{font-size:28px}
+.ms-header-title{font-size:15px;font-weight:800;color:var(--navy)}
+.ms-header-progress{font-size:12px;color:var(--gray-500);margin-top:2px}
+.ms-countdown{font-size:12px;font-weight:700;color:var(--orange);background:var(--orange-light);padding:4px 12px;border-radius:20px}
+.ms-progress-bar{height:5px;background:var(--gray-100);margin:0 20px 12px}
+.ms-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:5px;transition:width .5s}
+.ms-tasks{padding:0 20px 16px;display:flex;flex-direction:column;gap:6px}
+.ms-task{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;color:var(--gray-700);background:var(--gray-50);border:1px solid var(--gray-200);transition:all .15s}
+.ms-task.done{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.ms-task-check{font-size:16px;flex-shrink:0}
+.ms-complete{text-align:center;padding:16px;font-size:15px;font-weight:800;color:var(--green);background:var(--green-light);margin:0 20px 16px;border-radius:12px}
+
 /* ===== ACHIEVEMENTS ===== */
 .achv-progress{background:var(--white);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);margin-bottom:16px;text-align:center}
 .achv-progress-text{font-size:14px;font-weight:600;color:var(--gray-600);margin-bottom:8px}
@@ -122,6 +138,12 @@
 .achv-name{font-size:14px;font-weight:700;color:var(--navy)}
 .achv-desc{font-size:11px;color:var(--gray-500);margin-top:2px}
 .achv-date{font-size:10px;color:var(--green);font-weight:600;margin-top:4px}
+.achv-diff{position:absolute;top:10px;right:10px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.achv-diff.easy{background:#E6FCF5;color:#20C997}
+.achv-diff.medium{background:#E8F1FE;color:#3182F6}
+.achv-diff.hard{background:#FFF3ED;color:#FF6B35}
+.achv-diff.vhard{background:#FFF0F0;color:#FF6B6B}
+.achv-card{position:relative}
 .achv-popup-overlay{position:fixed;inset:0;z-index:10002;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center}
 .achv-popup-box{text-align:center;animation:lvlupIn .6s cubic-bezier(.34,1.56,.64,1);position:relative}
 .achv-popup-icon{font-size:72px;margin-bottom:8px}
