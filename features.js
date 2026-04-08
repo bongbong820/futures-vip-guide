@@ -206,7 +206,7 @@ const DB_WIDGETS=[
       </svg>
       <div class="db-fg-val" style="color:${c}">${val}</div></div>
       <div class="db-fg-label" style="color:${c}">${label}</div>
-      <div class="db-fg-time">클릭하여 자세히 보기 · Alternative.me</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding:7px 16px;background:#f0f4ff;border:1px solid #d0dbff;border-radius:20px;width:fit-content;margin-left:auto;margin-right:auto;cursor:pointer;font-size:12px;font-weight:600;color:#2962ff">📊 자세히 보기</div>
     </div>`;
   }}
 ];
