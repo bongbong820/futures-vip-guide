@@ -2370,7 +2370,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
         <div class="calc-row-label">수수료 설정</div>
 
         <div class="calc-row-3col">
-          <div><label class="calc-label">스프레드 (pt)</label><input class="calc-input" id="calcSpread" type="number" step="any" value="0.25" oninput="calcUpdate()"></div>
+          <div><label class="calc-label">코드 타입</label><select class="calc-select" id="calcCodeType" onchange="calcUpdate()"><option value="0.25">ECN</option><option value="0.50">STD</option><option value="0.50">STD5</option><option value="0.25">VIP</option><option value="0.25">DLX</option></select></div>
           <div><label class="calc-label">수수료 (USD/계약)</label><input class="calc-input" id="calcFee" type="number" step="any" value="4.50" oninput="calcUpdate()"></div>
           <div><label class="calc-label">USD/KRW 환율</label><input class="calc-input" id="calcFx" type="number" step="any" value="1450" oninput="calcUpdate()"></div>
         </div>
@@ -3190,12 +3190,14 @@ function calcUpdate(){
   document.getElementById('calcSymInfo').innerHTML=
     '<span>틱값: <strong>$'+sym.tickVal.toFixed(2)+'</strong></span>'+
     '<span>틱사이즈: <strong>'+sym.tickSize+'</strong></span>'+
+    '<span>코드: <strong>'+document.getElementById('calcCodeType').selectedOptions[0].text+'</strong></span>'+
     '<span>증거금: <strong>$'+sym.margin.toLocaleString()+'</strong></span>';
 
   const entry=parseFloat(document.getElementById('calcEntry').value);
   const exit=parseFloat(document.getElementById('calcExit').value);
   const contracts=Math.max(1,parseInt(document.getElementById('calcContracts').value)||1);
-  const spread=parseFloat(document.getElementById('calcSpread').value)||0;
+  const codeSelect=document.getElementById('calcCodeType');
+  const spread=parseFloat(codeSelect.value)||0;
   const fee=parseFloat(document.getElementById('calcFee').value)||0;
   const fx=parseFloat(document.getElementById('calcFx').value)||1450;
 
