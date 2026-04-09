@@ -125,14 +125,19 @@ a{text-decoration:none;color:inherit}
 .sidebar-heading{font-size:18px;font-weight:800;color:var(--navy);line-height:1.4;margin-bottom:20px}
 .sidebar-label{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
 
+.sidebar-list-card{
+  border:1px solid var(--gray-200);border-radius:12px;overflow:hidden;margin-bottom:4px;background:var(--white);
+}
+.sidebar-list-card .chapter-btn{border-bottom:1px solid #f0f0f0}
+.sidebar-list-card .chapter-btn:last-child{border-bottom:none}
 .chapter-btn{
   display:flex;align-items:center;gap:12px;
-  width:100%;padding:12px 14px;margin-bottom:4px;
+  width:100%;padding:12px 14px;
   border:none;background:transparent;
-  border-radius:var(--radius-sm);cursor:pointer;
+  cursor:pointer;
   text-align:left;transition:var(--transition);
 }
-.chapter-btn:hover{background:var(--gray-100)}
+.chapter-btn:hover{background:var(--gray-50)}
 .chapter-btn.active{background:var(--blue-light)}
 .chapter-btn.active .chapter-num{background:var(--blue);color:#fff}
 .chapter-btn.active .chapter-btn-title{color:var(--blue);font-weight:700}
@@ -1627,57 +1632,65 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 
   <div class="sidebar-label">목차</div>
 
-  <button class="chapter-btn active" onclick="goTo(1)">
-    <div class="chapter-num">01</div>
-    <div><span class="chapter-btn-title">트레이딩 마인드셋</span><span class="chapter-btn-sub">심리 · 두려움 · 기본원칙</span></div>
-  </button>
-  <button class="chapter-btn" onclick="goTo(2)">
-    <div class="chapter-num">02</div>
-    <div><span class="chapter-btn-title">손절 & 리스크 관리</span><span class="chapter-btn-sub">Stop-Loss · 포지션 사이즈</span></div>
-  </button>
-  <button class="chapter-btn" onclick="goTo(3)">
-    <div class="chapter-num">03</div>
-    <div><span class="chapter-btn-title">고수 vs 초보의 차이</span><span class="chapter-btn-sub">비교표 · 핵심 차이점</span></div>
-  </button>
-  <button class="chapter-btn" onclick="goTo(4)">
-    <div class="chapter-num">04</div>
-    <div><span class="chapter-btn-title">기술적 분석 기초</span><span class="chapter-btn-sub">MA · 캔들 · 볼륨</span></div>
-  </button>
-  <button class="chapter-btn" onclick="goTo(5)">
-    <div class="chapter-num">05</div>
-    <div><span class="chapter-btn-title">추세 & 진입 전략</span><span class="chapter-btn-sub">Trend Following · 타점</span></div>
-  </button>
-  <button class="chapter-btn" onclick="goTo(6)">
-    <div class="chapter-num">06</div>
-    <div><span class="chapter-btn-title">패턴 & 트랩</span><span class="chapter-btn-sub">Trap · Fakeout · 패턴</span></div>
-  </button>
-  <button class="chapter-btn" onclick="goTo(7)">
-    <div class="chapter-num">07</div>
-    <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
-  </button>
+  <div class="sidebar-list-card">
+    <button class="chapter-btn active" onclick="goTo(1)">
+      <div class="chapter-num">01</div>
+      <div><span class="chapter-btn-title">트레이딩 마인드셋</span><span class="chapter-btn-sub">심리 · 두려움 · 기본원칙</span></div>
+    </button>
+    <button class="chapter-btn" onclick="goTo(2)">
+      <div class="chapter-num">02</div>
+      <div><span class="chapter-btn-title">손절 & 리스크 관리</span><span class="chapter-btn-sub">Stop-Loss · 포지션 사이즈</span></div>
+    </button>
+    <button class="chapter-btn" onclick="goTo(3)">
+      <div class="chapter-num">03</div>
+      <div><span class="chapter-btn-title">고수 vs 초보의 차이</span><span class="chapter-btn-sub">비교표 · 핵심 차이점</span></div>
+    </button>
+    <button class="chapter-btn" onclick="goTo(4)">
+      <div class="chapter-num">04</div>
+      <div><span class="chapter-btn-title">기술적 분석 기초</span><span class="chapter-btn-sub">MA · 캔들 · 볼륨</span></div>
+    </button>
+    <button class="chapter-btn" onclick="goTo(5)">
+      <div class="chapter-num">05</div>
+      <div><span class="chapter-btn-title">추세 & 진입 전략</span><span class="chapter-btn-sub">Trend Following · 타점</span></div>
+    </button>
+    <button class="chapter-btn" onclick="goTo(6)">
+      <div class="chapter-num">06</div>
+      <div><span class="chapter-btn-title">패턴 & 트랩</span><span class="chapter-btn-sub">Trap · Fakeout · 패턴</span></div>
+    </button>
+    <button class="chapter-btn" onclick="goTo(7)">
+      <div class="chapter-num">07</div>
+      <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
+    </button>
+  </div>
 
   <div class="sidebar-label" style="margin-top:16px">도구</div>
 
-  <button class="chapter-btn quiz-btn" onclick="goToUnifiedQuiz()">
-    <div class="chapter-num quiz-num">&#128221;</div>
-    <div><span class="chapter-btn-title">퀴즈</span><span class="chapter-btn-sub">트레이딩 · 실력점검</span></div>
-  </button>
-  <button class="chapter-btn tool-btn" onclick="goToCalendar()">
-    <div class="chapter-num" style="background:var(--blue);color:#fff;font-size:13px">&#128197;</div>
-    <div><span class="chapter-btn-title">경제 캘린더</span><span class="chapter-btn-sub">CPI · NFP · FOMC</span></div>
-  </button>
-  <button class="chapter-btn tool-btn" onclick="goToCalc()">
-    <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128178;</div>
-    <div><span class="chapter-btn-title">계산기 & 매매일지</span><span class="chapter-btn-sub">증거금 · 손익 · 매매기록</span></div>
-  </button>
-  <button class="chapter-btn tool-btn" onclick="goToGlossary()">
-    <div class="chapter-num" style="background:var(--gray-600);color:#fff;font-size:13px">&#128214;</div>
-    <div><span class="chapter-btn-title">용어 사전</span><span class="chapter-btn-sub">50+ 트레이딩 용어</span></div>
-  </button>
-  <button class="chapter-btn chart-btn" onclick="goToChart()">
-    <div class="chapter-num chart-num">&#128200;</div>
-    <div><span class="chapter-btn-title">차트 보기</span><span class="chapter-btn-sub">BINANCE · BTCUSDT · 실시간</span></div>
-  </button>
+  <div class="sidebar-list-card">
+    <button class="chapter-btn quiz-btn" onclick="goToUnifiedQuiz()">
+      <div class="chapter-num quiz-num">&#128221;</div>
+      <div><span class="chapter-btn-title">퀴즈</span><span class="chapter-btn-sub">트레이딩 · 실력점검</span></div>
+    </button>
+    <button class="chapter-btn tool-btn" onclick="goToCalendar()">
+      <div class="chapter-num" style="background:var(--blue);color:#fff;font-size:13px">&#128197;</div>
+      <div><span class="chapter-btn-title">경제 캘린더</span><span class="chapter-btn-sub">CPI · NFP · FOMC</span></div>
+    </button>
+    <button class="chapter-btn tool-btn" onclick="goToCalc()">
+      <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128178;</div>
+      <div><span class="chapter-btn-title">계산기 & 매매일지</span><span class="chapter-btn-sub">증거금 · 손익 · 매매기록</span></div>
+    </button>
+    <button class="chapter-btn tool-btn" onclick="goToGlossary()">
+      <div class="chapter-num" style="background:var(--gray-600);color:#fff;font-size:13px">&#128214;</div>
+      <div><span class="chapter-btn-title">용어 사전</span><span class="chapter-btn-sub">50+ 트레이딩 용어</span></div>
+    </button>
+    <button class="chapter-btn chart-btn" onclick="goToChart()">
+      <div class="chapter-num chart-num">&#128200;</div>
+      <div><span class="chapter-btn-title">차트 보기</span><span class="chapter-btn-sub">BINANCE · BTCUSDT · 실시간</span></div>
+    </button>
+    <button class="chapter-btn achv-btn" onclick="goToAchievements()">
+      <div class="chapter-num" style="background:var(--red);color:#fff;font-size:13px">&#127919;</div>
+      <div><span class="chapter-btn-title">도전 과제</span><span class="chapter-btn-sub">52개 뱃지 · 3일 미션</span></div>
+    </button>
+  </div>
 
   <div class="sidebar-footer">
     <div class="trainer-card">
