@@ -897,55 +897,6 @@ body.dark .ticker-wrap{background:var(--gray-50)}
   .earnings-vals{width:100%;justify-content:space-around;padding-top:8px;border-top:1px solid var(--gray-100)}
 }
 
-.finnhub-key-wrap{margin-bottom:16px}
-.finnhub-key-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.finnhub-key-input{
-  flex:1;min-width:200px;padding:10px 16px;border:1px solid var(--gray-200);
-  border-radius:10px;font-size:14px;background:var(--white);
-  color:var(--gray-900);font-family:var(--font);outline:none;
-}
-.finnhub-key-input:focus{border-color:var(--blue)}
-.finnhub-key-btn{
-  padding:10px 20px;border:none;border-radius:10px;
-  background:var(--blue);color:#fff;font-size:14px;font-weight:700;
-  cursor:pointer;font-family:var(--font);white-space:nowrap;
-}
-.finnhub-key-btn:hover{background:var(--navy)}
-.finnhub-key-test{
-  padding:10px 20px;border:1px solid var(--green);border-radius:10px;
-  background:var(--white);color:var(--green);font-size:14px;font-weight:700;
-  cursor:pointer;font-family:var(--font);white-space:nowrap;
-}
-.finnhub-key-test:hover{background:var(--green-light)}
-.finnhub-key-status{font-size:13px;color:var(--gray-500)}
-.finnhub-key-status.success{color:var(--green)}
-.finnhub-key-status.error{color:var(--red)}
-
-.finnhub-loading{text-align:center;padding:20px;color:var(--gray-400);font-size:14px}
-.finnhub-empty{text-align:center;padding:30px;color:var(--gray-400);font-size:14px}
-
-/* Quotes grid */
-.finnhub-quotes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.fh-quote{
-  padding:18px;border:1px solid var(--gray-200);border-radius:var(--radius);
-  background:var(--white);transition:var(--transition);
-}
-.fh-quote:hover{box-shadow:var(--shadow);border-color:var(--blue)}
-.fh-quote-name{font-size:13px;color:var(--gray-500);margin-bottom:4px}
-.fh-quote-price{font-size:22px;font-weight:800;color:var(--navy)}
-.fh-quote-change{font-size:13px;font-weight:700;margin-top:4px}
-.fh-quote-change.up{color:var(--green)}
-.fh-quote-change.down{color:var(--red)}
-.fh-quote-detail{font-size:11px;color:var(--gray-400);margin-top:6px}
-
-@media(max-width:640px){
-  .finnhub-quotes{grid-template-columns:1fr 1fr}
-}
-@media(max-width:640px){
-  .finnhub-key-row{flex-direction:column}
-  .finnhub-key-input{min-width:100%}
-}
-
 /* ===== JOURNAL ===== */
 .journal-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .journal-form-full{grid-column:1/-1}
@@ -3943,48 +3894,6 @@ function ec4UpdateCards(){
     if(metas[0])metas[0].innerHTML='<span class="ec4-ml">날짜</span> '+(kst.getUTCMonth()+1)+'/'+kst.getUTCDate();
     if(metas[1])metas[1].innerHTML='<span class="ec4-ml">이전</span> '+(ev.previous||'—');
   });
-}
-
-// ===== YAHOO FINANCE (RapidAPI) =====
-function getRapidKey(){return localStorage.getItem('rapidApiKey')||''}
-function saveRapidKey(){
-  const key=document.getElementById('rapidApiInput').value.trim();
-  if(!key){showToast('API 키를 입력하세요','',null);return}
-  localStorage.setItem('rapidApiKey',key);
-  showToast('API 키 저장 완료!','',null);loadYahooQuotes();
-}
-const YF_SYMBOLS=['AAPL','TSLA','NVDA','MSFT','AMZN','GOOG'];
-
-function loadYahooQuotes(){
-  const grid=document.getElementById('finnhubQuotes');
-  const apiKey=getRapidKey();
-  if(!apiKey){
-    grid.innerHTML='<div class="ec2-empty">RapidAPI 키를 입력하면 실시간 시세를 볼 수 있습니다</div>';
-    const inp=document.getElementById('rapidApiInput');
-    if(inp)inp.value=apiKey;
-    return;
-  }
-  // Hide key input if already saved
-  const wrap=document.getElementById('rapidApiWrap');
-  if(wrap&&apiKey)wrap.style.display='none';
-  grid.innerHTML=YF_SYMBOLS.map(()=>'<div class="fh-quote"><div class="skel-block" style="width:60%;height:14px;margin-bottom:8px"></div><div class="skel-block" style="width:40%;height:22px"></div></div>').join('');
-
-  Promise.all(YF_SYMBOLS.map(sym=>
-    fetch('https://yahoo-finance15.p.rapidapi.com/api/v1/markets/stock/quotes?ticker='+sym,{
-      headers:{'x-rapidapi-key':apiKey,'x-rapidapi-host':'yahoo-finance15.p.rapidapi.com'}
-    }).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>d.body?.[0]).catch(()=>null)
-  )).then(results=>{
-    grid.innerHTML=results.filter(Boolean).map(q=>{
-      const chg=q.regularMarketChange||0;
-      const chgPct=q.regularMarketChangePercent||0;
-      const upDown=chg>=0?'up':'down';
-      const arrow=chg>=0?'▲':'▼';
-      return '<div class="fh-quote"><div class="fh-quote-name">'+escHtml(q.shortName||q.symbol)+' ('+escHtml(q.symbol)+')</div>'+
-        '<div class="fh-quote-price">$'+(q.regularMarketPrice||0).toFixed(2)+'</div>'+
-        '<div class="fh-quote-change '+upDown+'">'+arrow+' '+Math.abs(chg).toFixed(2)+' ('+chgPct.toFixed(2)+'%)</div>'+
-        '<div class="fh-quote-detail">H: $'+(q.regularMarketDayHigh||0).toFixed(2)+' · L: $'+(q.regularMarketDayLow||0).toFixed(2)+'</div></div>';
-    }).join('');
-  }).catch(()=>{grid.innerHTML='<div class="ec2-empty">시세 데이터를 불러오지 못했습니다</div>'});
 }
 
 // ===== CHART CONTROLS =====
