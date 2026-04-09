@@ -130,6 +130,12 @@ a{text-decoration:none;color:inherit}
 }
 .sidebar-list-card .chapter-btn{border-bottom:1px solid #f0f0f0}
 .sidebar-list-card .chapter-btn:last-child{border-bottom:none}
+.sidebar-accordion-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;border:none;background:transparent;cursor:pointer;font-size:14px;font-weight:700;color:var(--navy);font-family:var(--font);border-bottom:1px solid #f0f0f0}
+.sidebar-accordion-toggle:hover{background:var(--gray-50)}
+.sidebar-acc-arrow{font-size:12px;color:var(--gray-400);transition:transform .3s}
+.sidebar-acc-arrow.up{transform:rotate(180deg)}
+.sidebar-accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.sidebar-accordion-body.open{max-height:500px}
 .chapter-btn{
   display:flex;align-items:center;gap:12px;
   width:100%;padding:12px 14px;
@@ -1630,37 +1636,41 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="sidebar-greeting">VIP 회원 전용 가이드</div>
   <div class="sidebar-heading">500억의 실전 경험이 담긴<br>실전 매매의 모든 것</div>
 
-  <div class="sidebar-label">목차</div>
-
   <div class="sidebar-list-card">
-    <button class="chapter-btn active" onclick="goTo(1)">
-      <div class="chapter-num">01</div>
-      <div><span class="chapter-btn-title">트레이딩 마인드셋</span><span class="chapter-btn-sub">심리 · 두려움 · 기본원칙</span></div>
+    <button class="sidebar-accordion-toggle" id="eduToggle" onclick="toggleEdu()">
+      <span>📚 교육 자료</span>
+      <span class="sidebar-acc-arrow" id="eduArrow">▾</span>
     </button>
-    <button class="chapter-btn" onclick="goTo(2)">
-      <div class="chapter-num">02</div>
-      <div><span class="chapter-btn-title">손절 & 리스크 관리</span><span class="chapter-btn-sub">Stop-Loss · 포지션 사이즈</span></div>
-    </button>
-    <button class="chapter-btn" onclick="goTo(3)">
-      <div class="chapter-num">03</div>
-      <div><span class="chapter-btn-title">고수 vs 초보의 차이</span><span class="chapter-btn-sub">비교표 · 핵심 차이점</span></div>
-    </button>
-    <button class="chapter-btn" onclick="goTo(4)">
-      <div class="chapter-num">04</div>
-      <div><span class="chapter-btn-title">기술적 분석 기초</span><span class="chapter-btn-sub">MA · 캔들 · 볼륨</span></div>
-    </button>
-    <button class="chapter-btn" onclick="goTo(5)">
-      <div class="chapter-num">05</div>
-      <div><span class="chapter-btn-title">추세 & 진입 전략</span><span class="chapter-btn-sub">Trend Following · 타점</span></div>
-    </button>
-    <button class="chapter-btn" onclick="goTo(6)">
-      <div class="chapter-num">06</div>
-      <div><span class="chapter-btn-title">패턴 & 트랩</span><span class="chapter-btn-sub">Trap · Fakeout · 패턴</span></div>
-    </button>
-    <button class="chapter-btn" onclick="goTo(7)">
-      <div class="chapter-num">07</div>
-      <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
-    </button>
+    <div class="sidebar-accordion-body" id="eduBody">
+      <button class="chapter-btn active" onclick="goTo(1)">
+        <div class="chapter-num">01</div>
+        <div><span class="chapter-btn-title">트레이딩 마인드셋</span><span class="chapter-btn-sub">심리 · 두려움 · 기본원칙</span></div>
+      </button>
+      <button class="chapter-btn" onclick="goTo(2)">
+        <div class="chapter-num">02</div>
+        <div><span class="chapter-btn-title">손절 & 리스크 관리</span><span class="chapter-btn-sub">Stop-Loss · 포지션 사이즈</span></div>
+      </button>
+      <button class="chapter-btn" onclick="goTo(3)">
+        <div class="chapter-num">03</div>
+        <div><span class="chapter-btn-title">고수 vs 초보의 차이</span><span class="chapter-btn-sub">비교표 · 핵심 차이점</span></div>
+      </button>
+      <button class="chapter-btn" onclick="goTo(4)">
+        <div class="chapter-num">04</div>
+        <div><span class="chapter-btn-title">기술적 분석 기초</span><span class="chapter-btn-sub">MA · 캔들 · 볼륨</span></div>
+      </button>
+      <button class="chapter-btn" onclick="goTo(5)">
+        <div class="chapter-num">05</div>
+        <div><span class="chapter-btn-title">추세 & 진입 전략</span><span class="chapter-btn-sub">Trend Following · 타점</span></div>
+      </button>
+      <button class="chapter-btn" onclick="goTo(6)">
+        <div class="chapter-num">06</div>
+        <div><span class="chapter-btn-title">패턴 & 트랩</span><span class="chapter-btn-sub">Trap · Fakeout · 패턴</span></div>
+      </button>
+      <button class="chapter-btn" onclick="goTo(7)">
+        <div class="chapter-num">07</div>
+        <div><span class="chapter-btn-title">실전 매매 원칙</span><span class="chapter-btn-sub">체크리스트 · 익절 · 대응</span></div>
+      </button>
+    </div>
   </div>
 
   <div class="sidebar-label" style="margin-top:16px">도구</div>
@@ -3029,6 +3039,23 @@ function gDropToggle(e){
   document.getElementById('gDropLevel').textContent=level;
 }
 function gDropClose(){document.getElementById('gDropdown').classList.remove('open')}
+// Education accordion
+function toggleEdu(){
+  const body=document.getElementById('eduBody');
+  const arrow=document.getElementById('eduArrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('up');
+}
+// Auto-open if currently viewing a chapter
+(function(){
+  const last=localStorage.getItem('lastChapter');
+  if(last&&parseInt(last)>=1&&parseInt(last)<=7){
+    const b=document.getElementById('eduBody');
+    const a=document.getElementById('eduArrow');
+    if(b)b.classList.add('open');
+    if(a)a.classList.add('up');
+  }
+})()
 document.addEventListener('click',function(e){
   const dd=document.getElementById('gDropdown');
   if(dd&&!dd.contains(e.target)&&!e.target.closest('.g-profile'))gDropClose();
