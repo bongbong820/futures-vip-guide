@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="features.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 /* ===== FONT ===== */
 @supports (font-variation-settings: normal) {
@@ -1700,6 +1701,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       <div class="chapter-num" style="background:var(--red);color:#fff;font-size:13px">&#127919;</div>
       <div><span class="chapter-btn-title">도전 과제</span><span class="chapter-btn-sub">52개 뱃지 · 3일 미션</span></div>
     </button>
+    <button class="chapter-btn spread-btn" onclick="goToSpread()">
+      <div class="chapter-num" style="background:#185fa5;color:#fff;font-size:13px">&#9878;</div>
+      <div><span class="chapter-btn-title">스프레드 비교</span><span class="chapter-btn-sub">거래소 레이더 차트 대결</span></div>
+    </button>
   </div>
 
   <div class="sidebar-footer">
@@ -2638,6 +2643,37 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
+<!-- SPREAD COMPARISON PAGE -->
+<div class="chapter-page" id="chSpread">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#9878;</div>
+    <div>
+      <div class="chapter-label">Spread Battle</div>
+      <h2 class="chapter-title">거래소 스프레드 대결</h2>
+      <p class="chapter-desc">두 거래소를 선택하면 6개 종목 스프레드를 레이더 차트로 비교합니다.</p>
+    </div>
+  </div>
+  <div class="sp-note">✱ 표시는 실측 데이터 미확보 추정값입니다.</div>
+  <div class="sp-selectors">
+    <div class="sp-sel sp-sel-a">
+      <label class="sp-sel-label" style="color:#185fa5">A 거래소</label>
+      <select class="sp-select sp-select-a" id="spSelA" onchange="spUpdate()"></select>
+    </div>
+    <div class="sp-vs">VS</div>
+    <div class="sp-sel sp-sel-b">
+      <label class="sp-sel-label" style="color:#ba7517">B 거래소</label>
+      <select class="sp-select sp-select-b" id="spSelB" onchange="spUpdate()"></select>
+    </div>
+  </div>
+  <div class="sp-winner" id="spWinner" style="display:none"></div>
+  <div class="sp-chart-wrap"><canvas id="spChart"></canvas></div>
+  <div class="sp-legend">
+    <span class="sp-leg-item"><span class="sp-leg-line" style="background:#185fa5"></span><span id="spLegA">A</span> (실선)</span>
+    <span class="sp-leg-item"><span class="sp-leg-line sp-leg-dash" style="background:#ba7517"></span><span id="spLegB">B</span> (점선)</span>
+  </div>
+  <div class="sp-cards" id="spCards"></div>
+</div>
+
 </main>
 </div>
 
@@ -3047,6 +3083,123 @@ function toggleEdu(){
   arrow.classList.toggle('up');
 }
 // Accordion starts collapsed; opens when user navigates to a chapter
+
+// ===== SPREAD COMPARISON =====
+const SP_BROKERS={
+  'Axel Private':{short:'AX',data:{XAUUSD:[10,'R'],US100:[90,'R'],BTCUSD:[1500,'E'],EURUSD:[3,'R'],USOil:[31,'R'],HK33:[71,'R']}},
+  'CCL':{short:'CC',data:{XAUUSD:[10,'R'],US100:[90,'R'],BTCUSD:[1500,'E'],EURUSD:[3,'R'],USOil:[35,'E'],HK33:[80,'E']}},
+  'Doo Prime':{short:'DP',data:{XAUUSD:[35,'R'],US100:[149,'R'],BTCUSD:[1919,'R'],EURUSD:[20,'E'],USOil:[45,'E'],HK33:[150,'E']}},
+  'PU Prime':{short:'PU',data:{XAUUSD:[58,'R'],US100:[375,'R'],BTCUSD:[1001,'R'],EURUSD:[25,'E'],USOil:[55,'E'],HK33:[19,'R']}},
+  'EZ Square':{short:'EZ',data:{XAUUSD:[35,'R'],US100:[39,'R'],BTCUSD:[800,'E'],EURUSD:[13,'R'],USOil:[22,'R'],HK33:[48,'R']}},
+  'GFS':{short:'GF',data:{XAUUSD:[46,'R'],US100:[170,'R'],BTCUSD:[300,'R'],EURUSD:[15,'E'],USOil:[40,'E'],HK33:[49,'R']}},
+  'Go Markets':{short:'GO',data:{XAUUSD:[48,'R'],US100:[100,'R'],BTCUSD:[2500,'R'],EURUSD:[18,'E'],USOil:[35,'R'],HK33:[500,'R']}},
+  'Infinox':{short:'IN',data:{XAUUSD:[40,'E'],US100:[85,'R'],BTCUSD:[1244,'R'],EURUSD:[15,'E'],USOil:[45,'E'],HK33:[10,'R']}},
+  'IronFX':{short:'IR',data:{XAUUSD:[38,'R'],US100:[250,'R'],BTCUSD:[1480,'R'],EURUSD:[18,'R'],USOil:[40,'E'],HK33:[200,'E']}},
+  'Zero Markets':{short:'ZM',data:{XAUUSD:[35,'R'],US100:[280,'R'],BTCUSD:[6000,'R'],EURUSD:[20,'E'],USOil:[45,'E'],HK33:[300,'E']}}
+};
+const SP_SYMS=['XAUUSD','US100','BTCUSD','EURUSD','USOil','HK33'];
+const SP_MAX={XAUUSD:58,US100:375,BTCUSD:6000,EURUSD:25,USOil:55,HK33:500};
+let spChartInst=null;
+
+function goToSpread(){
+  goToPage('chSpread','spread-btn');
+  spInit();
+}
+
+function spInit(){
+  const names=Object.keys(SP_BROKERS);
+  const selA=document.getElementById('spSelA');
+  const selB=document.getElementById('spSelB');
+  if(!selA.options.length){
+    names.forEach((n,i)=>{
+      selA.add(new Option(n,n));
+      selB.add(new Option(n,n));
+    });
+    selB.selectedIndex=1;
+  }
+  spUpdate();
+}
+
+function spScore(val,sym){return Math.max(5,Math.round((1-val/SP_MAX[sym])*90+10))}
+
+function spUpdate(){
+  const nameA=document.getElementById('spSelA').value;
+  const nameB=document.getElementById('spSelB').value;
+  const a=SP_BROKERS[nameA],b=SP_BROKERS[nameB];
+  if(!a||!b)return;
+
+  document.getElementById('spLegA').textContent=nameA;
+  document.getElementById('spLegB').textContent=nameB;
+
+  const scoresA=SP_SYMS.map(s=>spScore(a.data[s][0],s));
+  const scoresB=SP_SYMS.map(s=>spScore(b.data[s][0],s));
+
+  // Chart
+  const ctx=document.getElementById('spChart');
+  if(spChartInst)spChartInst.destroy();
+  spChartInst=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:SP_SYMS,
+      datasets:[
+        {label:nameA,data:scoresA,borderColor:'#185fa5',backgroundColor:'rgba(24,95,165,.15)',borderWidth:2.5,pointBackgroundColor:'#185fa5',pointRadius:4},
+        {label:nameB,data:scoresB,borderColor:'#ba7517',backgroundColor:'rgba(186,117,23,.12)',borderWidth:2.5,borderDash:[6,4],pointBackgroundColor:'#ba7517',pointRadius:4}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      scales:{r:{min:0,max:100,ticks:{stepSize:20,display:false},grid:{color:'#e9ecef'},angleLines:{color:'#e9ecef'},pointLabels:{font:{size:13,weight:'600',family:'Pretendard Variable, sans-serif'},color:'#1B2A4A'}}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:function(c){
+          const sym=SP_SYMS[c.dataIndex];
+          const br=c.datasetIndex===0?a:b;
+          const d=br.data[sym];
+          return c.dataset.label+': '+d[0]+'pt'+(d[1]==='E'?' (추정)':'');
+        }}}
+      }
+    }
+  });
+
+  // Winner
+  const sumA=SP_SYMS.reduce((s,sym)=>s+a.data[sym][0],0);
+  const sumB=SP_SYMS.reduce((s,sym)=>s+b.data[sym][0],0);
+  const winsA=SP_SYMS.filter(s=>a.data[s][0]<b.data[s][0]).length;
+  const winsB=SP_SYMS.filter(s=>b.data[s][0]<a.data[s][0]).length;
+  const winEl=document.getElementById('spWinner');
+  winEl.style.display='block';
+  if(sumA<sumB){
+    winEl.className='sp-winner a-win';
+    winEl.textContent='🏆 '+nameA+' 승! 스프레드 합계 '+(sumB-sumA)+'pt 더 낮음 ('+winsA+'/6 종목 유리)';
+  }else if(sumB<sumA){
+    winEl.className='sp-winner b-win';
+    winEl.textContent='🏆 '+nameB+' 승! 스프레드 합계 '+(sumA-sumB)+'pt 더 낮음 ('+winsB+'/6 종목 유리)';
+  }else{
+    winEl.className='sp-winner draw';
+    winEl.textContent='🤝 무승부!';
+  }
+
+  // Cards
+  document.getElementById('spCards').innerHTML=SP_SYMS.map(sym=>{
+    const va=a.data[sym],vb=b.data[sym];
+    const aWin=va[0]<vb[0],bWin=vb[0]<va[0],tie=va[0]===vb[0];
+    return`<div class="sp-card">
+      <div class="sp-card-title">${sym}</div>
+      <div class="sp-card-row">
+        <div class="sp-card-side a-side${aWin?' highlight':''}">
+          <div class="sp-card-val a-val">${va[0]}pt</div>
+          ${va[1]==='E'?'<div class="sp-card-est">✱ 추정</div>':''}
+          ${aWin?'<div class="sp-card-tag win">✓ 유리</div>':bWin?'<div class="sp-card-tag lose">✗ 불리</div>':''}
+        </div>
+        <div class="sp-card-side${bWin?' highlight':''}">
+          <div class="sp-card-val b-val">${vb[0]}pt</div>
+          ${vb[1]==='E'?'<div class="sp-card-est">✱ 추정</div>':''}
+          ${bWin?'<div class="sp-card-tag win">✓ 유리</div>':aWin?'<div class="sp-card-tag lose">✗ 불리</div>':''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 document.addEventListener('click',function(e){
   const dd=document.getElementById('gDropdown');
   if(dd&&!dd.contains(e.target)&&!e.target.closest('.g-profile'))gDropClose();
