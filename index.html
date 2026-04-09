@@ -1703,6 +1703,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       <div class="chapter-num" style="background:var(--red);color:#fff;font-size:13px">&#127919;</div>
       <div><span class="chapter-btn-title">도전 과제</span><span class="chapter-btn-sub">52개 뱃지 · 3일 미션</span></div>
     </button>
+    <button class="chapter-btn ta-btn" onclick="goToTradeAnalysis()">
+      <div class="chapter-num" style="background:var(--orange);color:#fff;font-size:13px">&#128202;</div>
+      <div><span class="chapter-btn-title">거래내역 분석</span><span class="chapter-btn-sub">CSV · HTML · AI 피드백</span></div>
+    </button>
     <button class="chapter-btn spread-btn" onclick="goToSpread()">
       <div class="chapter-num" style="background:#185fa5;color:#fff;font-size:13px">&#9878;</div>
       <div><span class="chapter-btn-title">스프레드 비교</span><span class="chapter-btn-sub">거래소 레이더 차트 대결</span></div>
@@ -2329,7 +2333,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="calc-tabs">
     <button class="calc-tab active" onclick="switchCalcTab(this,'calcSection')">💲 계산기</button>
     <button class="calc-tab" onclick="switchCalcTab(this,'journalSection')">📔 매매일지</button>
-    <button class="calc-tab" onclick="switchCalcTab(this,'tradeAnalysis')">📊 거래내역 분석</button>
   </div>
 
   <div class="section calc-sub-section" id="calcSection">
@@ -2438,48 +2441,6 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="journal-empty" id="journalEmpty">아직 기록이 없습니다. 위 양식으로 첫 매매를 기록해보세요.</div>
   </div>
 
-  <!-- Trade Analysis Section -->
-  <div class="section calc-sub-section" id="tradeAnalysis" style="display:none">
-    <h2 class="section-title">거래내역 분석</h2>
-    <p class="prose">거래내역 파일을 업로드하면 AI가 매매 스타일을 분석하고 피드백을 드려요.</p>
-
-    <!-- Upload Zone -->
-    <div class="ta-upload" id="taUpload">
-      <div class="ta-upload-zone" id="taDropZone" onclick="document.getElementById('taFileInput').click()">
-        <div class="ta-upload-icon">📁</div>
-        <div class="ta-upload-text">파일을 드래그하거나 클릭하여 선택</div>
-        <div class="ta-upload-formats">CSV · HTML · XLSX · PDF · 이미지 (PNG, JPG)</div>
-        <input type="file" id="taFileInput" accept=".csv,.html,.htm,.xlsx,.xls,.pdf,.png,.jpg,.jpeg" style="display:none" onchange="taHandleFile(this.files[0])">
-      </div>
-    </div>
-
-    <!-- Loading -->
-    <div class="ta-loading" id="taLoading" style="display:none">
-      <div class="ec4-spinner"></div><br>분석 중...
-    </div>
-
-    <!-- Results -->
-    <div class="ta-results" id="taResults" style="display:none">
-      <!-- Style Banner -->
-      <div class="ta-style-banner" id="taStyleBanner"></div>
-
-      <!-- Stats Grid -->
-      <div class="ta-stats-grid" id="taStatsGrid"></div>
-
-      <!-- Pattern + AI Feedback -->
-      <div class="ta-two-col">
-        <div class="ta-patterns" id="taPatterns"></div>
-        <div class="ta-ai-feedback" id="taAiFeedback"></div>
-      </div>
-
-      <!-- Trade Table -->
-      <div class="ta-table-wrap">
-        <h3 class="ta-table-title">최근 거래 내역</h3>
-        <div style="overflow-x:auto"><table class="ta-table" id="taTable"></table></div>
-      </div>
-
-      <button class="ta-reset-btn" onclick="taReset()">다른 파일 분석하기</button>
-    </div>
   </div>
 </div>
 
@@ -2687,6 +2648,40 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="achv-popup-title">도전 과제 달성! 🎉</div>
     <div class="achv-popup-name" id="achvPopupName"></div>
     <div class="lvlup-particles" id="achvParticles"></div>
+  </div>
+</div>
+
+<!-- TRADE ANALYSIS PAGE -->
+<div class="chapter-page" id="chTradeAnalysis">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128202;</div>
+    <div>
+      <div class="chapter-label">Trade Analysis</div>
+      <h2 class="chapter-title">거래내역 분석</h2>
+      <p class="chapter-desc">거래내역 파일을 업로드하면 AI가 매매 스타일을 분석하고 피드백을 드려요.</p>
+    </div>
+  </div>
+  <div class="ta-upload" id="taUpload">
+    <div class="ta-upload-zone" id="taDropZone" onclick="document.getElementById('taFileInput').click()">
+      <div class="ta-upload-icon">📁</div>
+      <div class="ta-upload-text">파일을 드래그하거나 클릭하여 선택</div>
+      <div class="ta-upload-formats">CSV · HTML · XLSX · PDF · 이미지 (PNG, JPG)</div>
+      <input type="file" id="taFileInput" accept=".csv,.html,.htm,.xlsx,.xls,.pdf,.png,.jpg,.jpeg" style="display:none" onchange="taHandleFile(this.files[0])">
+    </div>
+  </div>
+  <div class="ta-loading" id="taLoading" style="display:none"><div class="ec4-spinner"></div><br>분석 중...</div>
+  <div class="ta-results" id="taResults" style="display:none">
+    <div class="ta-style-banner" id="taStyleBanner"></div>
+    <div class="ta-stats-grid" id="taStatsGrid"></div>
+    <div class="ta-two-col">
+      <div class="ta-patterns" id="taPatterns"></div>
+      <div class="ta-ai-feedback" id="taAiFeedback"></div>
+    </div>
+    <div class="ta-table-wrap">
+      <h3 class="ta-table-title">최근 거래 내역</h3>
+      <div style="overflow-x:auto"><table class="ta-table" id="taTable"></table></div>
+    </div>
+    <button class="ta-reset-btn" onclick="taReset()">다른 파일 분석하기</button>
   </div>
 </div>
 
@@ -3411,6 +3406,11 @@ const SP_BROKERS={
 const SP_SYMS=['XAUUSD','US100','BTCUSD','EURUSD','USOil','HK33'];
 const SP_MAX={XAUUSD:58,US100:375,BTCUSD:6000,EURUSD:25,USOil:55,HK33:500};
 let spChartInst=null;
+
+function goToTradeAnalysis(){
+  goToPage('chTradeAnalysis','ta-btn');
+  taReset();
+}
 
 function goToSpread(){
   goToPage('chSpread','spread-btn');
