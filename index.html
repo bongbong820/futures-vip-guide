@@ -13,6 +13,8 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="features.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 /* ===== FONT ===== */
 @supports (font-variation-settings: normal) {
@@ -2325,8 +2327,9 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 
   <!-- Sub Tabs -->
   <div class="calc-tabs">
-    <button class="calc-tab active" onclick="switchCalcTab(this,'calcSection')">💲 증거금 & 손익 계산기</button>
-    <button class="calc-tab" onclick="switchCalcTab(this,'journalSection')">📔 매매 일지</button>
+    <button class="calc-tab active" onclick="switchCalcTab(this,'calcSection')">💲 계산기</button>
+    <button class="calc-tab" onclick="switchCalcTab(this,'journalSection')">📔 매매일지</button>
+    <button class="calc-tab" onclick="switchCalcTab(this,'tradeAnalysis')">📊 거래내역 분석</button>
   </div>
 
   <div class="section calc-sub-section" id="calcSection">
@@ -2433,6 +2436,50 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="calc-row-label" style="margin-bottom:10px">매매 기록</div>
     <div style="overflow-x:auto"><table class="journal-table"><thead><tr><th>날짜</th><th>종목</th><th>방향</th><th>진입</th><th>청산</th><th>결과</th><th>메모</th><th></th></tr></thead><tbody id="journalBody"></tbody></table></div>
     <div class="journal-empty" id="journalEmpty">아직 기록이 없습니다. 위 양식으로 첫 매매를 기록해보세요.</div>
+  </div>
+
+  <!-- Trade Analysis Section -->
+  <div class="section calc-sub-section" id="tradeAnalysis" style="display:none">
+    <h2 class="section-title">거래내역 분석</h2>
+    <p class="prose">거래내역 파일을 업로드하면 AI가 매매 스타일을 분석하고 피드백을 드려요.</p>
+
+    <!-- Upload Zone -->
+    <div class="ta-upload" id="taUpload">
+      <div class="ta-upload-zone" id="taDropZone" onclick="document.getElementById('taFileInput').click()">
+        <div class="ta-upload-icon">📁</div>
+        <div class="ta-upload-text">파일을 드래그하거나 클릭하여 선택</div>
+        <div class="ta-upload-formats">CSV · HTML · XLSX · PDF · 이미지 (PNG, JPG)</div>
+        <input type="file" id="taFileInput" accept=".csv,.html,.htm,.xlsx,.xls,.pdf,.png,.jpg,.jpeg" style="display:none" onchange="taHandleFile(this.files[0])">
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="ta-loading" id="taLoading" style="display:none">
+      <div class="ec4-spinner"></div><br>분석 중...
+    </div>
+
+    <!-- Results -->
+    <div class="ta-results" id="taResults" style="display:none">
+      <!-- Style Banner -->
+      <div class="ta-style-banner" id="taStyleBanner"></div>
+
+      <!-- Stats Grid -->
+      <div class="ta-stats-grid" id="taStatsGrid"></div>
+
+      <!-- Pattern + AI Feedback -->
+      <div class="ta-two-col">
+        <div class="ta-patterns" id="taPatterns"></div>
+        <div class="ta-ai-feedback" id="taAiFeedback"></div>
+      </div>
+
+      <!-- Trade Table -->
+      <div class="ta-table-wrap">
+        <h3 class="ta-table-title">최근 거래 내역</h3>
+        <div style="overflow-x:auto"><table class="ta-table" id="taTable"></table></div>
+      </div>
+
+      <button class="ta-reset-btn" onclick="taReset()">다른 파일 분석하기</button>
+    </div>
   </div>
 </div>
 
@@ -3083,6 +3130,270 @@ function toggleEdu(){
   arrow.classList.toggle('up');
 }
 // Accordion starts collapsed; opens when user navigates to a chapter
+
+// ===== TRADE ANALYSIS =====
+(function(){
+  const dz=document.getElementById('taDropZone');
+  if(!dz)return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover')});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');if(e.dataTransfer.files[0])taHandleFile(e.dataTransfer.files[0])});
+})();
+
+async function taHandleFile(file){
+  if(!file)return;
+  document.getElementById('taUpload').style.display='none';
+  document.getElementById('taLoading').style.display='block';
+  document.getElementById('taResults').style.display='none';
+  try{
+    let trades=[];
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(ext==='csv'){trades=await taParseCsv(file)}
+    else if(ext==='html'||ext==='htm'){trades=await taParseHtml(file)}
+    else if(ext==='xlsx'||ext==='xls'){trades=await taParseXlsx(file)}
+    else if(ext==='pdf'){trades=await taParsePdf(file)}
+    else if(['png','jpg','jpeg'].includes(ext)){trades=await taParseImage(file)}
+    else{alert('지원하지 않는 파일 형식입니다.');taReset();return}
+    if(!trades.length){alert('거래 데이터를 찾을 수 없습니다.');taReset();return}
+    taAnalyze(trades);
+  }catch(e){console.error(e);alert('파일 분석 중 오류: '+e.message);taReset()}
+}
+
+function taParseCsv(file){return new Promise((res,rej)=>{
+  const reader=new FileReader();
+  reader.onload=e=>{try{res(taParseCsvText(e.target.result))}catch(err){rej(err)}};
+  reader.readAsText(file);
+})}
+
+function taParseCsvText(text){
+  const lines=text.trim().split('\n').map(l=>l.split(/[,\t]/));
+  if(lines.length<2)return[];
+  const hdr=lines[0].map(h=>h.trim().toLowerCase());
+  return lines.slice(1).map(row=>{
+    const r={};hdr.forEach((h,i)=>r[h]=row[i]?.trim()||'');
+    return taMapRow(r);
+  }).filter(t=>t.symbol);
+}
+
+function taParseHtml(file){return new Promise((res,rej)=>{
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const doc=new DOMParser().parseFromString(e.target.result,'text/html');
+      const tables=doc.querySelectorAll('table');
+      let trades=[];
+      tables.forEach(tbl=>{
+        const rows=tbl.querySelectorAll('tr');
+        if(rows.length<2)return;
+        const hdrs=Array.from(rows[0].querySelectorAll('th,td')).map(c=>c.textContent.trim().toLowerCase());
+        for(let i=1;i<rows.length;i++){
+          const cells=Array.from(rows[i].querySelectorAll('td')).map(c=>c.textContent.trim());
+          if(cells.length<3)continue;
+          const r={};hdrs.forEach((h,j)=>r[h]=cells[j]||'');
+          const t=taMapRow(r);
+          if(t.symbol)trades.push(t);
+        }
+      });
+      res(trades);
+    }catch(err){rej(err)}
+  };
+  reader.readAsText(file);
+})}
+
+function taParseXlsx(file){return new Promise((res,rej)=>{
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const json=XLSX.utils.sheet_to_json(ws,{defval:''});
+      const trades=json.map(r=>{
+        const mapped={};Object.keys(r).forEach(k=>mapped[k.toLowerCase()]=String(r[k]));
+        return taMapRow(mapped);
+      }).filter(t=>t.symbol);
+      res(trades);
+    }catch(err){rej(err)}
+  };
+  reader.readAsArrayBuffer(file);
+})}
+
+async function taParsePdf(file){
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const data=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data}).promise;
+  let text='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const content=await page.getTextContent();
+    text+=content.items.map(it=>it.str).join(' ')+'\n';
+  }
+  return taParseCsvText(text)||taParseTextFallback(text);
+}
+
+async function taParseImage(file){
+  // Send to Gemini via existing chat API for vision
+  const base64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(file)});
+  try{
+    const resp=await fetch('https://futures-chat-api.vercel.app/api/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:'이 거래내역 이미지를 CSV 형식으로 변환해줘. 컬럼: symbol,type,open_time,close_time,open_price,close_price,profit,lots. 헤더 포함해서 CSV만 출력해. 다른 설명 없이.\n\n[이미지 데이터: '+base64.substring(0,200)+'...]'}]})
+    });
+    const reader=resp.body.getReader();
+    const decoder=new TextDecoder();let text='',buf='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=decoder.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        const p=line.slice(6).trim();if(p==='[DONE]')continue;
+        try{const d=JSON.parse(p);if(d.text)text+=d.text}catch(e){}
+      }
+    }
+    return taParseCsvText(text);
+  }catch(e){console.error('Image parse error:',e);return[]}
+}
+
+function taParseTextFallback(text){
+  // Try to extract trades from raw text
+  const lines=text.split('\n').filter(l=>l.match(/\d+\.\d+/));
+  return lines.map(l=>{
+    const nums=l.match(/[\d.]+/g)||[];
+    if(nums.length<3)return null;
+    return{symbol:'Unknown',type:l.match(/sell|short/i)?'sell':'buy',openTime:'',closeTime:'',openPrice:parseFloat(nums[0])||0,closePrice:parseFloat(nums[1])||0,profit:parseFloat(nums[nums.length-1])||0,lots:1};
+  }).filter(Boolean);
+}
+
+function taMapRow(r){
+  const find=(...keys)=>{for(const k of keys){for(const rk of Object.keys(r)){if(rk.includes(k))return r[rk]}}return''};
+  const sym=find('symbol','종목','item','instrument','pair');
+  const type=find('type','방향','side','action','buy/sell');
+  const openTime=find('open time','open date','opentime','시작','entry time','time');
+  const closeTime=find('close time','close date','closetime','종료','exit time');
+  const openPrice=parseFloat(find('open price','openprice','진입','entry','price'))||0;
+  const closePrice=parseFloat(find('close price','closeprice','청산','exit'))||0;
+  const profit=parseFloat(find('profit','손익','pnl','p/l','net'))||0;
+  const lots=parseFloat(find('lot','volume','계약','size','qty'))||1;
+  return{symbol:sym,type:type.toLowerCase(),openTime,closeTime,openPrice,closePrice,profit,lots};
+}
+
+function taAnalyze(trades){
+  const wins=trades.filter(t=>t.profit>0);
+  const losses=trades.filter(t=>t.profit<0);
+  const totalPnl=trades.reduce((s,t)=>s+t.profit,0);
+  const avgWin=wins.length?wins.reduce((s,t)=>s+t.profit,0)/wins.length:0;
+  const avgLoss=losses.length?Math.abs(losses.reduce((s,t)=>s+t.profit,0)/losses.length):1;
+  const winRate=trades.length?Math.round(wins.length/trades.length*100):0;
+  const rrRatio=avgLoss?Math.round(avgWin/avgLoss*100)/100:0;
+
+  // Holding time
+  let avgHoldMin=0;
+  const withTime=trades.filter(t=>t.openTime&&t.closeTime);
+  if(withTime.length){
+    const totalMin=withTime.reduce((s,t)=>{
+      const d=Math.abs(new Date(t.closeTime)-new Date(t.openTime))/60000;
+      return s+(isNaN(d)?0:d);
+    },0);
+    avgHoldMin=totalMin/withTime.length;
+  }
+
+  // Style
+  let styleType,styleDesc;
+  if(avgHoldMin>0&&avgHoldMin<30){styleType='단타형 스캘퍼';styleDesc='빠른 진입과 탈출, 고빈도 매매'}
+  else if(avgHoldMin>=30&&avgHoldMin<240){styleType='단기 스윙';styleDesc='트렌드를 따라가는 중단기 전략'}
+  else if(avgHoldMin>=240){styleType='스윙 트레이더';styleDesc='큰 흐름을 포착하는 인내형 전략'}
+  else{styleType='분석 결과';styleDesc='보유시간 데이터가 없어 시간 기반 분류 불가'}
+
+  const score=Math.min(100,Math.max(0,Math.round(winRate*0.4+Math.min(rrRatio*20,30)+Math.min(trades.length,30))));
+
+  // Max consecutive losses
+  let maxConsLoss=0,cur=0;
+  trades.forEach(t=>{if(t.profit<0){cur++;maxConsLoss=Math.max(maxConsLoss,cur)}else{cur=0}});
+
+  // MDD
+  let peak=0,mdd=0,running=0;
+  trades.forEach(t=>{running+=t.profit;if(running>peak)peak=running;const dd=peak-running;if(dd>mdd)mdd=dd});
+
+  // Patterns
+  const speedScore=wins.length&&avgHoldMin>0?Math.min(100,Math.round(100-avgHoldMin/10)):50;
+  const slScore=losses.length?Math.min(100,Math.round(100-maxConsLoss*15)):80;
+  const consistScore=Math.min(100,Math.round(winRate*1.1));
+  const riskScore=Math.min(100,Math.round(rrRatio*30+20));
+  const freqScore=Math.min(100,Math.round(trades.length*3));
+
+  // Render
+  document.getElementById('taLoading').style.display='none';
+  document.getElementById('taResults').style.display='block';
+
+  document.getElementById('taStyleBanner').innerHTML=
+    `<div class="ta-style-type">${styleType}</div>
+     <div class="ta-style-desc">${styleDesc}</div>
+     <div class="ta-style-score">종합 점수: ${score} / 100</div>`;
+
+  document.getElementById('taStatsGrid').innerHTML=[
+    ['총 거래',trades.length+'회'],['승률',winRate+'%'],
+    ['총 손익',(totalPnl>=0?'+':'')+totalPnl.toFixed(2)],['손익비',rrRatio.toFixed(2)+':1'],
+    ['평균 수익','+'+avgWin.toFixed(2)],['평균 손실','-'+avgLoss.toFixed(2)],
+    ['MDD',mdd.toFixed(2)],['최대 연속 손실',maxConsLoss+'회']
+  ].map(([l,v])=>`<div class="ta-stat"><div class="ta-stat-val">${v}</div><div class="ta-stat-label">${l}</div></div>`).join('');
+
+  document.getElementById('taPatterns').innerHTML='<h3>📊 패턴 분석</h3>'+
+    [['수익 실현 속도',speedScore],['손절 실행력',slScore],['포지션 일관성',consistScore],['리스크 관리',riskScore],['매매 빈도',freqScore]]
+    .map(([l,v])=>`<div class="ta-pat-item"><div class="ta-pat-label"><span>${l}</span><span>${v}%</span></div><div class="ta-pat-bar"><div class="ta-pat-fill" style="width:${v}%"></div></div></div>`).join('');
+
+  // AI Feedback
+  const aiEl=document.getElementById('taAiFeedback');
+  aiEl.innerHTML='<h3>🤖 AI 피드백</h3><div class="ta-ai-text" id="taAiText">분석 중...</div>';
+  taGetAiFeedback({trades:trades.length,winRate,totalPnl,rrRatio,avgWin,avgLoss,mdd,maxConsLoss,avgHoldMin,styleType});
+
+  // Table
+  const tbl=document.getElementById('taTable');
+  tbl.innerHTML='<thead><tr><th>종목</th><th>방향</th><th>진입가</th><th>청산가</th><th>손익</th></tr></thead><tbody>'+
+    trades.slice(0,50).map(t=>{
+      const dir=t.type.match(/sell|short/i)?'숏':'롱';
+      const cls=t.profit>=0?'profit':'loss';
+      return`<tr><td>${escHtml(t.symbol)}</td><td>${dir}</td><td>${t.openPrice}</td><td>${t.closePrice}</td><td class="${cls}">${t.profit>=0?'+':''}${t.profit.toFixed(2)}</td></tr>`;
+    }).join('')+'</tbody>';
+}
+
+async function taGetAiFeedback(stats){
+  const el=document.getElementById('taAiText');
+  const prompt=`아래 트레이딩 통계를 분석해서 한국어로 피드백을 줘.
+강점 1~2개, 핵심 문제점 1~2개, 개선 전략 1개를 구체적으로 알려줘. 숫자 근거를 반드시 포함해.
+
+총 거래: ${stats.trades}회, 승률: ${stats.winRate}%, 총 손익: ${stats.totalPnl.toFixed(2)}
+손익비: ${stats.rrRatio.toFixed(2)}:1, 평균 수익: ${stats.avgWin.toFixed(2)}, 평균 손실: ${stats.avgLoss.toFixed(2)}
+MDD: ${stats.mdd.toFixed(2)}, 최대 연속 손실: ${stats.maxConsLoss}회
+매매 스타일: ${stats.styleType}`;
+
+  try{
+    const resp=await fetch('https://futures-chat-api.vercel.app/api/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
+    });
+    const reader=resp.body.getReader();
+    const decoder=new TextDecoder();let text='',buf='';
+    el.textContent='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buf+=decoder.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        const p=line.slice(6).trim();if(p==='[DONE]')continue;
+        try{const d=JSON.parse(p);if(d.text){text+=d.text;el.textContent=text}}catch(e){}
+      }
+    }
+    if(!text)el.textContent='AI 피드백을 가져올 수 없습니다. 잠시 후 다시 시도해주세요.';
+  }catch(e){el.textContent='AI 피드백을 가져올 수 없습니다. (API 연결 오류)'}
+}
+
+function taReset(){
+  document.getElementById('taUpload').style.display='';
+  document.getElementById('taLoading').style.display='none';
+  document.getElementById('taResults').style.display='none';
+  document.getElementById('taFileInput').value='';
+}
 
 // ===== SPREAD COMPARISON =====
 const SP_BROKERS={
