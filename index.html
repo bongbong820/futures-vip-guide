@@ -3175,25 +3175,18 @@ async function taParsePdf(file){
 }
 
 async function taParseImage(file){
-  // Send to Gemini via existing chat API for vision
-  const base64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(file)});
+  const base64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result.split(',')[1]);fr.readAsDataURL(file)});
+  const mime=file.type||'image/png';
   try{
-    const resp=await fetch('https://futures-chat-api.vercel.app/api/chat',{
+    const resp=await fetch(GEMINI_URL,{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'user',content:'이 거래내역 이미지를 CSV 형식으로 변환해줘. 컬럼: symbol,type,open_time,close_time,open_price,close_price,profit,lots. 헤더 포함해서 CSV만 출력해. 다른 설명 없이.\n\n[이미지 데이터: '+base64.substring(0,200)+'...]'}]})
+      body:JSON.stringify({contents:[{parts:[
+        {text:'이 거래내역 이미지를 CSV 형식으로 변환해줘. 컬럼: symbol,type,open_time,close_time,open_price,close_price,profit,lots. 헤더 포함해서 CSV만 출력해. 다른 설명 없이.'},
+        {inline_data:{mime_type:mime,data:base64}}
+      ]}]})
     });
-    const reader=resp.body.getReader();
-    const decoder=new TextDecoder();let text='',buf='';
-    while(true){
-      const{done,value}=await reader.read();if(done)break;
-      buf+=decoder.decode(value,{stream:true});
-      const lines=buf.split('\n');buf=lines.pop()||'';
-      for(const line of lines){
-        if(!line.startsWith('data: '))continue;
-        const p=line.slice(6).trim();if(p==='[DONE]')continue;
-        try{const d=JSON.parse(p);if(d.text)text+=d.text}catch(e){}
-      }
-    }
+    const data=await resp.json();
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
     return taParseCsvText(text);
   }catch(e){console.error('Image parse error:',e);return[]}
 }
@@ -3300,9 +3293,23 @@ function taAnalyze(trades){
     }).join('')+'</tbody>';
 }
 
+const GEMINI_KEY='AIzaSyDFcBKuE3yw5jNkwa0HJbq-RUmGtgc_sJU';
+const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY;
+
+async function geminiCall(prompt){
+  const resp=await fetch(GEMINI_URL,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+  });
+  if(!resp.ok){const e=await resp.text();throw new Error('Gemini API '+resp.status+': '+e)}
+  const data=await resp.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+
 async function taGetAiFeedback(stats){
   const el=document.getElementById('taAiText');
-  const prompt=`아래 트레이딩 통계를 분석해서 한국어로 피드백을 줘.
+  const prompt=`너는 선물 트레이딩 전문 코치야.
+아래 거래 데이터를 분석해서 한국어로 피드백을 줘.
 강점 1~2개, 핵심 문제점 1~2개, 개선 전략 1개를 구체적으로 알려줘. 숫자 근거를 반드시 포함해.
 
 총 거래: ${stats.trades}회, 승률: ${stats.winRate}%, 총 손익: ${stats.totalPnl.toFixed(2)}
@@ -3310,26 +3317,15 @@ async function taGetAiFeedback(stats){
 MDD: ${stats.mdd.toFixed(2)}, 최대 연속 손실: ${stats.maxConsLoss}회
 매매 스타일: ${stats.styleType}`;
 
+  el.textContent='분석 중...';
   try{
-    const resp=await fetch('https://futures-chat-api.vercel.app/api/chat',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:[{role:'user',content:prompt}]})
-    });
-    const reader=resp.body.getReader();
-    const decoder=new TextDecoder();let text='',buf='';
-    el.textContent='';
-    while(true){
-      const{done,value}=await reader.read();if(done)break;
-      buf+=decoder.decode(value,{stream:true});
-      const lines=buf.split('\n');buf=lines.pop()||'';
-      for(const line of lines){
-        if(!line.startsWith('data: '))continue;
-        const p=line.slice(6).trim();if(p==='[DONE]')continue;
-        try{const d=JSON.parse(p);if(d.text){text+=d.text;el.textContent=text}}catch(e){}
-      }
-    }
-    if(!text)el.textContent='AI 피드백을 가져올 수 없습니다. 잠시 후 다시 시도해주세요.';
-  }catch(e){el.textContent='AI 피드백을 가져올 수 없습니다. (API 연결 오류)'}
+    const text=await geminiCall(prompt);
+    el.textContent=text||'피드백을 생성하지 못했습니다.';
+  }catch(e){
+    console.error('AI Feedback error:',e);
+    el.innerHTML='AI 피드백을 가져올 수 없습니다.<br><span style="font-size:11px;color:var(--gray-400)">'+escHtml(e.message)+'</span><br><button onclick="taGetAiFeedback(window._lastTaStats)" style="margin-top:8px;padding:6px 16px;border:none;border-radius:8px;background:var(--blue);color:#fff;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:600">재시도</button>';
+  }
+  window._lastTaStats=stats;
 }
 
 function taReset(){
@@ -4243,7 +4239,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 
 <script>
 // ===== AI CHAT WIDGET =====
-const AI_API_URL = 'https://futures-chat-api.vercel.app/api/chat';
+const AI_SYSTEM_PROMPT='너는 선물·주식·외환 트레이딩 전문 AI 어시스턴트야. 사용자는 한국인 트레이더들이야. 반드시 한국어로만 대답해. 전문적이지만 쉽고 친근하게 설명해줘. 답변 마지막엔 항상 리스크 주의사항도 함께 알려줘. 투자 권유는 절대 하지 말고 정보 제공 목적으로만 답변해. 모르는 건 모른다고 솔직하게 말해.';
 const AI_STORE_KEY = 'aiChatData';
 const AI_MAX_RPM = 10;
 
@@ -4368,69 +4364,38 @@ async function aiSend(){
   aiAddTyping();
 
   try {
-    const body = JSON.stringify({
-      messages: aiMessages.filter(m=>m.role==='user'||m.role==='assistant').slice(-10).map(m=>({role:m.role,content:m.content}))
+    // Build conversation for Gemini
+    const recent=aiMessages.filter(m=>m.role==='user'||m.role==='assistant').slice(-10);
+    const contents=[];
+    contents.push({role:'user',parts:[{text:AI_SYSTEM_PROMPT}]});
+    contents.push({role:'model',parts:[{text:'네, 알겠습니다. 한국어로 트레이딩 관련 질문에 답변하겠습니다.'}]});
+    recent.forEach(m=>{
+      contents.push({role:m.role==='user'?'user':'model',parts:[{text:m.content}]});
     });
 
-    const res = await fetch(AI_API_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body
+    const res=await fetch(GEMINI_URL,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents})
     });
 
-    if (!res.ok) throw new Error('HTTP '+res.status);
+    if(!res.ok){const e=await res.text();throw new Error('API '+res.status)}
+
+    const data=await res.json();
+    const fullText=data.candidates?.[0]?.content?.parts?.[0]?.text||'응답을 생성하지 못했습니다.';
 
     aiRemoveTyping();
 
-    // Create streaming bubble
-    const rowDiv = document.createElement('div');
-    rowDiv.className = 'ai-msg-row';
-    rowDiv.innerHTML = '<div class="ai-msg-ava">AI</div><div><div class="ai-bubble" id="aiStreamBubble"></div><div class="ai-msg-time" id="aiStreamTime"></div></div>';
+    const rTime=aiTimeStr();
+    const rowDiv=document.createElement('div');
+    rowDiv.className='ai-msg-row';
+    rowDiv.innerHTML='<div class="ai-msg-ava">AI</div><div><div class="ai-bubble">'+escHtml(fullText)+'</div><div class="ai-msg-time">'+rTime+'</div></div>';
     msgs.appendChild(rowDiv);
 
-    const bubble = document.getElementById('aiStreamBubble');
-    const timeEl = document.getElementById('aiStreamTime');
-    let fullText = '';
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    while(true){
-      const {done, value} = await reader.read();
-      if(done) break;
-      buffer += decoder.decode(value, {stream:true});
-
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-
-      for(const line of lines){
-        if(!line.startsWith('data: ')) continue;
-        const payload = line.slice(6).trim();
-        if(payload === '[DONE]') break;
-        try{
-          const d = JSON.parse(payload);
-          if(d.error){
-            fullText += '\n\n' + d.error;
-            bubble.textContent = fullText;
-          } else if(d.text){
-            fullText += d.text;
-            bubble.textContent = fullText;
-          }
-        }catch(e){}
-      }
-      aiScrollBottom();
-    }
-
-    const rTime = aiTimeStr();
-    timeEl.textContent = rTime;
-    bubble.removeAttribute('id');
-    timeEl.removeAttribute('id');
-
-    aiMessages.push({ role:'assistant', content:fullText, time:rTime });
+    aiMessages.push({role:'assistant',content:fullText,time:rTime});
     aiSave();
 
   } catch(e) {
+    console.error('AI Chat error:',e);
     aiRemoveTyping();
     const errTime = aiTimeStr();
     aiMessages.push({ role:'assistant', content:'죄송합니다. 잠시 후 다시 시도해 주세요.', time:errTime });
