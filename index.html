@@ -2720,9 +2720,6 @@ function startGuide() {
 
 // ===== CHAPTER NAVIGATION =====
 function goTo(n) {
-  // Auto-open edu accordion when navigating to a chapter
-  const eb=document.getElementById('eduBody'),ea=document.getElementById('eduArrow');
-  if(eb&&!eb.classList.contains('open')){eb.classList.add('open');if(ea)ea.classList.add('up')}
   document.querySelectorAll('.chapter-page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('ch' + n).classList.add('active');
