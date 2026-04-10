@@ -2699,10 +2699,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 
   <div class="st-search">
-    <div class="st-search-wrap">
-      <input type="text" id="stSearchInput" class="st-search-input" placeholder="티커 또는 한글 (예: AAPL, 애플, 삼성전자)" oninput="stAutocomplete()" onkeydown="stHandleKey(event)" autocomplete="off">
-      <div class="st-autocomplete" id="stAutocomplete" style="display:none"></div>
-    </div>
+    <input type="text" id="stSearchInput" class="st-search-input" placeholder="티커 또는 한글 (예: AAPL, 애플, 삼성전자)" oninput="stAutocomplete()" onkeydown="stHandleKey(event)" autocomplete="off" style="flex:1">
     <button class="st-search-btn" onclick="stSearch()">분석하기</button>
   </div>
   <div class="st-sources">데이터: <span>FMP</span> · <span>Alpha Vantage</span> · <span>Groq AI</span></div>
@@ -2799,6 +2796,15 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 </div>
 
 </main>
+</div>
+
+<!-- Stock Search Bottom Sheet -->
+<div class="st-sheet-overlay" id="stSheetOverlay" onclick="if(event.target===this)stCloseSheet()">
+  <div class="st-sheet" id="stSheet">
+    <div class="st-sheet-handle"></div>
+    <div class="st-sheet-query" id="stSheetQuery"></div>
+    <div class="st-sheet-list" id="stSheetList"></div>
+  </div>
 </div>
 
 <!-- Achievement Popup (outside main) -->
@@ -3595,74 +3601,72 @@ function stResolveTicker(input){
 let stAcIdx=-1;
 function stAutocomplete(){
   const inp=document.getElementById('stSearchInput');
-  const ac=document.getElementById('stAutocomplete');
   const q=inp.value.trim();
-  if(q.length<1){ac.style.display='none';return}
+  if(q.length<1){stCloseSheet();return}
 
-  // Direct ticker - hide
-  if(/^[A-Z]{1,5}(\.[A-Z])?$|^\d{6}$/.test(q)){ac.style.display='none';return}
+  // Direct ticker - close sheet
+  if(/^[A-Z]{1,5}(\.[A-Z])?$|^\d{6}$/.test(q)){stCloseSheet();return}
 
   const results=[];
-  // KR matches
   for(const [name,code] of Object.entries(KR_STOCKS)){
-    if(name.includes(q)){
-      results.push({name,ticker:code,market:'kr',flag:'🇰🇷'});
-      if(results.length>=8)break;
-    }
+    if(name.includes(q)){results.push({name,ticker:code,market:'kr',flag:'🇰🇷'});if(results.length>=20)break}
   }
-  // US matches
   for(const [name,code] of Object.entries(US_STOCKS)){
-    if(results.length>=8)break;
-    if(name.includes(q)){
-      results.push({name,ticker:code,market:'us',flag:'🇺🇸'});
-    }
+    if(results.length>=20)break;
+    if(name.includes(q))results.push({name,ticker:code,market:'us',flag:'🇺🇸'});
   }
 
-  if(!results.length){ac.style.display='none';return}
+  document.getElementById('stSheetQuery').textContent="'"+q+"' 검색 결과";
+  const list=document.getElementById('stSheetList');
+  if(!results.length){
+    list.innerHTML='<div class="st-sheet-empty">검색 결과가 없습니다<br>티커를 직접 입력해보세요 (예: AAPL, 005930)</div>';
+  }else{
+    list.innerHTML=results.map((r,i)=>
+      `<div class="st-sheet-item${i===stAcIdx?' active':''}" onclick="stPickAc('${escHtml(r.name)}','${r.ticker}','${r.market}')"><div class="st-sheet-name"><span class="st-sheet-flag">${r.flag}</span>${escHtml(r.name)}</div><div class="st-sheet-ticker">${r.ticker}</div></div>`
+    ).join('');
+  }
+  stOpenSheet();
+  stAcIdx=-1;
+}
 
-  ac.innerHTML=results.map((r,i)=>
-    `<div class="st-ac-item${i===stAcIdx?' active':''}" onclick="stPickAc('${escHtml(r.name)}','${r.ticker}','${r.market}')"><span class="st-ac-name">${r.flag} ${escHtml(r.name)}</span><span class="st-ac-ticker">${r.ticker}</span></div>`
-  ).join('');
-  ac.style.display='block';
+function stOpenSheet(){
+  document.getElementById('stSheetOverlay').classList.add('show');
+}
+function stCloseSheet(){
+  document.getElementById('stSheetOverlay').classList.remove('show');
   stAcIdx=-1;
 }
 
 function stPickAc(name,ticker,market){
   document.getElementById('stSearchInput').value=name;
-  document.getElementById('stAutocomplete').style.display='none';
-  // Switch market tab
+  stCloseSheet();
   const tabs=document.querySelectorAll('.st-tab');
   tabs.forEach(b=>b.classList.remove('active'));
   if(market==='kr')tabs[1].classList.add('active');
   else tabs[0].classList.add('active');
   stMarket=market;
-  // Trigger search
   stSearchTicker(ticker);
 }
 
 function stHandleKey(e){
-  const ac=document.getElementById('stAutocomplete');
-  const items=ac.querySelectorAll('.st-ac-item');
+  const items=document.querySelectorAll('.st-sheet-item');
   if(e.key==='ArrowDown'&&items.length){
     e.preventDefault();
     stAcIdx=(stAcIdx+1)%items.length;
     items.forEach((it,i)=>it.classList.toggle('active',i===stAcIdx));
+    items[stAcIdx]?.scrollIntoView({block:'nearest'});
   }else if(e.key==='ArrowUp'&&items.length){
     e.preventDefault();
     stAcIdx=stAcIdx<=0?items.length-1:stAcIdx-1;
     items.forEach((it,i)=>it.classList.toggle('active',i===stAcIdx));
+    items[stAcIdx]?.scrollIntoView({block:'nearest'});
   }else if(e.key==='Enter'){
     if(stAcIdx>=0&&items[stAcIdx]){items[stAcIdx].click()}
     else stSearch();
   }else if(e.key==='Escape'){
-    ac.style.display='none';
+    stCloseSheet();
   }
 }
-
-document.addEventListener('click',function(e){
-  const ac=document.getElementById('stAutocomplete');
-  if(ac&&!e.target.closest('.st-search-wrap')){ac.style.display='none'}
-});
 const ST_CACHE_TTL=5*60*1000; // 5 minutes
 function stCacheGet(k){
   try{const v=JSON.parse(sessionStorage.getItem('stCache_'+k)||'null');
@@ -3692,7 +3696,7 @@ function stSwitchMarket(btn,m){
 async function stSearch(){
   const raw=document.getElementById('stSearchInput').value.trim();
   if(!raw)return;
-  document.getElementById('stAutocomplete').style.display='none';
+  stCloseSheet();
 
   // Resolve to ticker + market
   const resolved=stResolveTicker(raw);
