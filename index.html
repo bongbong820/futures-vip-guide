@@ -15,6 +15,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 /* ===== FONT ===== */
 @supports (font-variation-settings: normal) {
@@ -2610,6 +2612,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
   <div class="ta-loading" id="taLoading" style="display:none"><div class="ec4-spinner"></div><br>분석 중...</div>
   <div class="ta-results" id="taResults" style="display:none">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;gap:8px">
+      <button class="ta-pdf-btn" id="taPdfBtn" onclick="taPdfDownload()">📥 PDF 다운로드</button>
+      <button class="ta-reset-btn" onclick="taReset()" style="margin:0">다른 파일 분석하기</button>
+    </div>
     <div class="ta-style-banner" id="taStyleBanner"></div>
     <div class="ta-stats-grid" id="taStatsGrid"></div>
     <div class="ta-two-col">
@@ -2620,8 +2626,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       <h3 class="ta-table-title">최근 거래 내역</h3>
       <div style="overflow-x:auto"><table class="ta-table" id="taTable"></table></div>
     </div>
-    <button class="ta-reset-btn" onclick="taReset()">다른 파일 분석하기</button>
   </div>
+
+  <!-- Hidden PDF render container -->
+  <div id="taPdfContent" style="position:absolute;left:-9999px;top:0;width:595px;background:#fff;font-family:'Noto Sans KR',sans-serif;color:#1a1d2e;padding:30px 25px"></div>
 </div>
 
 <!-- SPREAD COMPARISON PAGE -->
@@ -3325,6 +3333,69 @@ function taReset(){
   document.getElementById('taLoading').style.display='none';
   document.getElementById('taResults').style.display='none';
   document.getElementById('taFileInput').value='';
+}
+
+async function taPdfDownload(){
+  const btn=document.getElementById('taPdfBtn');
+  btn.disabled=true;btn.textContent='PDF 생성 중...';
+
+  try{
+    const stats=window._lastTaStats||{};
+    const style=document.getElementById('taStyleBanner')?.innerText||'';
+    const patterns=document.getElementById('taPatterns')?.innerText||'';
+    const aiFeedback=document.getElementById('taAiText')?.innerText||'';
+    const userName=document.getElementById('gName')?.textContent||'회원';
+    const levelText=document.getElementById('gLevel')?.textContent||'';
+    const now=new Date();
+    const dateStr=now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일 '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+
+    // Build PDF HTML
+    const c=document.getElementById('taPdfContent');
+    c.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2px solid #1B2A4A;margin-bottom:20px">
+        <div><div style="font-size:18px;font-weight:900;color:#1B2A4A">VIP Guide</div><div style="font-size:9px;color:#888;margin-top:2px">해외선물 핵심 키워드 마스터 가이드</div></div>
+        <div style="text-align:right"><div style="font-size:14px;font-weight:800;color:#1B2A4A">거래내역 분석 리포트</div><div style="font-size:9px;color:#888;margin-top:2px">${dateStr}</div><div style="font-size:9px;color:#3182F6;margin-top:2px">${escHtml(userName)} ${escHtml(levelText)}</div></div>
+      </div>
+      <div style="background:#1B2A4A;color:#fff;border-radius:10px;padding:18px;text-align:center;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:900">${escHtml(style.split('\n')[0]||'매매 스타일')}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:4px">${escHtml(style.split('\n').slice(1).join(' '))}</div>
+      </div>
+      <div style="font-size:12px;font-weight:800;color:#1B2A4A;margin-bottom:8px">핵심 통계</div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:10px">
+        <tr>${[['총 거래',(stats.trades||0)+'회'],['승률',(stats.winRate||0)+'%'],['총 손익',(stats.totalPnl||0).toFixed(2)],['손익비',(stats.rrRatio||0).toFixed(2)+':1']].map(([l,v])=>'<td style="padding:10px;background:#f8f8f8;border:1px solid #e9ecef;text-align:center;width:25%"><div style="font-size:14px;font-weight:900;color:#1B2A4A">'+v+'</div><div style="color:#888;margin-top:2px">'+l+'</div></td>').join('')}</tr>
+        <tr>${[['평균 수익','+'+(stats.avgWin||0).toFixed(2)],['평균 손실','-'+(stats.avgLoss||0).toFixed(2)],['MDD',(stats.mdd||0).toFixed(2)],['연속 손실',(stats.maxConsLoss||0)+'회']].map(([l,v])=>'<td style="padding:10px;background:#f8f8f8;border:1px solid #e9ecef;text-align:center;width:25%"><div style="font-size:14px;font-weight:900;color:#1B2A4A">'+v+'</div><div style="color:#888;margin-top:2px">'+l+'</div></td>').join('')}</tr>
+      </table>
+      <div style="font-size:12px;font-weight:800;color:#1B2A4A;margin-bottom:8px">매매 패턴 분석</div>
+      <div style="background:#f8f8f8;border-radius:8px;padding:14px;margin-bottom:16px;font-size:10px;line-height:1.8;white-space:pre-wrap">${escHtml(patterns)}</div>
+      <div style="font-size:12px;font-weight:800;color:#1B2A4A;margin-bottom:8px">AI 피드백</div>
+      <div style="border:1.5px solid #e9ecef;border-radius:8px;padding:14px;margin-bottom:20px;font-size:10px;line-height:1.8;white-space:pre-wrap">${escHtml(aiFeedback)}</div>
+      <div style="border-top:1px solid #e9ecef;padding-top:10px;font-size:8px;color:#aaa;display:flex;justify-content:space-between">
+        <span>본 리포트는 AI 분석 기반이며 투자 권유가 아닙니다.</span>
+        <span>bongbong820.github.io/futures-vip-guide</span>
+      </div>`;
+
+    const canvas=await html2canvas(c,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const imgW=210,imgH=canvas.height*imgW/canvas.width;
+    let y=0;
+    // Handle multi-page
+    while(y<imgH){
+      if(y>0)pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/png'),'PNG',0,-y,imgW,imgH);
+      y+=297;
+    }
+    const fname='거래내역분석_'+now.getFullYear()+(now.getMonth()+1)+now.getDate()+'.pdf';
+    pdf.save(fname);
+    c.innerHTML='';
+
+    btn.textContent='✅ 다운로드 완료';
+    setTimeout(()=>{btn.textContent='📥 PDF 다운로드';btn.disabled=false},2000);
+  }catch(e){
+    console.error('PDF error:',e);
+    btn.textContent='PDF 생성 실패';
+    setTimeout(()=>{btn.textContent='📥 PDF 다운로드';btn.disabled=false},2000);
+  }
 }
 
 // ===== SPREAD COMPARISON =====
