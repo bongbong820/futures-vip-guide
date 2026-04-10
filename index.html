@@ -671,7 +671,8 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .ec4-country{display:flex;align-items:center;gap:6px}
 .ec4-flag{font-size:16px}
 .ec4-cc{font-size:11px;font-weight:600;color:var(--gray-500)}
-.ec4-event{font-weight:500}
+.ec4-event{font-weight:500;max-width:280px}
+.ec4-event-col{max-width:280px}
 .ec4-stars{color:#f5a623;font-size:12px;letter-spacing:1px}
 .ec4-stars .empty{color:var(--gray-300)}
 .ec4-dg td{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-light);padding:7px 16px;letter-spacing:.5px}
@@ -3896,16 +3897,28 @@ function ec4Render(){
   const groups={};evts.forEach(ev=>{const d=ev.date.slice(0,10);(groups[d]=groups[d]||[]).push(ev)});
   const dates=Object.keys(groups).sort();
   const others=dates.filter(d=>d!==td);const showMore=ec4Range==='week'&&others.length>0;
-  let h='<table class="ec4-table"><thead><tr><th>시간 (KST)</th><th>국가</th><th>종목명</th><th class="r">중요도</th><th class="r">예상</th><th class="r">이전</th></tr></thead><tbody>';
+  let h='<table class="ec4-table"><thead><tr><th>시간 (KST)</th><th>국가</th><th class="ec4-event-col">종목명</th><th class="r">중요도</th><th class="r">예상</th><th class="r">이전</th><th class="r">결과</th></tr></thead><tbody>';
   dates.forEach(ds=>{
     const isO=ds!==td&&ec4Range==='week';const cls=isO?'ec4-other':'';
-    if(ec4Range==='week')h+='<tr class="ec4-dg '+cls+'"><td colspan="6">'+ec4DateLabel(ds)+'</td></tr>';
+    if(ec4Range==='week')h+='<tr class="ec4-dg '+cls+'"><td colspan="7">'+ec4DateLabel(ds)+'</td></tr>';
     groups[ds].forEach(ev=>{
       const kst=new Date(new Date(ev.date).getTime()+9*3600000);
       const hh=String(kst.getUTCHours()).padStart(2,'0');
       const mm=String(kst.getUTCMinutes()).padStart(2,'0');
       const ci=EC4C[ev.currency]||{f:'🌐',c:ev.currency||''};
-      h+='<tr class="'+cls+'"><td class="ec4-time">'+hh+':'+mm+'</td><td><div class="ec4-country"><span class="ec4-flag">'+ci.f+'</span><span class="ec4-cc">'+ci.c+'</span></div></td><td class="ec4-event">'+escHtml(ev.event)+'</td><td class="r"><span class="ec4-stars">'+ec4Stars(ev.impact)+'</span></td><td class="r" style="color:var(--gray-500)">'+(ev.estimate||'—')+'</td><td class="r" style="color:var(--gray-500)">'+(ev.previous||'—')+'</td></tr>';
+      // Result color
+      let resColor='#ccc',resWeight='400';
+      if(ev.actual){
+        resWeight='600';
+        const aNum=parseFloat(String(ev.actual).replace(/[^\d.-]/g,''));
+        const eNum=parseFloat(String(ev.estimate||'').replace(/[^\d.-]/g,''));
+        if(!isNaN(aNum)&&!isNaN(eNum)){
+          if(aNum>eNum)resColor='#089981';
+          else if(aNum<eNum)resColor='#f23645';
+          else resColor='#888';
+        }else resColor='#888';
+      }
+      h+='<tr class="'+cls+'"><td class="ec4-time">'+hh+':'+mm+'</td><td><div class="ec4-country"><span class="ec4-flag">'+ci.f+'</span><span class="ec4-cc">'+ci.c+'</span></div></td><td class="ec4-event">'+escHtml(ev.event)+'</td><td class="r"><span class="ec4-stars">'+ec4Stars(ev.impact)+'</span></td><td class="r" style="color:var(--gray-500)">'+(ev.estimate||'—')+'</td><td class="r" style="color:var(--gray-500)">'+(ev.previous||'—')+'</td><td class="r" style="color:'+resColor+';font-weight:'+resWeight+'">'+(ev.actual||'—')+'</td></tr>';
     });
   });
   h+='</tbody></table>';
