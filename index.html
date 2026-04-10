@@ -3597,25 +3597,34 @@ function stShowAggroLoading(){
   document.getElementById('stAggroText').innerHTML='<span class="st-skel"></span>';
 }
 
-async function stGenerateAggro(name,price,changePct,extra){
+async function stGenerateAggro(name,price,changePct,ctx){
   const el=document.getElementById('stAggroText');
-  const direction=changePct>=0?'상승':'하락';
-  const prompt=`주식 종목 "${name}"의 현재 상황을 한 줄짜리 흥미진진한 헤드라인으로 만들어줘.
-가격: ${price}, 변동률: ${changePct.toFixed(2)}% (${direction})
-${extra||''}
+  const direction=changePct>=0?`+${changePct.toFixed(2)}%`:`${changePct.toFixed(2)}%`;
+  const techSignal=ctx?.techSignal||'중립';
+  const instFlow=ctx?.instFlow||'데이터 없음';
+  const news=ctx?.news||'특이사항 없음';
+
+  const system='너는 주식 뉴스 헤드라인 작가야. 자극적이고 궁금증을 유발하는 한 줄 코멘트를 써줘. 독자가 반드시 아래 내용을 읽고 싶게 만들어야 해.';
+  const user=`종목: ${name}
+현재가: ${price} (${direction})
+기술적신호: ${techSignal}
+기관동향: ${instFlow}
+최근이슈: ${news}
 
 조건:
-- 한 줄, 50자 이내
-- 클릭하고 싶은 자극적이고 흥미로운 톤 (어그로)
-- 이모지 1개 포함 가능
-- 한국어
-- 헤드라인만 출력 (설명 없이)
-- 따옴표 없이`;
+- 30자 이내 한국어
+- 질문형 또는 반전형
+- 숫자·고유명사 포함
+- 자극적일수록 좋음
+- 투자 권유 금지
+- 딱 한 줄, 따옴표 없이`;
 
   try{
-    const text=await aiCall(prompt,'너는 자극적인 금융 헤드라인을 작성하는 카피라이터야.');
-    el.textContent=(text||'').replace(/^["「『]|["」』]$/g,'').trim()||name+' 분석 완료';
+    const text=await aiCall(user,system);
+    let cleaned=(text||'').trim().split('\n')[0].replace(/^["「『'']|["」』'']$/g,'').trim();
+    el.textContent=cleaned||name+' 분석 완료';
   }catch(e){
+    console.error('Aggro headline error:',e);
     el.textContent=name+' 종목 분석 결과';
   }
 }
@@ -3624,8 +3633,11 @@ function stRenderKr(d){
   const ch=parseFloat((d.change||'0').replace(/,/g,''))*(d.changeDir==='down'?-1:1);
   const chPct=parseFloat(d.changePct||0)*(d.changeDir==='down'?-1:1);
   // Aggro headline
-  stGenerateAggro(d.name,'₩'+d.price,chPct,
-    `시가총액: ${d.marketCap}, 52주: ₩${d.yearLow}~₩${d.yearHigh}, PER: ${d.per}`);
+  stGenerateAggro(d.name,'₩'+d.price,chPct,{
+    techSignal:'중립',
+    instFlow:`외국인 보유 ${d.foreignRate||'—'}`,
+    news:`PER ${d.per||'—'}, 52주 ₩${d.yearLow}~₩${d.yearHigh}`
+  });
   const upDown=d.changeDir==='down'?'down':'up';
   const arrow=d.changeDir==='down'?'▼':'▲';
   const logo=d.logo?'<img src="'+escHtml(d.logo)+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff" onerror="this.outerHTML=\'<div class=st-logo>'+escHtml(d.code.slice(0,3))+'</div>\'">':'<div class="st-logo">'+escHtml(d.code.slice(0,3))+'</div>';
@@ -3752,9 +3764,23 @@ function stRender(quote,profile,ratios,rsi,macd,bbands){
   // Header
   const ch=quote.change||0;
   const chPct=quote.changePercentage||0;
-  // Generate aggro headline
-  stGenerateAggro(quote.name||quote.symbol,'$'+(quote.price||0).toFixed(2),chPct,
-    `시가총액: ${stFmt(quote.marketCap)}, 52주: $${quote.yearLow}~$${quote.yearHigh}`);
+  // Generate aggro headline (will compute techSignal after RSI/MACD parsing below; defer)
+  setTimeout(()=>{
+    const rsiVal2=parseFloat(stExtractLatest(rsi,'RSI')||'');
+    const macdVal2=parseFloat(stExtractLatest(macd,'MACD')||'');
+    const macdSig2=parseFloat(stExtractLatest(macd,'MACD_Signal')||'');
+    let sig='중립';
+    if(!isNaN(rsiVal2)){
+      if(rsiVal2>=70)sig='과매수';
+      else if(rsiVal2<=30)sig='과매도';
+      else if(!isNaN(macdVal2)&&!isNaN(macdSig2))sig=macdVal2>macdSig2?'매수':'매도';
+    }
+    stGenerateAggro(quote.name||quote.symbol,'$'+(quote.price||0).toFixed(2),chPct,{
+      techSignal:sig,
+      instFlow:'데이터 없음',
+      news:`52주 ${quote.yearLow}~${quote.yearHigh}, 시총 ${stFmt(quote.marketCap)}`
+    });
+  },100);
   const upDown=ch>=0?'up':'down';
   const arrow=ch>=0?'▲':'▼';
   const logo=profile.image?'<img src="'+escHtml(profile.image)+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff" onerror="this.outerHTML=\'<div class=st-logo>'+escHtml((quote.symbol||'').slice(0,3))+'</div>\'">':'<div class="st-logo">'+escHtml((quote.symbol||'').slice(0,3))+'</div>';
