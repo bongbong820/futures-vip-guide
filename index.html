@@ -641,13 +641,15 @@ body.dark .ticker-wrap{background:var(--gray-50)}
 .ec4-title{font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
 .ec4-kst{font-size:12px;color:var(--gray-500);margin-top:4px;font-family:'Courier New',monospace}
 .ec4-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
-.ec4-card{background:var(--white);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;transition:box-shadow .2s,transform .2s}
+.ec4-card{background:var(--white);border-radius:14px;padding:18px 20px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px;transition:box-shadow .2s,transform .2s}
 .ec4-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .ec4-card-top{display:flex;align-items:center;gap:8px}
 .ec4-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;position:relative}
 .ec4-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:rgba(255,107,107,.18)}
 .ec4-card-name{font-size:13px;font-weight:600;color:var(--navy)}
 .ec4-card-val{font-size:20px;font-weight:700;color:var(--gray-500);padding-left:16px;min-height:28px;display:flex;align-items:center}
+.ec4-card-time{font-size:11px;color:var(--gray-500);padding-left:16px;font-weight:500;font-family:'Courier New',monospace;margin-bottom:2px}
+.ec4-meta-sep{color:var(--gray-300);font-size:10px}
 .ec4-card-meta{display:flex;gap:10px;padding-left:16px}
 .ec4-meta{font-size:11px;color:var(--gray-500)}
 .ec4-ml{font-weight:500}
@@ -2222,25 +2224,37 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="ec4-card">
       <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">FOMC 금리 결정</span></div>
       <div class="ec4-card-val">—</div>
+      <div class="ec4-card-time">—</div>
       <div class="ec4-card-meta">
         <span class="ec4-meta"><span class="ec4-ml">예상</span> —</span>
+        <span class="ec4-meta-sep">·</span>
         <span class="ec4-meta"><span class="ec4-ml">이전</span> —</span>
+        <span class="ec4-meta-sep">·</span>
+        <span class="ec4-meta"><span class="ec4-ml">결과</span> —</span>
       </div>
     </div>
     <div class="ec4-card">
       <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">CPI 소비자물가</span></div>
       <div class="ec4-card-val">—</div>
+      <div class="ec4-card-time">—</div>
       <div class="ec4-card-meta">
         <span class="ec4-meta"><span class="ec4-ml">예상</span> —</span>
+        <span class="ec4-meta-sep">·</span>
         <span class="ec4-meta"><span class="ec4-ml">이전</span> —</span>
+        <span class="ec4-meta-sep">·</span>
+        <span class="ec4-meta"><span class="ec4-ml">결과</span> —</span>
       </div>
     </div>
     <div class="ec4-card">
       <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">NFP 비농업고용</span></div>
       <div class="ec4-card-val">—</div>
+      <div class="ec4-card-time">—</div>
       <div class="ec4-card-meta">
         <span class="ec4-meta"><span class="ec4-ml">예상</span> —</span>
+        <span class="ec4-meta-sep">·</span>
         <span class="ec4-meta"><span class="ec4-ml">이전</span> —</span>
+        <span class="ec4-meta-sep">·</span>
+        <span class="ec4-meta"><span class="ec4-ml">결과</span> —</span>
       </div>
     </div>
   </div>
@@ -3944,18 +3958,61 @@ async function ec4Fetch(){
 
 function ec4UpdateCards(){
   const now=new Date();
-  const find=(kw)=>ec4Events.find(ev=>ev.event.toLowerCase().includes(kw)&&new Date(ev.date)>now);
-  const fomc=find('fomc'),cpi=find('cpi'),nfp=find('nonfarm')||find('payroll');
+  // Show upcoming first; if none, show most recent past
+  const findUpcoming=(kw)=>ec4Events.find(ev=>ev.event.toLowerCase().includes(kw)&&new Date(ev.date)>=now);
+  const findRecent=(kw)=>{
+    const past=ec4Events.filter(ev=>ev.event.toLowerCase().includes(kw)&&new Date(ev.date)<now);
+    return past.length?past[past.length-1]:null;
+  };
+  const find=(kw)=>findUpcoming(kw)||findRecent(kw);
+  const fomc=find('fomc')||find('federal funds')||find('rate decision');
+  const cpi=find('cpi')||find('consumer price');
+  const nfp=find('nonfarm')||find('non-farm')||find('payroll');
+  const days=['일','월','화','수','목','금','토'];
   const cards=document.querySelectorAll('.ec4-card');
   [fomc,cpi,nfp].forEach((ev,i)=>{
     if(!ev||!cards[i])return;
-    const kst=new Date(new Date(ev.date).getTime()+9*3600000);
-    const diff=Math.ceil((new Date(ev.date)-now)/86400000);
-    cards[i].querySelector('.ec4-card-val').textContent='D-'+diff;
+    const evDate=new Date(ev.date);
+    const kst=new Date(evDate.getTime()+9*3600000);
+    const mo=kst.getUTCMonth()+1,dy=kst.getUTCDate();
+    const dow=days[kst.getUTCDay()];
+    const hh=String(kst.getUTCHours()).padStart(2,'0');
+    const mm=String(kst.getUTCMinutes()).padStart(2,'0');
+
+    // D-day
+    const todayKst=new Date(Date.now()+9*3600000);
+    todayKst.setUTCHours(0,0,0,0);
+    const evKstDay=new Date(kst);evKstDay.setUTCHours(0,0,0,0);
+    const diff=Math.round((evKstDay-todayKst)/86400000);
+    let dLabel;
+    if(diff===0)dLabel='D-day';
+    else if(diff>0)dLabel='D-'+diff;
+    else dLabel='D+'+Math.abs(diff);
+
+    cards[i].querySelector('.ec4-card-val').textContent=dLabel;
     cards[i].querySelector('.ec4-card-val').style.color='var(--navy)';
+
+    const timeEl=cards[i].querySelector('.ec4-card-time');
+    if(timeEl)timeEl.textContent=mo+'/'+dy+' ('+dow+') '+hh+':'+mm+' KST';
+
     const metas=cards[i].querySelectorAll('.ec4-meta');
-    if(metas[0])metas[0].innerHTML='<span class="ec4-ml">날짜</span> '+(kst.getUTCMonth()+1)+'/'+kst.getUTCDate();
-    if(metas[1])metas[1].innerHTML='<span class="ec4-ml">이전</span> '+(ev.previous||'—');
+    const est=ev.estimate||'';
+    const prev=ev.previous||'';
+    const actual=ev.actual||'';
+    if(metas[0])metas[0].innerHTML='<span class="ec4-ml">예상</span> '+(est||'—');
+    if(metas[1])metas[1].innerHTML='<span class="ec4-ml">이전</span> '+(prev||'—');
+    if(metas[2]){
+      let color='var(--gray-500)';
+      if(actual&&est){
+        const aNum=parseFloat(String(actual).replace(/[^\d.-]/g,''));
+        const eNum=parseFloat(String(est).replace(/[^\d.-]/g,''));
+        if(!isNaN(aNum)&&!isNaN(eNum)){
+          if(aNum>eNum)color='var(--green)';
+          else if(aNum<eNum)color='var(--red)';
+        }
+      }
+      metas[2].innerHTML='<span class="ec4-ml">결과</span> <span style="color:'+color+';font-weight:700">'+(actual||'—')+'</span>';
+    }
   });
 }
 
