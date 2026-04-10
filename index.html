@@ -3905,11 +3905,10 @@ function ec4SetImp(btn){document.querySelectorAll('#ec4ImpF .ec4-fb').forEach(b=
 
 async function ec4Fetch(){
   try{
-    // FairEconomy API via CORS proxy
-    const res=await fetch('https://api.allorigins.win/get?url='+encodeURIComponent('https://nfs.faireconomy.media/ff_calendar_thisweek.json'));
+    // FairEconomy API via own Vercel proxy
+    const res=await fetch('https://futures-chat-api.vercel.app/api/calendar');
     if(!res.ok)throw new Error('HTTP '+res.status);
-    const wrapped=await res.json();
-    const data=JSON.parse(wrapped.contents);
+    const data=await res.json();
     if(!Array.isArray(data)||!data.length)throw new Error('empty');
     // FairEconomy 필드를 FMP 호환 형태로 변환
     ec4Events=data.map(e=>({
