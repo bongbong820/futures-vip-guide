@@ -1667,6 +1667,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       <div class="chapter-num" style="background:#185fa5;color:#fff;font-size:13px">&#9878;</div>
       <div><span class="chapter-btn-title">스프레드 비교</span><span class="chapter-btn-sub">거래소 레이더 차트 대결</span></div>
     </button>
+    <button class="chapter-btn stock-btn" onclick="goToStock()">
+      <div class="chapter-num" style="background:var(--green);color:#fff;font-size:13px">&#128200;</div>
+      <div><span class="chapter-btn-title">종목 분석</span><span class="chapter-btn-sub">미국·한국 전문 분석</span></div>
+    </button>
   </div>
 
   <div class="sidebar-footer">
@@ -2678,6 +2682,61 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="sp-cards" id="spCards"></div>
 </div>
 
+<!-- STOCK ANALYSIS PAGE -->
+<div class="chapter-page" id="chStock">
+  <div class="chapter-hero">
+    <div class="chapter-hero-num" style="font-size:40px">&#128200;</div>
+    <div>
+      <div class="chapter-label">Stock Analysis</div>
+      <h2 class="chapter-title">종목 분석</h2>
+      <p class="chapter-desc">미국/한국 주식을 검색하면 시세, 재무, 기술 지표, AI 분석을 한 번에 보여드립니다.</p>
+    </div>
+  </div>
+
+  <div class="st-tabs">
+    <button class="st-tab active" onclick="stSwitchMarket(this,'us')">🇺🇸 미국 주식</button>
+    <button class="st-tab" onclick="stSwitchMarket(this,'kr')">🇰🇷 한국 주식</button>
+  </div>
+
+  <div class="st-search">
+    <input type="text" id="stSearchInput" class="st-search-input" placeholder="티커 입력 (예: AAPL, TSLA, MSFT)" onkeydown="if(event.key==='Enter')stSearch()">
+    <button class="st-search-btn" onclick="stSearch()">분석하기</button>
+  </div>
+  <div class="st-sources">데이터: <span>FMP</span> · <span>Alpha Vantage</span> · <span>Groq AI</span></div>
+
+  <div class="st-loading" id="stLoading" style="display:none"><div class="ec4-spinner"></div><br>분석 중...</div>
+
+  <div class="st-results" id="stResults" style="display:none">
+    <!-- Header -->
+    <div class="st-header" id="stHeader"></div>
+    <!-- Quick stats grid -->
+    <div class="st-stats" id="stStats"></div>
+    <!-- Two column: company info + technicals -->
+    <div class="st-two-col">
+      <div class="st-card">
+        <h3 class="st-card-title">📊 회사 정보</h3>
+        <div id="stCompany"></div>
+      </div>
+      <div class="st-card">
+        <h3 class="st-card-title">📈 기술적 지표</h3>
+        <div id="stTechnical"></div>
+      </div>
+    </div>
+    <!-- Financial ratios -->
+    <div class="st-card">
+      <h3 class="st-card-title">💰 재무 지표 (TTM)</h3>
+      <div id="stRatios"></div>
+    </div>
+    <!-- AI Analysis -->
+    <div class="st-card">
+      <h3 class="st-card-title">🤖 AI 종합 분석</h3>
+      <div id="stAi" class="st-ai-text">AI 분석 생성 중...</div>
+    </div>
+  </div>
+
+  <div class="st-empty" id="stEmpty">티커를 입력하고 분석을 시작하세요.</div>
+</div>
+
 </main>
 </div>
 
@@ -3444,6 +3503,233 @@ function goToTradeAnalysis(){
 function goToSpread(){
   goToPage('chSpread','spread-btn');
   spInit();
+}
+
+// ===== STOCK ANALYSIS =====
+const FMP_KEY='cooEK92NcPykIx4tin9GeOZBQtC7afe6';
+const AV_KEY='IL5XXQBRJ7H5TVCA';
+let stMarket='us';
+
+function goToStock(){
+  goToPage('chStock','stock-btn');
+}
+
+function stSwitchMarket(btn,m){
+  document.querySelectorAll('.st-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  stMarket=m;
+  const inp=document.getElementById('stSearchInput');
+  if(m==='us'){
+    inp.placeholder='티커 입력 (예: AAPL, TSLA, MSFT)';
+  }else{
+    inp.placeholder='종목 코드 또는 이름 (예: 005930, 삼성전자)';
+  }
+}
+
+async function stSearch(){
+  const ticker=document.getElementById('stSearchInput').value.trim().toUpperCase();
+  if(!ticker)return;
+
+  if(stMarket==='kr'){
+    document.getElementById('stEmpty').style.display='block';
+    document.getElementById('stEmpty').textContent='🇰🇷 한국 주식 분석 기능은 곧 출시 예정입니다.';
+    document.getElementById('stResults').style.display='none';
+    return;
+  }
+
+  document.getElementById('stEmpty').style.display='none';
+  document.getElementById('stResults').style.display='none';
+  document.getElementById('stLoading').style.display='block';
+
+  try{
+    // Parallel fetch
+    const [quote,profile,ratios,rsi,macd,bbands]=await Promise.all([
+      stFetchFmp('quote?symbol='+ticker),
+      stFetchFmp('profile?symbol='+ticker),
+      stFetchFmp('ratios-ttm?symbol='+ticker),
+      stFetchAv('RSI&interval=daily&time_period=14&series_type=close&symbol='+ticker),
+      stFetchAv('MACD&interval=daily&series_type=close&symbol='+ticker),
+      stFetchAv('BBANDS&interval=daily&time_period=20&series_type=close&symbol='+ticker)
+    ]);
+
+    if(!quote||!quote.length){
+      throw new Error('종목을 찾을 수 없습니다: '+ticker);
+    }
+
+    document.getElementById('stLoading').style.display='none';
+    document.getElementById('stResults').style.display='block';
+
+    stRender(quote[0],profile[0]||{},ratios[0]||{},rsi,macd,bbands);
+  }catch(e){
+    console.error('Stock fetch error:',e);
+    document.getElementById('stLoading').style.display='none';
+    document.getElementById('stEmpty').style.display='block';
+    document.getElementById('stEmpty').textContent='⚠️ 분석 실패: '+e.message;
+  }
+}
+
+async function stFetchFmp(endpoint){
+  const url='https://financialmodelingprep.com/stable/'+endpoint+'&apikey='+FMP_KEY;
+  const r=await fetch(url);
+  if(!r.ok)return null;
+  return await r.json();
+}
+
+async function stFetchAv(query){
+  const url='https://www.alphavantage.co/query?function='+query+'&apikey='+AV_KEY;
+  try{
+    const r=await fetch(url);
+    if(!r.ok)return null;
+    return await r.json();
+  }catch(e){return null}
+}
+
+function stFmt(n,d){
+  if(n==null||isNaN(n))return '—';
+  if(Math.abs(n)>=1e12)return '$'+(n/1e12).toFixed(2)+'T';
+  if(Math.abs(n)>=1e9)return '$'+(n/1e9).toFixed(2)+'B';
+  if(Math.abs(n)>=1e6)return '$'+(n/1e6).toFixed(2)+'M';
+  return '$'+n.toLocaleString(undefined,{maximumFractionDigits:d||2});
+}
+function stPct(n,d){
+  if(n==null||isNaN(n))return '—';
+  return (n*100).toFixed(d||2)+'%';
+}
+
+function stExtractLatest(avData,key){
+  if(!avData)return null;
+  const k=Object.keys(avData).find(k=>k.includes('Technical Analysis')||k.includes('analysis'));
+  if(!k)return null;
+  const series=avData[k];
+  const dates=Object.keys(series);
+  if(!dates.length)return null;
+  const latest=series[dates[0]];
+  return latest[key];
+}
+
+function stRender(quote,profile,ratios,rsi,macd,bbands){
+  // Header
+  const ch=quote.change||0;
+  const chPct=quote.changePercentage||0;
+  const upDown=ch>=0?'up':'down';
+  const arrow=ch>=0?'▲':'▼';
+  const logo=profile.image?'<img src="'+escHtml(profile.image)+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff" onerror="this.outerHTML=\'<div class=st-logo>'+escHtml((quote.symbol||'').slice(0,3))+'</div>\'">':'<div class="st-logo">'+escHtml((quote.symbol||'').slice(0,3))+'</div>';
+
+  document.getElementById('stHeader').innerHTML=`
+    <div class="st-header-left">${logo}
+      <div><div class="st-name">${escHtml(quote.name||quote.symbol)}</div><div class="st-symbol">${escHtml(quote.symbol||'')} · ${escHtml(quote.exchange||'')}</div></div>
+    </div>
+    <div class="st-price-wrap">
+      <div class="st-price">$${(quote.price||0).toFixed(2)}</div>
+      <div class="st-change ${upDown}">${arrow} ${Math.abs(ch).toFixed(2)} (${Math.abs(chPct).toFixed(2)}%)</div>
+    </div>`;
+
+  // Stats grid
+  document.getElementById('stStats').innerHTML=[
+    ['시가총액',stFmt(quote.marketCap)],
+    ['52주 고가','$'+(quote.yearHigh||0).toFixed(2)],
+    ['52주 저가','$'+(quote.yearLow||0).toFixed(2)],
+    ['거래량',(quote.volume||0).toLocaleString()],
+    ['일중 고가','$'+(quote.dayHigh||0).toFixed(2)],
+    ['일중 저가','$'+(quote.dayLow||0).toFixed(2)],
+    ['50일 평균','$'+(quote.priceAvg50||0).toFixed(2)],
+    ['200일 평균','$'+(quote.priceAvg200||0).toFixed(2)]
+  ].map(([l,v])=>`<div class="st-stat"><div class="st-stat-val">${v}</div><div class="st-stat-label">${l}</div></div>`).join('');
+
+  // Company info
+  document.getElementById('stCompany').innerHTML=[
+    ['업종',profile.sector||'—'],
+    ['산업',profile.industry||'—'],
+    ['CEO',profile.ceo||'—'],
+    ['직원수',profile.fullTimeEmployees?(+profile.fullTimeEmployees).toLocaleString()+'명':'—'],
+    ['본사',profile.country?(profile.city||'')+', '+profile.country:'—'],
+    ['상장일',profile.ipoDate||'—'],
+    ['웹사이트',profile.website?'<a href="'+escHtml(profile.website)+'" target="_blank" style="color:var(--blue)">'+escHtml((profile.website||'').replace(/^https?:\/\//,'').replace(/\/$/,''))+'</a>':'—']
+  ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
+
+  // Technical
+  const rsiVal=parseFloat(stExtractLatest(rsi,'RSI')||'');
+  const macdVal=parseFloat(stExtractLatest(macd,'MACD')||'');
+  const macdSig=parseFloat(stExtractLatest(macd,'MACD_Signal')||'');
+  const bbU=parseFloat(stExtractLatest(bbands,'Real Upper Band')||'');
+  const bbL=parseFloat(stExtractLatest(bbands,'Real Lower Band')||'');
+  const bbM=parseFloat(stExtractLatest(bbands,'Real Middle Band')||'');
+
+  let rsiState='중립',rsiColor='var(--gray-500)';
+  if(rsiVal>=70){rsiState='과매수';rsiColor='var(--red)'}
+  else if(rsiVal<=30){rsiState='과매도';rsiColor='var(--green)'}
+  else if(rsiVal>50){rsiState='상승 모멘텀';rsiColor='#3182F6'}
+  else{rsiState='하락 모멘텀';rsiColor='var(--orange)'}
+
+  const macdState=macdVal>macdSig?'상승 신호':macdVal<macdSig?'하락 신호':'중립';
+  const macdColor=macdVal>macdSig?'var(--green)':'var(--red)';
+
+  const bbPos=quote.price>bbU?'상단 돌파':quote.price<bbL?'하단 돌파':'밴드 내';
+
+  document.getElementById('stTechnical').innerHTML=`
+    <div class="st-tech-bar">
+      <div class="st-tech-label"><span>RSI (14)</span><span style="color:${rsiColor}">${isNaN(rsiVal)?'—':rsiVal.toFixed(2)} · ${rsiState}</span></div>
+      <div class="st-tech-bar-bg"><div class="st-tech-bar-fill" style="width:${Math.min(100,Math.max(0,rsiVal||50))}%;background:${rsiColor}"></div></div>
+    </div>
+    <div class="st-info-row"><span>MACD</span><span style="color:${macdColor}">${isNaN(macdVal)?'—':macdVal.toFixed(3)} · ${macdState}</span></div>
+    <div class="st-info-row"><span>MACD Signal</span><span>${isNaN(macdSig)?'—':macdSig.toFixed(3)}</span></div>
+    <div class="st-info-row"><span>볼린저 상단</span><span>$${isNaN(bbU)?'—':bbU.toFixed(2)}</span></div>
+    <div class="st-info-row"><span>볼린저 중간</span><span>$${isNaN(bbM)?'—':bbM.toFixed(2)}</span></div>
+    <div class="st-info-row"><span>볼린저 하단</span><span>$${isNaN(bbL)?'—':bbL.toFixed(2)}</span></div>
+    <div class="st-info-row"><span>현재 위치</span><span style="color:var(--blue)">${bbPos}</span></div>`;
+
+  // Ratios
+  document.getElementById('stRatios').innerHTML=[
+    ['PER (TTM)',ratios.peRatioTTM?ratios.peRatioTTM.toFixed(2):'—'],
+    ['PBR',ratios.priceToBookRatioTTM?ratios.priceToBookRatioTTM.toFixed(2):'—'],
+    ['PSR',ratios.priceToSalesRatioTTM?ratios.priceToSalesRatioTTM.toFixed(2):'—'],
+    ['ROE',ratios.returnOnEquityTTM?stPct(ratios.returnOnEquityTTM):'—'],
+    ['ROA',ratios.returnOnAssetsTTM?stPct(ratios.returnOnAssetsTTM):'—'],
+    ['영업이익률',ratios.operatingProfitMarginTTM?stPct(ratios.operatingProfitMarginTTM):'—'],
+    ['순이익률',ratios.netProfitMarginTTM?stPct(ratios.netProfitMarginTTM):'—'],
+    ['부채비율',ratios.debtEquityRatioTTM?ratios.debtEquityRatioTTM.toFixed(2):'—'],
+    ['배당수익률',ratios.dividendYielTTM?stPct(ratios.dividendYielTTM):'—']
+  ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
+
+  // AI Analysis
+  stGetAi(quote,profile,ratios,{rsi:rsiVal,macd:macdVal,macdSig,bbPos});
+}
+
+async function stGetAi(quote,profile,ratios,tech){
+  const el=document.getElementById('stAi');
+  el.textContent='AI 분석 생성 중...';
+  const prompt=`아래는 ${quote.name} (${quote.symbol})의 데이터야. 한국어로 종합 분석을 해줘.
+
+[가격 정보]
+현재가: $${quote.price}, 변동률: ${quote.changePercentage?.toFixed(2)}%
+시가총액: ${stFmt(quote.marketCap)}, 52주 범위: $${quote.yearLow} ~ $${quote.yearHigh}
+
+[펀더멘털]
+업종: ${profile.sector||'—'}, 산업: ${profile.industry||'—'}
+PER: ${ratios.peRatioTTM?.toFixed(2)||'—'}, PBR: ${ratios.priceToBookRatioTTM?.toFixed(2)||'—'}
+ROE: ${ratios.returnOnEquityTTM?(ratios.returnOnEquityTTM*100).toFixed(1)+'%':'—'}
+순이익률: ${ratios.netProfitMarginTTM?(ratios.netProfitMarginTTM*100).toFixed(1)+'%':'—'}
+
+[기술적 지표]
+RSI: ${isNaN(tech.rsi)?'—':tech.rsi.toFixed(1)}
+MACD: ${isNaN(tech.macd)?'—':tech.macd.toFixed(3)} (Signal: ${isNaN(tech.macdSig)?'—':tech.macdSig.toFixed(3)})
+볼린저 위치: ${tech.bbPos}
+
+다음 4가지로 분석해줘 (각 항목 1-2문장):
+1. 펀더멘털 평가
+2. 기술적 시그널
+3. 핵심 리스크
+4. 종합 의견
+
+마지막에 "본 분석은 참고용이며 투자 권유가 아닙니다." 추가.`;
+
+  try{
+    const text=await aiCall(prompt,'너는 주식 분석 전문가야. 한국어로만 답변해.');
+    el.textContent=text||'AI 분석을 생성하지 못했습니다.';
+  }catch(e){
+    console.error('Stock AI error:',e);
+    el.innerHTML='AI 분석 실패. <button onclick="stGetAi('+JSON.stringify(quote).replace(/"/g,'&quot;')+',{},{},{rsi:NaN,macd:NaN,macdSig:NaN,bbPos:\'—\'})" style="padding:4px 12px;border:none;border-radius:6px;background:var(--blue);color:#fff;cursor:pointer;font-size:11px">재시도</button>';
+  }
 }
 
 function spInit(){
