@@ -3588,13 +3588,46 @@ function stResolveTicker(input){
   if(/^[A-Z]{1,5}(\.[A-Z])?$/.test(q))return{ticker:q,market:'us'};
   // Direct KR code
   if(/^\d{6}$/.test(q))return{ticker:q,market:'kr'};
-  // Exact KR mapping
+  // Exact KR mapping (cache)
   if(KR_STOCKS[q])return{ticker:KR_STOCKS[q],market:'kr'};
-  // Exact US mapping
   if(US_STOCKS[q])return{ticker:US_STOCKS[q],market:'us'};
-  // Partial match (KR first since user explicitly typing Korean)
+  // Partial match
   for(const k of Object.keys(KR_STOCKS))if(k.includes(q))return{ticker:KR_STOCKS[k],market:'kr',matched:k};
   for(const k of Object.keys(US_STOCKS))if(k.includes(q))return{ticker:US_STOCKS[k],market:'us',matched:k};
+  return null;
+}
+
+// AI-powered ticker resolution for unknown queries
+async function stResolveAi(query){
+  const cacheKey='aiTickerCache';
+  const cache=JSON.parse(localStorage.getItem(cacheKey)||'{}');
+  if(cache[query])return cache[query];
+
+  const prompt=`다음 종목명/검색어를 분석해서 정확한 티커와 거래소를 찾아줘.
+검색어: ${query}
+
+JSON으로만 응답:
+{
+  "ticker": "정확한 티커 (예: AAPL, 005930)",
+  "market": "us" 또는 "kr",
+  "name": "정확한 회사명"
+}
+
+규칙:
+- 한국 상장 종목이면 6자리 코드와 market="kr"
+- 미국 상장이면 티커 (BRK.B 등 점 포함 가능)와 market="us"
+- 일본 ETF처럼 미국 시장에서 거래되는 외국주식도 미국 시장으로 (예: 토요타 → TM)
+- 해당하는 종목이 없으면 {"ticker":null}`;
+
+  try{
+    const text=await aiCall(prompt,'너는 글로벌 주식 데이터베이스야. 정확한 티커만 반환해. 추측하지 말고 확실한 것만.');
+    const parsed=stExtractJson(text);
+    if(parsed&&parsed.ticker){
+      cache[query]=parsed;
+      try{localStorage.setItem(cacheKey,JSON.stringify(cache))}catch(e){}
+      return parsed;
+    }
+  }catch(e){console.warn('AI resolve failed:',e)}
   return null;
 }
 
@@ -3698,13 +3731,25 @@ async function stSearch(){
   if(!raw)return;
   stCloseSheet();
 
-  // Resolve to ticker + market
-  const resolved=stResolveTicker(raw);
+  // 1) Direct/cached resolution
+  let resolved=stResolveTicker(raw);
+
+  // 2) AI fallback if not resolved
   if(!resolved){
-    document.getElementById('stEmpty').style.display='block';
-    document.getElementById('stEmpty').textContent='⚠️ "'+raw+'" 종목을 찾을 수 없습니다. 티커를 직접 입력해주세요.';
+    document.getElementById('stEmpty').style.display='none';
     document.getElementById('stResults').style.display='none';
-    return;
+    document.getElementById('stLoading').style.display='block';
+    document.getElementById('stLoading').innerHTML='<div class="ec4-spinner"></div><br>AI로 종목 검색 중...';
+    resolved=await stResolveAi(raw);
+    if(!resolved||!resolved.ticker){
+      document.getElementById('stLoading').style.display='none';
+      document.getElementById('stEmpty').style.display='block';
+      document.getElementById('stEmpty').textContent='⚠️ "'+raw+'" 종목을 찾을 수 없습니다. 티커를 직접 입력해주세요.';
+      return;
+    }
+    // Add to cache for autocomplete
+    if(resolved.market==='kr'&&resolved.name)KR_STOCKS[resolved.name]=resolved.ticker;
+    if(resolved.market==='us'&&resolved.name)US_STOCKS[resolved.name]=resolved.ticker;
   }
 
   // Auto-switch tab
