@@ -260,6 +260,105 @@
 .st-tech-bar-bg{height:8px;background:var(--gray-100);border-radius:8px;overflow:hidden}
 .st-tech-bar-fill{height:100%;border-radius:8px;transition:width .6s}
 .st-ai-text{font-size:13px;line-height:1.7;color:var(--gray-700);white-space:pre-wrap;min-height:60px}
+.st-ai-loading{font-size:13px;color:var(--gray-500);text-align:center;padding:20px}
+.st-ai-loading-light{color:rgba(255,255,255,.8)}
+.st-dots::after{content:'...';animation:stDots 1.5s infinite;display:inline-block;width:18px;text-align:left}
+@keyframes stDots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+
+/* Timing Score */
+.st-timing-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.st-gauge{position:relative;width:160px;height:90px;flex-shrink:0}
+.st-gauge svg{width:100%;height:auto;display:block}
+.st-gauge-val{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:30px;font-weight:900}
+.st-gauge-label{text-align:center;font-size:12px;font-weight:700;margin-top:4px}
+.st-timing-bars{flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px}
+.st-timing-bar{display:flex;align-items:center;gap:10px;font-size:12px}
+.st-timing-bar-name{width:80px;color:var(--gray-600);font-weight:600}
+.st-timing-bar-bg{flex:1;height:6px;background:var(--gray-100);border-radius:6px;overflow:hidden}
+.st-timing-bar-fill{height:100%;border-radius:6px;transition:width .6s}
+.st-timing-bar-val{width:30px;text-align:right;font-weight:700;color:var(--navy)}
+
+/* Technical 3x3 grid */
+.st-tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st-tech-cell{background:var(--gray-50);border-radius:10px;padding:12px;text-align:center}
+.st-tech-cell-name{font-size:11px;color:var(--gray-500);font-weight:600}
+.st-tech-cell-val{font-size:14px;font-weight:800;color:var(--navy);margin-top:4px}
+.st-tech-cell-sig{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px}
+.st-tech-cell-sig.buy{background:#d1fae5;color:#089981}
+.st-tech-cell-sig.sell{background:#fee2e2;color:#f23645}
+.st-tech-cell-sig.neutral{background:var(--gray-100);color:var(--gray-500)}
+
+/* Target price */
+.st-target-bar-wrap{margin:20px 0 14px}
+.st-target-bar{height:12px;border-radius:6px;background:linear-gradient(90deg,#f23645 0%,#ff8b00 35%,#089981 100%);position:relative}
+.st-target-marker{position:absolute;top:-6px;width:4px;height:24px;background:#1B2A4A;border-radius:2px}
+.st-target-marker::after{content:attr(data-label);position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;white-space:nowrap;color:#1B2A4A}
+.st-target-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--gray-500);margin-top:6px}
+.st-target-pnl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.st-pnl-card{padding:14px;border-radius:10px;text-align:center;border:1px solid}
+.st-pnl-card.loss{background:#fff0f0;border-color:#f23645;color:#f23645}
+.st-pnl-card.gain{background:#e6fcf5;border-color:#089981;color:#089981}
+.st-pnl-val{font-size:22px;font-weight:900}
+.st-pnl-label{font-size:11px;font-weight:600;margin-top:2px}
+
+/* Investment Points (Buy/Anti) */
+.st-points-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.st-point-card{padding:14px;border-radius:12px;font-size:13px}
+.st-point-card.buy{background:#e6fcf5;border-left:4px solid #089981}
+.st-point-card.anti{background:#fff0f0;border-left:4px solid #f23645;grid-column:1/-1}
+.st-point-title{font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.st-point-desc{color:var(--gray-700);line-height:1.6;font-size:12px}
+
+/* Issues timeline */
+.st-issue{display:flex;gap:12px;padding:12px 14px;background:var(--gray-50);border-radius:10px;margin-bottom:8px;font-size:13px}
+.st-issue-date{flex-shrink:0;width:70px;font-size:11px;color:var(--gray-500);font-weight:600;padding-top:2px}
+.st-issue-body{flex:1}
+.st-issue-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:6px}
+.st-issue-tag.good{background:#d1fae5;color:#089981}
+.st-issue-tag.bad{background:#fee2e2;color:#f23645}
+.st-issue-tag.upcoming{background:#dbeafe;color:#3182F6}
+.st-issue-title{font-weight:700;color:var(--navy);font-size:13px}
+.st-issue-desc{font-size:12px;color:var(--gray-600);margin-top:4px;line-height:1.5}
+
+/* Risk/Opp 2col */
+.st-ro-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.st-ro-col{display:flex;flex-direction:column;gap:8px}
+.st-ro-item{padding:12px 14px;border-radius:10px;font-size:13px;border-left:3px solid}
+.st-ro-item.opp{background:#e6fcf5;border-left-color:#089981}
+.st-ro-item.risk{background:#fff0f0;border-left-color:#f23645}
+.st-ro-item-title{font-weight:800;color:var(--navy);font-size:13px;margin-bottom:4px}
+.st-ro-item-desc{font-size:11px;color:var(--gray-600);line-height:1.5}
+
+/* Peers table */
+.st-peers-table{width:100%;border-collapse:collapse;font-size:12px}
+.st-peers-table th{font-weight:600;color:var(--gray-500);padding:8px 10px;border-bottom:2px solid var(--gray-200);text-align:left}
+.st-peers-table td{padding:10px;border-bottom:1px solid var(--gray-100)}
+.st-peers-table tr.active{background:var(--blue-light)}
+.st-peers-table tr.active td{font-weight:700;color:var(--blue)}
+
+/* Risk metrics 3x2 */
+.st-risk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.st-risk-cell{background:var(--gray-50);border-radius:10px;padding:12px;text-align:center}
+.st-risk-cell-name{font-size:11px;color:var(--gray-500);font-weight:600}
+.st-risk-cell-val{font-size:16px;font-weight:800;margin-top:4px}
+.st-risk-cell-state{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px}
+.st-risk-cell-state.good{background:#d1fae5;color:#089981}
+.st-risk-cell-state.warn{background:#fef3c7;color:#d97706}
+.st-risk-cell-state.bad{background:#fee2e2;color:#f23645}
+
+/* AI 종합 카드 (navy) */
+.st-ai-card{background:#1a1d2e;border-radius:16px;padding:24px;margin-bottom:16px;color:#fff}
+.st-ai-card-title{font-size:15px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.st-ai-avatar{width:32px;height:32px;background:#3182F6;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.st-ai-card .st-ai-text{color:rgba(255,255,255,.85)}
+
+@media(max-width:640px){
+  .st-tech-grid{grid-template-columns:repeat(2,1fr)}
+  .st-points-grid{grid-template-columns:1fr}
+  .st-ro-grid{grid-template-columns:1fr}
+  .st-risk-grid{grid-template-columns:repeat(2,1fr)}
+  .st-target-pnl{grid-template-columns:1fr}
+}
 
 @media(max-width:640px){
   .st-stats{grid-template-columns:repeat(2,1fr)}
