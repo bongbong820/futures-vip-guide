@@ -325,6 +325,18 @@
 .st-point-title{font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .st-point-desc{color:var(--gray-700);line-height:1.6;font-size:12px}
 
+/* News */
+.st-news-item{display:flex;gap:12px;padding:12px 14px;background:var(--gray-50);border-radius:10px;margin-bottom:8px;font-size:13px;cursor:pointer;transition:background .15s;text-decoration:none;color:inherit}
+.st-news-item:hover{background:var(--blue-light)}
+.st-news-date{flex-shrink:0;width:80px;font-size:11px;color:var(--gray-500);font-weight:600;padding-top:2px}
+.st-news-body{flex:1;min-width:0}
+.st-news-source{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:6px;color:#fff}
+.st-news-title{font-weight:500;color:var(--navy);font-size:14px;display:inline}
+.st-news-summary{font-size:12px;color:var(--gray-600);margin-top:4px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.st-news-skel{height:60px;background:linear-gradient(90deg,#f5f5f5 25%,#eee 50%,#f5f5f5 75%);background-size:200% 100%;animation:stShimmer 1.5s infinite;border-radius:10px;margin-bottom:8px}
+.st-news-more{display:block;width:100%;padding:10px;border:1px solid var(--gray-200);background:var(--white);color:var(--blue);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font);margin-top:6px}
+.st-news-more:hover{background:var(--blue-light)}
+
 /* Issues timeline */
 .st-issue{display:flex;gap:12px;padding:12px 14px;background:var(--gray-50);border-radius:10px;margin-bottom:8px;font-size:13px}
 .st-issue-date{flex-shrink:0;width:70px;font-size:11px;color:var(--gray-500);font-weight:600;padding-top:2px}

@@ -2767,6 +2767,12 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       <div id="stIssues"><div class="st-ai-loading">AI 분석 생성 중<span class="st-dots"></span></div></div>
     </div>
 
+    <!-- 관련 뉴스 -->
+    <div class="st-card">
+      <h3 class="st-card-title">📰 관련 뉴스</h3>
+      <div id="stNews"><div class="st-news-skel"></div><div class="st-news-skel"></div><div class="st-news-skel"></div></div>
+    </div>
+
     <!-- 리스크 & 기회 -->
     <div class="st-card">
       <h3 class="st-card-title">⚖️ 리스크 & 기회 요인</h3>
@@ -3970,6 +3976,89 @@ async function stGetRiskOpp(ctx){
   }
 }
 
+// News fetching + rendering
+let stNewsData=[];
+let stNewsShown=5;
+
+const SOURCE_COLORS={
+  'Reuters':'#0066cc','Bloomberg':'#000000','CNBC':'#cc0000','Forbes':'#a32319',
+  'Wall Street Journal':'#000000','WSJ':'#000000','MarketWatch':'#1d8932',
+  'Financial Times':'#fff1e5','Yahoo Finance':'#6001d2','Investing.com':'#fa6e00',
+  'Seeking Alpha':'#ff7200','Barron':'#000000','Motley Fool':'#0a8b00',
+  '연합뉴스':'#0066cc','한국경제':'#0a8b00','매일경제':'#003876','이데일리':'#cc0000',
+  '머니투데이':'#e60000','파이낸셜뉴스':'#0066cc','서울경제':'#003876','뉴시스':'#444',
+  '디지털데일리':'#1c5dab','전자신문':'#003876','아시아경제':'#0066cc','뉴스1':'#444'
+};
+
+async function stFetchNews(market,ticker,name){
+  const el=document.getElementById('stNews');
+  if(!el)return;
+  el.innerHTML='<div class="st-news-skel"></div><div class="st-news-skel"></div><div class="st-news-skel"></div>';
+  try{
+    const url='https://futures-chat-api.vercel.app/api/stock-news?market='+market+'&ticker='+encodeURIComponent(ticker)+'&name='+encodeURIComponent(name||'');
+    const r=await fetch(url);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    stNewsData=data.items||[];
+    if(!stNewsData.length){
+      el.innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">현재 관련 뉴스가 없습니다</div>';
+      return;
+    }
+    // Translate US news titles to Korean
+    if(market==='us'){
+      stTranslateAndRender();
+    }else{
+      stRenderNews();
+    }
+  }catch(e){
+    console.error('News fetch error:',e);
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">뉴스 로딩 실패</div>';
+  }
+}
+
+async function stTranslateAndRender(){
+  const items=stNewsData.slice(0,stNewsShown);
+  const titles=items.map(i=>i.title);
+  try{
+    const prompt=`다음 영문 뉴스 제목들을 자연스러운 한국어로 번역해. JSON 배열로만 응답:
+${JSON.stringify(titles)}
+
+응답 형식: ["번역1","번역2",...]`;
+    const text=await aiCall(prompt,'너는 금융 뉴스 번역가야. 정확한 한국어 번역만 출력.');
+    const start=text.indexOf('[');
+    const end=text.lastIndexOf(']');
+    if(start>=0&&end>=0){
+      try{
+        const translated=JSON.parse(text.substring(start,end+1));
+        if(Array.isArray(translated)){
+          translated.forEach((t,i)=>{if(items[i])items[i].titleKo=t});
+        }
+      }catch(e){}
+    }
+  }catch(e){console.warn('Translate failed:',e)}
+  stRenderNews();
+}
+
+function stRenderNews(){
+  const el=document.getElementById('stNews');
+  const shown=stNewsData.slice(0,stNewsShown);
+  let html=shown.map(n=>{
+    const color=SOURCE_COLORS[n.source]||'#888';
+    const title=n.titleKo||n.title;
+    return `<a class="st-news-item" href="${escHtml(n.url)}" target="_blank" rel="noopener"><div class="st-news-date">${escHtml(n.date||'')}</div><div class="st-news-body"><span class="st-news-source" style="background:${color}">${escHtml(n.source||'NEWS')}</span><span class="st-news-title">${escHtml(title)}</span><div class="st-news-summary">${escHtml(n.summary||'')}</div></div></a>`;
+  }).join('');
+  if(stNewsData.length>stNewsShown){
+    html+='<button class="st-news-more" onclick="stShowMoreNews()">뉴스 더보기 ▾</button>';
+  }
+  el.innerHTML=html;
+}
+
+function stShowMoreNews(){
+  stNewsShown=Math.min(stNewsShown+5,10);
+  if(window._stNewsMarket==='us')stTranslateAndRender();
+  else stRenderNews();
+}
+
 function stExtractJson(text){
   if(!text)return null;
   // Find first { and last }
@@ -4056,6 +4145,11 @@ function stRenderKr(d){
 
   // AI estimate for tech indicators + timing + target
   stEstimateKr(d,priceNum,yhNum,ylNum,perNum);
+
+  // News
+  stNewsShown=5;
+  window._stNewsMarket='kr';
+  stFetchNews('kr',d.code,d.name);
 
   document.getElementById('stCompany').innerHTML=[
     ['종목명',d.name],
@@ -4471,6 +4565,11 @@ function stRender(quote,profile,ratios,rsi,macd,bbands,keyMetrics,peers,priceTar
   stGetIssues(stockCtx);
   stGetRiskOpp(stockCtx);
   stGetAi(quote,profile,ratios,{rsi:rsiVal,macd:macdVal,macdSig,bbPos,score:totalScore});
+
+  // News
+  stNewsShown=5;
+  window._stNewsMarket='us';
+  stFetchNews('us',quote.symbol,quote.name);
 }
 
 async function stGetAi(quote,profile,ratios,tech){
