@@ -3527,44 +3527,139 @@ function stSwitchMarket(btn,m){
 }
 
 async function stSearch(){
-  const ticker=document.getElementById('stSearchInput').value.trim().toUpperCase();
-  if(!ticker)return;
-
-  if(stMarket==='kr'){
-    document.getElementById('stEmpty').style.display='block';
-    document.getElementById('stEmpty').textContent='🇰🇷 한국 주식 분석 기능은 곧 출시 예정입니다.';
-    document.getElementById('stResults').style.display='none';
-    return;
-  }
+  const raw=document.getElementById('stSearchInput').value.trim();
+  if(!raw)return;
 
   document.getElementById('stEmpty').style.display='none';
   document.getElementById('stResults').style.display='none';
   document.getElementById('stLoading').style.display='block';
 
   try{
-    // Parallel fetch
-    const [quote,profile,ratios,rsi,macd,bbands]=await Promise.all([
-      stFetchFmp('quote?symbol='+ticker),
-      stFetchFmp('profile?symbol='+ticker),
-      stFetchFmp('ratios-ttm?symbol='+ticker),
-      stFetchAv('RSI&interval=daily&time_period=14&series_type=close&symbol='+ticker),
-      stFetchAv('MACD&interval=daily&series_type=close&symbol='+ticker),
-      stFetchAv('BBANDS&interval=daily&time_period=20&series_type=close&symbol='+ticker)
-    ]);
-
-    if(!quote||!quote.length){
-      throw new Error('종목을 찾을 수 없습니다: '+ticker);
+    if(stMarket==='kr'){
+      await stSearchKr(raw);
+    }else{
+      await stSearchUs(raw.toUpperCase());
     }
-
-    document.getElementById('stLoading').style.display='none';
-    document.getElementById('stResults').style.display='block';
-
-    stRender(quote[0],profile[0]||{},ratios[0]||{},rsi,macd,bbands);
   }catch(e){
     console.error('Stock fetch error:',e);
     document.getElementById('stLoading').style.display='none';
     document.getElementById('stEmpty').style.display='block';
     document.getElementById('stEmpty').textContent='⚠️ 분석 실패: '+e.message;
+  }
+}
+
+async function stSearchUs(ticker){
+  const [quote,profile,ratios,rsi,macd,bbands]=await Promise.all([
+    stFetchFmp('quote?symbol='+ticker),
+    stFetchFmp('profile?symbol='+ticker),
+    stFetchFmp('ratios-ttm?symbol='+ticker),
+    stFetchAv('RSI&interval=daily&time_period=14&series_type=close&symbol='+ticker),
+    stFetchAv('MACD&interval=daily&series_type=close&symbol='+ticker),
+    stFetchAv('BBANDS&interval=daily&time_period=20&series_type=close&symbol='+ticker)
+  ]);
+
+  if(!quote||!quote.length)throw new Error('종목을 찾을 수 없습니다: '+ticker);
+
+  document.getElementById('stLoading').style.display='none';
+  document.getElementById('stResults').style.display='block';
+  stRender(quote[0],profile[0]||{},ratios[0]||{},rsi,macd,bbands);
+}
+
+async function stSearchKr(query){
+  const r=await fetch('https://futures-chat-api.vercel.app/api/naver-stock?code='+encodeURIComponent(query));
+  if(!r.ok){
+    const e=await r.json().catch(()=>({error:'알 수 없는 오류'}));
+    throw new Error(e.error||'한국 주식 분석 실패');
+  }
+  const data=await r.json();
+  document.getElementById('stLoading').style.display='none';
+  document.getElementById('stResults').style.display='block';
+  stRenderKr(data);
+}
+
+function stRenderKr(d){
+  const ch=parseFloat((d.change||'0').replace(/,/g,''))*(d.changeDir==='down'?-1:1);
+  const chPct=parseFloat(d.changePct||0)*(d.changeDir==='down'?-1:1);
+  const upDown=d.changeDir==='down'?'down':'up';
+  const arrow=d.changeDir==='down'?'▼':'▲';
+  const logo=d.logo?'<img src="'+escHtml(d.logo)+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff" onerror="this.outerHTML=\'<div class=st-logo>'+escHtml(d.code.slice(0,3))+'</div>\'">':'<div class="st-logo">'+escHtml(d.code.slice(0,3))+'</div>';
+
+  document.getElementById('stHeader').innerHTML=`
+    <div class="st-header-left">${logo}
+      <div><div class="st-name">${escHtml(d.name)}</div><div class="st-symbol">${escHtml(d.code)} · ${escHtml(d.market)}</div></div>
+    </div>
+    <div class="st-price-wrap">
+      <div class="st-price">₩${d.price}</div>
+      <div class="st-change ${upDown}">${arrow} ${d.change} (${Math.abs(chPct).toFixed(2)}%)</div>
+    </div>`;
+
+  document.getElementById('stStats').innerHTML=[
+    ['시가총액',d.marketCap||'—'],
+    ['52주 최고','₩'+(d.yearHigh||'—')],
+    ['52주 최저','₩'+(d.yearLow||'—')],
+    ['거래량',d.volume||'—'],
+    ['시가','₩'+(d.open||'—')],
+    ['고가','₩'+(d.high||'—')],
+    ['저가','₩'+(d.low||'—')],
+    ['외국인 보유',d.foreignRate||'—']
+  ].map(([l,v])=>`<div class="st-stat"><div class="st-stat-val" style="font-size:15px">${v}</div><div class="st-stat-label">${l}</div></div>`).join('');
+
+  document.getElementById('stCompany').innerHTML=[
+    ['종목명',d.name],
+    ['종목코드',d.code],
+    ['시장',d.market||'—'],
+    ['전일 종가','₩'+(d.prevClose||'—')],
+    ['거래대금',d.tradeValue||'—'],
+    ['배당금',d.dividend||'—'],
+    ['배당수익률',d.dividendYield||'—']
+  ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
+
+  // Korean market doesn't have RSI/MACD/BBANDS via free API
+  document.getElementById('stTechnical').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">기술적 지표는 미국 주식만 지원합니다.<br>향후 업데이트 예정</div>';
+
+  document.getElementById('stRatios').innerHTML=[
+    ['PER (TTM)',d.per||'—'],
+    ['EPS',d.eps||'—'],
+    ['추정 PER',d.cnsPer||'—'],
+    ['추정 EPS',d.cnsEps||'—'],
+    ['PBR',d.pbr||'—'],
+    ['BPS',d.bps||'—']
+  ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
+
+  // AI Analysis
+  stGetAiKr(d);
+}
+
+async function stGetAiKr(d){
+  const el=document.getElementById('stAi');
+  el.textContent='AI 분석 생성 중...';
+  const prompt=`아래는 ${d.name} (${d.code}, ${d.market})의 데이터야. 한국어로 종합 분석을 해줘.
+
+[가격 정보]
+현재가: ₩${d.price}, 변동률: ${d.changeDir==='down'?'-':'+'}${d.changePct}%
+시가총액: ${d.marketCap}, 52주 범위: ₩${d.yearLow} ~ ₩${d.yearHigh}
+외국인 보유율: ${d.foreignRate}
+
+[밸류에이션]
+PER: ${d.per}, EPS: ${d.eps}
+추정 PER: ${d.cnsPer}, 추정 EPS: ${d.cnsEps}
+PBR: ${d.pbr}, BPS: ${d.bps}
+배당수익률: ${d.dividendYield}
+
+다음 4가지로 분석해줘 (각 항목 1-2문장):
+1. 펀더멘털 평가 (PER, PBR 기준)
+2. 시장 위치 (52주 범위 대비 현재가)
+3. 핵심 리스크
+4. 종합 의견
+
+마지막에 "본 분석은 참고용이며 투자 권유가 아닙니다." 추가.`;
+
+  try{
+    const text=await aiCall(prompt,'너는 한국 주식 분석 전문가야. 한국어로만 답변해.');
+    el.textContent=text||'AI 분석을 생성하지 못했습니다.';
+  }catch(e){
+    console.error('Stock AI error:',e);
+    el.textContent='AI 분석 실패: '+e.message;
   }
 }
 
