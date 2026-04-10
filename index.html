@@ -2699,7 +2699,10 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 
   <div class="st-search">
-    <input type="text" id="stSearchInput" class="st-search-input" placeholder="티커 입력 (예: AAPL, TSLA, MSFT)" onkeydown="if(event.key==='Enter')stSearch()">
+    <div class="st-search-wrap">
+      <input type="text" id="stSearchInput" class="st-search-input" placeholder="티커 또는 한글 (예: AAPL, 애플, 삼성전자)" oninput="stAutocomplete()" onkeydown="stHandleKey(event)" autocomplete="off">
+      <div class="st-autocomplete" id="stAutocomplete" style="display:none"></div>
+    </div>
     <button class="st-search-btn" onclick="stSearch()">분석하기</button>
   </div>
   <div class="st-sources">데이터: <span>FMP</span> · <span>Alpha Vantage</span> · <span>Groq AI</span></div>
@@ -3567,6 +3570,99 @@ function goToSpread(){
 const FMP_KEY='cooEK92NcPykIx4tin9GeOZBQtC7afe6';
 const AV_KEY='IL5XXQBRJ7H5TVCA';
 let stMarket='us';
+
+const US_STOCKS={"애플":"AAPL","마이크로소프트":"MSFT","MS":"MSFT","구글":"GOOGL","알파벳":"GOOGL","아마존":"AMZN","메타":"META","페이스북":"META","테슬라":"TSLA","엔비디아":"NVDA","넷플릭스":"NFLX","AMD":"AMD","에이엠디":"AMD","인텔":"INTC","퀄컴":"QCOM","브로드컴":"AVGO","TSMC":"TSM","티에스엠씨":"TSM","코카콜라":"KO","펩시":"PEP","펩시콜라":"PEP","맥도날드":"MCD","스타벅스":"SBUX","나이키":"NKE","월마트":"WMT","코스트코":"COST","존슨앤존슨":"JNJ","화이자":"PFE","버크셔해서웨이":"BRK.B","버크셔":"BRK.B","JP모건":"JPM","제이피모건":"JPM","골드만삭스":"GS","비자":"V","마스터카드":"MA","페이팔":"PYPL","스냅":"SNAP","우버":"UBER","에어비앤비":"ABNB","스포티파이":"SPOT","팔란티어":"PLTR","코인베이스":"COIN","로빈후드":"HOOD","리비안":"RIVN","루시드":"LCID","보잉":"BA","록히드마틴":"LMT","엑슨모빌":"XOM","쉐브론":"CVX","AT&T":"T","버라이즌":"VZ","디즈니":"DIS","워너브라더스":"WBD","파라마운트":"PARA","줌":"ZM","줌비디오":"ZM","세일즈포스":"CRM","오라클":"ORCL","IBM":"IBM","어도비":"ADBE","인튜이트":"INTU","스퀘어":"SQ","블록":"SQ","쇼피파이":"SHOP","트위터":"X","스냅챗":"SNAP","레딧":"RDDT","핀터레스트":"PINS","리프트":"LYFT","도어대시":"DASH","인스타카트":"CART","클라우드플레어":"NET","스노우플레이크":"SNOW","데이터독":"DDOG","몽고DB":"MDB","트윌리오":"TWLO","서비스나우":"NOW","워크데이":"WDAY","허브스팟":"HUBS","쿠팡":"CPNG"};
+
+const KR_STOCKS={"삼성전자":"005930","SK하이닉스":"000660","하이닉스":"000660","LG에너지솔루션":"373220","LG에너지":"373220","삼성바이오로직스":"207940","삼바":"207940","현대차":"005380","현대자동차":"005380","기아":"000270","기아차":"000270","셀트리온":"068270","POSCO홀딩스":"005490","포스코":"005490","카카오":"035720","카카오뱅크":"323410","네이버":"035420","NAVER":"035420","삼성SDI":"006400","LG화학":"051910","현대모비스":"012330","KB금융":"105560","신한지주":"055550","하나금융지주":"086790","하나금융":"086790","우리금융지주":"316140","우리금융":"316140","삼성물산":"028260","한국전력":"015760","SK이노베이션":"096770","SK이노":"096770","LG전자":"066570","SK텔레콤":"017670","SKT":"017670","KT":"030200","LG유플러스":"032640","LGU+":"032640","롯데케미칼":"011170","한화에어로스페이스":"012450","한화에어로":"012450","두산에너빌리티":"034020","HD현대":"267250","HMM":"011200","현대글로비스":"086280","CJ제일제당":"097950","아모레퍼시픽":"090430","LG생활건강":"051900","한미약품":"128940","유한양행":"000100","삼성전기":"009150","삼성SDS":"018260","에코프로비엠":"247540","에코프로":"086520","엘앤에프":"066970","포스코퓨처엠":"003670","고려아연":"010130","크래프톤":"259960","엔씨소프트":"036570","엔씨":"036570","넷마블":"251270","카카오게임즈":"293490","펄어비스":"263750","컴투스":"078340","더존비즈온":"012510","카카오페이":"377300","쏘카":"403550","하이브":"352820","BTS":"352820","SM엔터테인먼트":"041510","JYP엔터테인먼트":"035900","JYP":"035900","YG엔터테인먼트":"122870","YG":"122870","CJ ENM":"035760","롯데쇼핑":"023530","신세계":"004170","현대백화점":"069960","이마트":"139480","BGF리테일":"282330","GS리테일":"007070"};
+
+function stResolveTicker(input){
+  const q=input.trim();
+  if(!q)return null;
+  // Direct US ticker
+  if(/^[A-Z]{1,5}(\.[A-Z])?$/.test(q))return{ticker:q,market:'us'};
+  // Direct KR code
+  if(/^\d{6}$/.test(q))return{ticker:q,market:'kr'};
+  // Exact KR mapping
+  if(KR_STOCKS[q])return{ticker:KR_STOCKS[q],market:'kr'};
+  // Exact US mapping
+  if(US_STOCKS[q])return{ticker:US_STOCKS[q],market:'us'};
+  // Partial match (KR first since user explicitly typing Korean)
+  for(const k of Object.keys(KR_STOCKS))if(k.includes(q))return{ticker:KR_STOCKS[k],market:'kr',matched:k};
+  for(const k of Object.keys(US_STOCKS))if(k.includes(q))return{ticker:US_STOCKS[k],market:'us',matched:k};
+  return null;
+}
+
+let stAcIdx=-1;
+function stAutocomplete(){
+  const inp=document.getElementById('stSearchInput');
+  const ac=document.getElementById('stAutocomplete');
+  const q=inp.value.trim();
+  if(q.length<1){ac.style.display='none';return}
+
+  // Direct ticker - hide
+  if(/^[A-Z]{1,5}(\.[A-Z])?$|^\d{6}$/.test(q)){ac.style.display='none';return}
+
+  const results=[];
+  // KR matches
+  for(const [name,code] of Object.entries(KR_STOCKS)){
+    if(name.includes(q)){
+      results.push({name,ticker:code,market:'kr',flag:'🇰🇷'});
+      if(results.length>=8)break;
+    }
+  }
+  // US matches
+  for(const [name,code] of Object.entries(US_STOCKS)){
+    if(results.length>=8)break;
+    if(name.includes(q)){
+      results.push({name,ticker:code,market:'us',flag:'🇺🇸'});
+    }
+  }
+
+  if(!results.length){ac.style.display='none';return}
+
+  ac.innerHTML=results.map((r,i)=>
+    `<div class="st-ac-item${i===stAcIdx?' active':''}" onclick="stPickAc('${escHtml(r.name)}','${r.ticker}','${r.market}')"><span class="st-ac-name">${r.flag} ${escHtml(r.name)}</span><span class="st-ac-ticker">${r.ticker}</span></div>`
+  ).join('');
+  ac.style.display='block';
+  stAcIdx=-1;
+}
+
+function stPickAc(name,ticker,market){
+  document.getElementById('stSearchInput').value=name;
+  document.getElementById('stAutocomplete').style.display='none';
+  // Switch market tab
+  const tabs=document.querySelectorAll('.st-tab');
+  tabs.forEach(b=>b.classList.remove('active'));
+  if(market==='kr')tabs[1].classList.add('active');
+  else tabs[0].classList.add('active');
+  stMarket=market;
+  // Trigger search
+  stSearchTicker(ticker);
+}
+
+function stHandleKey(e){
+  const ac=document.getElementById('stAutocomplete');
+  const items=ac.querySelectorAll('.st-ac-item');
+  if(e.key==='ArrowDown'&&items.length){
+    e.preventDefault();
+    stAcIdx=(stAcIdx+1)%items.length;
+    items.forEach((it,i)=>it.classList.toggle('active',i===stAcIdx));
+  }else if(e.key==='ArrowUp'&&items.length){
+    e.preventDefault();
+    stAcIdx=stAcIdx<=0?items.length-1:stAcIdx-1;
+    items.forEach((it,i)=>it.classList.toggle('active',i===stAcIdx));
+  }else if(e.key==='Enter'){
+    if(stAcIdx>=0&&items[stAcIdx]){items[stAcIdx].click()}
+    else stSearch();
+  }else if(e.key==='Escape'){
+    ac.style.display='none';
+  }
+}
+
+document.addEventListener('click',function(e){
+  const ac=document.getElementById('stAutocomplete');
+  if(ac&&!e.target.closest('.st-search-wrap')){ac.style.display='none'}
+});
 const ST_CACHE_TTL=5*60*1000; // 5 minutes
 function stCacheGet(k){
   try{const v=JSON.parse(sessionStorage.getItem('stCache_'+k)||'null');
@@ -3596,16 +3692,37 @@ function stSwitchMarket(btn,m){
 async function stSearch(){
   const raw=document.getElementById('stSearchInput').value.trim();
   if(!raw)return;
+  document.getElementById('stAutocomplete').style.display='none';
 
+  // Resolve to ticker + market
+  const resolved=stResolveTicker(raw);
+  if(!resolved){
+    document.getElementById('stEmpty').style.display='block';
+    document.getElementById('stEmpty').textContent='⚠️ "'+raw+'" 종목을 찾을 수 없습니다. 티커를 직접 입력해주세요.';
+    document.getElementById('stResults').style.display='none';
+    return;
+  }
+
+  // Auto-switch tab
+  const tabs=document.querySelectorAll('.st-tab');
+  tabs.forEach(b=>b.classList.remove('active'));
+  if(resolved.market==='kr')tabs[1].classList.add('active');
+  else tabs[0].classList.add('active');
+  stMarket=resolved.market;
+
+  await stSearchTicker(resolved.ticker);
+}
+
+async function stSearchTicker(ticker){
   document.getElementById('stEmpty').style.display='none';
   document.getElementById('stResults').style.display='none';
   document.getElementById('stLoading').style.display='block';
 
   try{
     if(stMarket==='kr'){
-      await stSearchKr(raw);
+      await stSearchKr(ticker);
     }else{
-      await stSearchUs(raw.toUpperCase());
+      await stSearchUs(ticker.toUpperCase());
     }
   }catch(e){
     console.error('Stock fetch error:',e);
