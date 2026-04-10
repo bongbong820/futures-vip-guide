@@ -3963,18 +3963,54 @@ function stRenderKr(d){
     ['52주 최저','₩'+(d.yearLow||'—')]
   ].map(([l,v])=>`<div class="st-stat"><div class="st-stat-val" style="font-size:15px">${v}</div><div class="st-stat-label">${l}</div></div>`).join('');
 
-  // Hide sections not supported for KR
-  document.getElementById('stTiming').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">매매 타이밍 스코어는 미국 주식만 지원합니다</div>';
-  document.getElementById('stTechGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--gray-400);font-size:13px">기술적 지표는 미국 주식만 지원합니다</div>';
-  document.getElementById('stTarget').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">애널리스트 목표가는 미국 주식만 지원합니다</div>';
-  document.getElementById('stPeers').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">동종업계 비교는 미국 주식만 지원합니다</div>';
-  document.getElementById('stRiskMetrics').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--gray-400);font-size:13px">상세 리스크 지표는 미국 주식만 지원합니다</div>';
+  // Loading placeholders
+  document.getElementById('stTiming').innerHTML='<div class="st-ai-loading">AI 추정 중<span class="st-dots"></span></div>';
+  document.getElementById('stTechGrid').innerHTML='<div style="grid-column:1/-1" class="st-ai-loading">AI 추정 중<span class="st-dots"></span></div>';
+  document.getElementById('stTarget').innerHTML='<div class="st-ai-loading">AI 추정 중<span class="st-dots"></span></div>';
 
-  // AI sections (work for KR too)
-  const ctx={name:d.name,symbol:d.code,price:d.price,chPct,sector:d.market,per:parseFloat((d.per||'0').replace(/[^\d.]/g,'')),roe:0,marketCap:0,score:50};
+  // Foreign/institution trend → in stPeers section
+  if(d.trend&&d.trend.length){
+    document.getElementById('stPeers').innerHTML='<div style="margin-bottom:8px;font-size:11px;color:var(--gray-500)">최근 5거래일 외국인·기관 매매 동향</div><div style="overflow-x:auto"><table class="st-peers-table"><thead><tr><th>날짜</th><th>종가</th><th>외국인</th><th>기관</th><th>외국인보유</th></tr></thead><tbody>'+
+      d.trend.map(t=>{
+        const dt=t.date.slice(4,6)+'/'+t.date.slice(6,8);
+        const fNum=parseFloat((t.foreignNet||'0').replace(/[+,]/g,''));
+        const oNum=parseFloat((t.orgNet||'0').replace(/[+,]/g,''));
+        const fCol=fNum>0?'#089981':fNum<0?'#f23645':'#888';
+        const oCol=oNum>0?'#089981':oNum<0?'#f23645':'#888';
+        return `<tr><td>${dt}</td><td>₩${t.close}</td><td style="color:${fCol};font-weight:700;font-size:11px">${t.foreignNet}</td><td style="color:${oCol};font-weight:700;font-size:11px">${t.orgNet}</td><td>${t.foreignRate}</td></tr>`;
+      }).join('')+'</tbody></table></div>';
+  }else{
+    document.getElementById('stPeers').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">매매 동향 데이터 없음</div>';
+  }
+
+  // KR Risk metrics
+  const perNum=parseFloat((d.per||'0').replace(/[^\d.]/g,''));
+  const yhNum=parseFloat((d.yearHigh||'0').replace(/,/g,''));
+  const ylNum=parseFloat((d.yearLow||'0').replace(/,/g,''));
+  const priceNum=parseFloat((d.price||'0').replace(/,/g,''));
+  const rangePct=ylNum?(((yhNum-ylNum)/ylNum*100)).toFixed(1)+'%':'—';
+  const ddPct=yhNum?(((ylNum-yhNum)/yhNum*100)).toFixed(1)+'%':'—';
+  const stateLabels2={good:'양호',warn:'주의',bad:'위험'};
+  const krRisks=[
+    {n:'PER',v:d.per||'—',s:perNum<15?'good':perNum<30?'warn':'bad'},
+    {n:'PBR',v:d.pbr||'—',s:'warn'},
+    {n:'52주 변동폭',v:rangePct,s:'warn'},
+    {n:'최대 낙폭',v:ddPct,s:Math.abs(parseFloat(ddPct))>30?'bad':'warn'},
+    {n:'시가총액',v:d.marketCap||'—',s:'good'},
+    {n:'외국인 보유',v:d.foreignRate||'—',s:'good'}
+  ];
+  document.getElementById('stRiskMetrics').innerHTML=krRisks.map(c=>
+    `<div class="st-risk-cell"><div class="st-risk-cell-name">${c.n}</div><div class="st-risk-cell-val" style="font-size:13px">${c.v}</div><div class="st-risk-cell-state ${c.s}">${stateLabels2[c.s]}</div></div>`
+  ).join('');
+
+  // AI sections (text-based)
+  const ctx={name:d.name,symbol:d.code,price:'₩'+d.price,chPct,sector:d.market,per:perNum,roe:0,marketCap:d.marketCap,score:50};
   stGetPoints(ctx);
   stGetIssues(ctx);
   stGetRiskOpp(ctx);
+
+  // AI estimate for tech indicators + timing + target
+  stEstimateKr(d,priceNum,yhNum,ylNum,perNum);
 
   document.getElementById('stCompany').innerHTML=[
     ['종목명',d.name],
@@ -3997,24 +4033,126 @@ function stRenderKr(d){
     ['PBR',d.pbr||'—'],
     ['BPS',d.bps||'—']
   ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
-
-  // AI Analysis
-  stGetAiKr(d);
 }
 
-async function stGetAiKr(d){
+async function stEstimateKr(d,price,yhNum,ylNum,perNum){
+  const prompt=`종목: ${d.name} (${d.code})
+현재가: ₩${d.price}
+PER: ${d.per}, PBR: ${d.pbr}
+52주 최고: ₩${d.yearHigh} / 최저: ₩${d.yearLow}
+외국인 보유: ${d.foreignRate}
+
+이 데이터로 아래를 추정해서 JSON으로만 응답:
+{
+  "rsi": 0~100 정수,
+  "trend": "상승" | "하락" | "횡보",
+  "techSignal": "매수" | "중립" | "매도",
+  "timingScore": 0~100 정수,
+  "targetPrice": 목표주가(원, 숫자만),
+  "highTarget": 최고목표주가(원, 숫자만),
+  "stopLoss": 손절가(원, 숫자만),
+  "upside": 상승여력 퍼센트(숫자),
+  "downside": 하락위험 퍼센트(숫자),
+  "techScore": 0~100,
+  "fundScore": 0~100,
+  "sentScore": 0~100,
+  "valScore": 0~100,
+  "riskScore": 0~100
+}`;
+  let est={};
+  try{
+    const text=await aiCall(prompt,'너는 주식 분석 전문가야. 반드시 유효한 JSON만 출력해.');
+    est=stExtractJson(text)||{};
+  }catch(e){console.warn('KR estimate failed:',e)}
+
+  const techCells=[
+    {n:'RSI(추정)',v:est.rsi||'—',s:est.rsi>=70?'sell':est.rsi<=30?'buy':est.rsi>50?'buy':est.rsi?'sell':'neutral'},
+    {n:'추세',v:est.trend||'—',s:est.trend==='상승'?'buy':est.trend==='하락'?'sell':'neutral'},
+    {n:'PER',v:d.per||'—',s:perNum<15?'buy':perNum<30?'neutral':'sell'},
+    {n:'52주 위치',v:yhNum?(((price-ylNum)/(yhNum-ylNum)*100).toFixed(0)+'%'):'—',s:yhNum&&((price-ylNum)/(yhNum-ylNum))>0.7?'sell':((price-ylNum)/(yhNum-ylNum))<0.3?'buy':'neutral'},
+    {n:'외국인',v:d.foreignRate||'—',s:'neutral'},
+    {n:'PBR',v:d.pbr||'—',s:'neutral'},
+    {n:'배당',v:d.dividendYield||'—',s:'neutral'},
+    {n:'기관동향',v:d.trend?.[0]?(parseFloat((d.trend[0].orgNet||'0').replace(/[+,]/g,''))>0?'순매수':'순매도'):'—',s:d.trend?.[0]?(parseFloat((d.trend[0].orgNet||'0').replace(/[+,]/g,''))>0?'buy':'sell'):'neutral'},
+    {n:'종합',v:est.techSignal||'중립',s:est.techSignal==='매수'?'buy':est.techSignal==='매도'?'sell':'neutral'}
+  ];
+  const techLabels={buy:'매수',sell:'매도',neutral:'중립'};
+  document.getElementById('stTechGrid').innerHTML=techCells.map(c=>
+    `<div class="st-tech-cell"><div class="st-tech-cell-name">${c.n}</div><div class="st-tech-cell-val">${c.v}</div><div class="st-tech-cell-sig ${c.s}">${techLabels[c.s]}</div></div>`
+  ).join('')+'<div style="grid-column:1/-1;font-size:10px;color:#FF6B35;text-align:right;margin-top:6px;font-weight:600">🤖 AI 추정 데이터</div>';
+
+  const totalScore=est.timingScore||50;
+  let scoreLabel,scoreColor;
+  if(totalScore>=80){scoreLabel='강력 매수 고려';scoreColor='#089981'}
+  else if(totalScore>=60){scoreLabel='매수 우세';scoreColor='#5FAD41'}
+  else if(totalScore>=40){scoreLabel='중립 — 관망';scoreColor='#F5A623'}
+  else if(totalScore>=20){scoreLabel='매도 우세';scoreColor='#FF6B35'}
+  else{scoreLabel='강력 매도 고려';scoreColor='#f23645'}
+  const arcLen=Math.PI*70*(180*(totalScore/100)/180);
+  document.getElementById('stTiming').innerHTML=`
+    <div class="st-timing-wrap">
+      <div>
+        <div class="st-gauge"><svg viewBox="0 0 160 90">
+          <path d="M15 80 A65 65 0 0 1 145 80" fill="none" stroke="#eee" stroke-width="14" stroke-linecap="round"/>
+          <path d="M15 80 A65 65 0 0 1 145 80" fill="none" stroke="${scoreColor}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${arcLen} 999"/>
+        </svg><div class="st-gauge-val" style="color:${scoreColor}">${totalScore}</div></div>
+        <div class="st-gauge-label" style="color:${scoreColor}">${scoreLabel}</div>
+      </div>
+      <div class="st-timing-bars">
+        ${[['기술적',est.techScore||50],['펀더멘털',est.fundScore||50],['시장심리',est.sentScore||50],['밸류에이션',est.valScore||50],['리스크',est.riskScore||50]].map(([n,s])=>{
+          const c=s>=60?'#089981':s>=40?'#F5A623':'#f23645';
+          return `<div class="st-timing-bar"><span class="st-timing-bar-name">${n}</span><div class="st-timing-bar-bg"><div class="st-timing-bar-fill" style="width:${s}%;background:${c}"></div></div><span class="st-timing-bar-val">${s}</span></div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div style="font-size:10px;color:#FF6B35;text-align:right;margin-top:8px;font-weight:600">🤖 AI 추정 데이터</div>`;
+
+  if(est.targetPrice){
+    const tgt=est.targetPrice;
+    const high=est.highTarget||tgt*1.1;
+    const sl=est.stopLoss||price*0.9;
+    const minVal=Math.min(sl,price)*0.98;
+    const maxVal=Math.max(high,price)*1.02;
+    const range=maxVal-minVal||1;
+    const pctOf=(v)=>((v-minVal)/range*100).toFixed(1);
+    const fmt=(n)=>'₩'+Math.round(n).toLocaleString();
+    document.getElementById('stTarget').innerHTML=`
+      <div class="st-target-bar-wrap">
+        <div class="st-target-bar">
+          <div class="st-target-marker" style="left:${pctOf(sl)}%" data-label="손절 ${fmt(sl)}"></div>
+          <div class="st-target-marker" style="left:${pctOf(price)}%;background:#3182F6" data-label="현재 ${fmt(price)}"></div>
+          <div class="st-target-marker" style="left:${pctOf(tgt)}%" data-label="목표 ${fmt(tgt)}"></div>
+        </div>
+        <div class="st-target-labels"><span>${fmt(minVal)}</span><span>${fmt(maxVal)}</span></div>
+      </div>
+      <div class="st-target-pnl">
+        <div class="st-pnl-card loss"><div class="st-pnl-val">-${(est.downside||0).toFixed(1)}%</div><div class="st-pnl-label">손절 시 손실</div></div>
+        <div class="st-pnl-card gain"><div class="st-pnl-val">+${(est.upside||0).toFixed(1)}%</div><div class="st-pnl-label">목표 도달 시 수익</div></div>
+      </div>
+      <div style="font-size:10px;color:#FF6B35;text-align:right;margin-top:8px;font-weight:600">🤖 AI 추정 데이터</div>`;
+  }else{
+    document.getElementById('stTarget').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">목표가 추정 실패</div>';
+  }
+
+  // Update AI 종합 분석 with score
+  if(d){
+    stGetAiKr(d,totalScore);
+  }
+}
+
+async function stGetAiKr(d,score){
   const el=document.getElementById('stAi');
-  el.textContent='AI 분석 생성 중...';
+  el.innerHTML='<div class="st-ai-loading st-ai-loading-light">AI 분석 생성 중<span class="st-dots"></span></div>';
   const prompt=`아래는 ${d.name} (${d.code}, ${d.market})의 데이터야. 한국어로 종합 분석을 해줘.
 
 [가격 정보]
 현재가: ₩${d.price}, 변동률: ${d.changeDir==='down'?'-':'+'}${d.changePct}%
 시가총액: ${d.marketCap}, 52주 범위: ₩${d.yearLow} ~ ₩${d.yearHigh}
 외국인 보유율: ${d.foreignRate}
+매매 타이밍 스코어: ${score||50}/100 (AI 추정)
 
 [밸류에이션]
 PER: ${d.per}, EPS: ${d.eps}
-추정 PER: ${d.cnsPer}, 추정 EPS: ${d.cnsEps}
 PBR: ${d.pbr}, BPS: ${d.bps}
 배당수익률: ${d.dividendYield}
 
