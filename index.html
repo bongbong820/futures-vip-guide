@@ -2707,6 +2707,17 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="st-loading" id="stLoading" style="display:none"><div class="ec4-spinner"></div><br>분석 중...</div>
 
   <div class="st-results" id="stResults" style="display:none">
+    <!-- AI Agro Headline -->
+    <div class="st-aggro" id="stAggro">
+      <div class="st-aggro-left">
+        <span class="st-aggro-icon">⚡</span>
+        <span class="st-aggro-text" id="stAggroText"><span class="st-skel"></span></span>
+      </div>
+      <div class="st-aggro-right">
+        <span class="st-aggro-dot"></span>
+        <span>AI 생성</span>
+      </div>
+    </div>
     <!-- Header -->
     <div class="st-header" id="stHeader"></div>
     <!-- Quick stats grid -->
@@ -3549,20 +3560,24 @@ async function stSearch(){
 }
 
 async function stSearchUs(ticker){
+  // Each section fetched independently with try/catch
+  const safe=async(fn)=>{try{return await fn()}catch(e){console.warn('Section failed:',e.message);return null}};
+
   const [quote,profile,ratios,rsi,macd,bbands]=await Promise.all([
-    stFetchFmp('quote?symbol='+ticker),
-    stFetchFmp('profile?symbol='+ticker),
-    stFetchFmp('ratios-ttm?symbol='+ticker),
-    stFetchAv('RSI&interval=daily&time_period=14&series_type=close&symbol='+ticker),
-    stFetchAv('MACD&interval=daily&series_type=close&symbol='+ticker),
-    stFetchAv('BBANDS&interval=daily&time_period=20&series_type=close&symbol='+ticker)
+    safe(()=>stFetchFmp('quote?symbol='+ticker)),
+    safe(()=>stFetchFmp('profile?symbol='+ticker)),
+    safe(()=>stFetchFmp('ratios-ttm?symbol='+ticker)),
+    safe(()=>stFetchAv('RSI&interval=daily&time_period=14&series_type=close&symbol='+ticker)),
+    safe(()=>stFetchAv('MACD&interval=daily&series_type=close&symbol='+ticker)),
+    safe(()=>stFetchAv('BBANDS&interval=daily&time_period=20&series_type=close&symbol='+ticker))
   ]);
 
   if(!quote||!quote.length)throw new Error('종목을 찾을 수 없습니다: '+ticker);
 
   document.getElementById('stLoading').style.display='none';
   document.getElementById('stResults').style.display='block';
-  stRender(quote[0],profile[0]||{},ratios[0]||{},rsi,macd,bbands);
+  stShowAggroLoading();
+  stRender(quote[0],profile?.[0]||{},ratios?.[0]||{},rsi,macd,bbands);
 }
 
 async function stSearchKr(query){
@@ -3574,12 +3589,43 @@ async function stSearchKr(query){
   const data=await r.json();
   document.getElementById('stLoading').style.display='none';
   document.getElementById('stResults').style.display='block';
+  stShowAggroLoading();
   stRenderKr(data);
+}
+
+function stShowAggroLoading(){
+  document.getElementById('stAggroText').innerHTML='<span class="st-skel"></span>';
+}
+
+async function stGenerateAggro(name,price,changePct,extra){
+  const el=document.getElementById('stAggroText');
+  const direction=changePct>=0?'상승':'하락';
+  const prompt=`주식 종목 "${name}"의 현재 상황을 한 줄짜리 흥미진진한 헤드라인으로 만들어줘.
+가격: ${price}, 변동률: ${changePct.toFixed(2)}% (${direction})
+${extra||''}
+
+조건:
+- 한 줄, 50자 이내
+- 클릭하고 싶은 자극적이고 흥미로운 톤 (어그로)
+- 이모지 1개 포함 가능
+- 한국어
+- 헤드라인만 출력 (설명 없이)
+- 따옴표 없이`;
+
+  try{
+    const text=await aiCall(prompt,'너는 자극적인 금융 헤드라인을 작성하는 카피라이터야.');
+    el.textContent=(text||'').replace(/^["「『]|["」』]$/g,'').trim()||name+' 분석 완료';
+  }catch(e){
+    el.textContent=name+' 종목 분석 결과';
+  }
 }
 
 function stRenderKr(d){
   const ch=parseFloat((d.change||'0').replace(/,/g,''))*(d.changeDir==='down'?-1:1);
   const chPct=parseFloat(d.changePct||0)*(d.changeDir==='down'?-1:1);
+  // Aggro headline
+  stGenerateAggro(d.name,'₩'+d.price,chPct,
+    `시가총액: ${d.marketCap}, 52주: ₩${d.yearLow}~₩${d.yearHigh}, PER: ${d.per}`);
   const upDown=d.changeDir==='down'?'down':'up';
   const arrow=d.changeDir==='down'?'▼':'▲';
   const logo=d.logo?'<img src="'+escHtml(d.logo)+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff" onerror="this.outerHTML=\'<div class=st-logo>'+escHtml(d.code.slice(0,3))+'</div>\'">':'<div class="st-logo">'+escHtml(d.code.slice(0,3))+'</div>';
@@ -3706,6 +3752,9 @@ function stRender(quote,profile,ratios,rsi,macd,bbands){
   // Header
   const ch=quote.change||0;
   const chPct=quote.changePercentage||0;
+  // Generate aggro headline
+  stGenerateAggro(quote.name||quote.symbol,'$'+(quote.price||0).toFixed(2),chPct,
+    `시가총액: ${stFmt(quote.marketCap)}, 52주: $${quote.yearLow}~$${quote.yearHigh}`);
   const upDown=ch>=0?'up':'down';
   const arrow=ch>=0?'▲':'▼';
   const logo=profile.image?'<img src="'+escHtml(profile.image)+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:#fff" onerror="this.outerHTML=\'<div class=st-logo>'+escHtml((quote.symbol||'').slice(0,3))+'</div>\'">':'<div class="st-logo">'+escHtml((quote.symbol||'').slice(0,3))+'</div>';
@@ -3732,17 +3781,24 @@ function stRender(quote,profile,ratios,rsi,macd,bbands){
   ].map(([l,v])=>`<div class="st-stat"><div class="st-stat-val">${v}</div><div class="st-stat-label">${l}</div></div>`).join('');
 
   // Company info
-  document.getElementById('stCompany').innerHTML=[
-    ['업종',profile.sector||'—'],
-    ['산업',profile.industry||'—'],
-    ['CEO',profile.ceo||'—'],
-    ['직원수',profile.fullTimeEmployees?(+profile.fullTimeEmployees).toLocaleString()+'명':'—'],
-    ['본사',profile.country?(profile.city||'')+', '+profile.country:'—'],
-    ['상장일',profile.ipoDate||'—'],
-    ['웹사이트',profile.website?'<a href="'+escHtml(profile.website)+'" target="_blank" style="color:var(--blue)">'+escHtml((profile.website||'').replace(/^https?:\/\//,'').replace(/\/$/,''))+'</a>':'—']
-  ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
+  if(profile&&Object.keys(profile).length){
+    document.getElementById('stCompany').innerHTML=[
+      ['업종',profile.sector||'—'],
+      ['산업',profile.industry||'—'],
+      ['CEO',profile.ceo||'—'],
+      ['직원수',profile.fullTimeEmployees?(+profile.fullTimeEmployees).toLocaleString()+'명':'—'],
+      ['본사',profile.country?(profile.city||'')+', '+profile.country:'—'],
+      ['상장일',profile.ipoDate||'—'],
+      ['웹사이트',profile.website?'<a href="'+escHtml(profile.website)+'" target="_blank" style="color:var(--blue)">'+escHtml((profile.website||'').replace(/^https?:\/\//,'').replace(/\/$/,''))+'</a>':'—']
+    ].map(([l,v])=>`<div class="st-info-row"><span>${l}</span><span>${v}</span></div>`).join('');
+  }else{
+    document.getElementById('stCompany').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">데이터를 불러올 수 없습니다</div>';
+  }
 
-  // Technical
+  // Technical - if all 3 are null show error
+  if(!rsi&&!macd&&!bbands){
+    document.getElementById('stTechnical').innerHTML='<div style="text-align:center;padding:30px;color:var(--gray-400);font-size:13px">데이터를 불러올 수 없습니다<br><span style="font-size:11px">(Alpha Vantage 일일 한도 초과 가능)</span></div>';
+  }
   const rsiVal=parseFloat(stExtractLatest(rsi,'RSI')||'');
   const macdVal=parseFloat(stExtractLatest(macd,'MACD')||'');
   const macdSig=parseFloat(stExtractLatest(macd,'MACD_Signal')||'');
