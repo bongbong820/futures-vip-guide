@@ -13,6 +13,7 @@
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet" crossorigin>
 <link rel="stylesheet" href="features.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="brokers.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2835,18 +2836,22 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <!-- Tab 1: Compare -->
   <div class="bk-panel" id="bkPanel1" style="display:none">
     <div class="bk-filters">
+      <select class="bk-filter-select" id="bkTierFilter" onchange="bkRenderTable()">
+        <option value="all">전체 Tier</option><option value="1">🏆 Tier 1</option><option value="2">🥈 Tier 2</option><option value="3">⚠️ Tier 3</option>
+      </select>
       <select class="bk-filter-select" id="bkRegFilter" onchange="bkRenderTable()">
-        <option value="all">전체 규제기관</option>
-        <option value="ASIC">ASIC</option><option value="FCA">FCA</option>
-        <option value="CFTC">CFTC</option><option value="CySEC">CySEC</option>
+        <option value="all">전체 규제</option><option value="ASIC">ASIC</option><option value="FCA">FCA</option><option value="CFTC">CFTC</option><option value="CySEC">CySEC</option><option value="MAS">MAS</option>
       </select>
       <select class="bk-filter-select" id="bkSortBy" onchange="bkRenderTable()">
-        <option value="safety">안전도순</option>
-        <option value="spread">스프레드순</option>
-        <option value="deposit">최소증거금순</option>
+        <option value="safety">안전도순</option><option value="spread">스프레드순</option><option value="deposit">최소증거금순</option><option value="rating">평점순</option>
       </select>
     </div>
     <div style="overflow-x:auto" id="bkTableWrap"></div>
+  </div>
+
+  <!-- Broker Detail Modal -->
+  <div class="bk-modal-overlay" id="bkDetailModal" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+    <div class="bk-modal" style="max-width:520px" id="bkDetailBody"></div>
   </div>
 
   <!-- Tab 2: Regulators -->
@@ -3808,23 +3813,7 @@ function goToBroker(){
 }
 
 // ===== FX BROKER GUIDE =====
-const BK_DATA=[
-  {name:'IC Markets',country:'호주',regulations:['ASIC','CySEC','FSA'],safetyScore:92,minDeposit:'$200',spread:'0.0 pip',maxLeverage:'1:500',withdrawalSpeed:'빠름',platforms:['MT4','MT5','cTrader'],rating:4.7},
-  {name:'OANDA',country:'미국',regulations:['CFTC','FCA','ASIC'],safetyScore:95,minDeposit:'$0',spread:'1.0 pip',maxLeverage:'1:50',withdrawalSpeed:'빠름',platforms:['MT4','fxTrade'],rating:4.5},
-  {name:'Exness',country:'키프로스',regulations:['CySEC','FCA','FSCA'],safetyScore:85,minDeposit:'$1',spread:'0.3 pip',maxLeverage:'1:무제한',withdrawalSpeed:'빠름',platforms:['MT4','MT5'],rating:4.6},
-  {name:'XM',country:'키프로스',regulations:['CySEC','ASIC','IFSC'],safetyScore:80,minDeposit:'$5',spread:'1.6 pip',maxLeverage:'1:888',withdrawalSpeed:'보통',platforms:['MT4','MT5'],rating:4.3},
-  {name:'Pepperstone',country:'호주',regulations:['ASIC','FCA','CySEC'],safetyScore:93,minDeposit:'$0',spread:'0.0 pip',maxLeverage:'1:500',withdrawalSpeed:'빠름',platforms:['MT4','MT5','cTrader'],rating:4.7},
-  {name:'FBS',country:'키프로스',regulations:['CySEC','IFSC','ASIC'],safetyScore:70,minDeposit:'$1',spread:'1.0 pip',maxLeverage:'1:3000',withdrawalSpeed:'보통',platforms:['MT4','MT5'],rating:4.0},
-  {name:'HFM',country:'키프로스',regulations:['CySEC','FCA','DFSA'],safetyScore:78,minDeposit:'$0',spread:'1.2 pip',maxLeverage:'1:1000',withdrawalSpeed:'보통',platforms:['MT4','MT5'],rating:4.1},
-  {name:'IG',country:'영국',regulations:['FCA','ASIC','CFTC'],safetyScore:97,minDeposit:'$0',spread:'0.6 pip',maxLeverage:'1:200',withdrawalSpeed:'빠름',platforms:['MT4','ProRealTime'],rating:4.8},
-  {name:'Saxo Bank',country:'덴마크',regulations:['FCA','ASIC','MAS'],safetyScore:96,minDeposit:'$2,000',spread:'0.4 pip',maxLeverage:'1:200',withdrawalSpeed:'빠름',platforms:['SaxoTrader'],rating:4.6},
-  {name:'Interactive Brokers',country:'미국',regulations:['CFTC','FCA','ASIC'],safetyScore:98,minDeposit:'$0',spread:'0.1 pip',maxLeverage:'1:50',withdrawalSpeed:'빠름',platforms:['TWS','IBKR'],rating:4.7},
-  {name:'Tickmill',country:'키프로스',regulations:['CySEC','FCA','FSA'],safetyScore:82,minDeposit:'$100',spread:'0.0 pip',maxLeverage:'1:500',withdrawalSpeed:'빠름',platforms:['MT4','MT5'],rating:4.4},
-  {name:'Admiral Markets',country:'에스토니아',regulations:['FCA','CySEC','ASIC'],safetyScore:84,minDeposit:'$100',spread:'0.5 pip',maxLeverage:'1:500',withdrawalSpeed:'보통',platforms:['MT4','MT5'],rating:4.3},
-  {name:'FxPro',country:'영국',regulations:['FCA','CySEC','FSCA'],safetyScore:86,minDeposit:'$100',spread:'0.6 pip',maxLeverage:'1:500',withdrawalSpeed:'보통',platforms:['MT4','MT5','cTrader'],rating:4.4},
-  {name:'Vantage',country:'호주',regulations:['ASIC','FCA','CIMA'],safetyScore:80,minDeposit:'$50',spread:'0.0 pip',maxLeverage:'1:500',withdrawalSpeed:'빠름',platforms:['MT4','MT5'],rating:4.3},
-  {name:'FXCM',country:'영국',regulations:['FCA','ASIC'],safetyScore:85,minDeposit:'$50',spread:'1.3 pip',maxLeverage:'1:400',withdrawalSpeed:'보통',platforms:['MT4','Trading Station'],rating:4.2}
-];
+// BK_BROKERS loaded from brokers.js
 
 const BK_REGS=[
   {abbr:'CFTC/NFA',country:'미국',flag:'🇺🇸',tier:'top',founded:'1974',protection:'NFA 분쟁 해결 + SIPC 보호',url:'https://www.cftc.gov'},
@@ -3866,7 +3855,8 @@ async function bkVerify(){
   el.innerHTML='<div class="st-ai-loading">AI로 브로커 검증 중<span class="st-dots"></span></div>';
 
   // Check hardcoded first
-  const found=BK_DATA.find(b=>b.name.toLowerCase()===name.toLowerCase());
+  const brokers=window.BK_BROKERS||[];
+  const found=brokers.find(b=>b.name.toLowerCase().includes(name.toLowerCase()));
   if(found){bkRenderVerify(found,el);return}
 
   // AI fallback
@@ -3894,7 +3884,7 @@ function bkRenderVerify(d,el){
   el.innerHTML=`
     <div class="bk-verify-card ${cls}">
       <div class="bk-verify-header">
-        <div class="bk-verify-name">${icon} ${escHtml(d.name)}</div>
+        <div class="bk-verify-name"><img src="https://logo.clearbit.com/${d.domain||''}" style="width:44px;height:44px;border-radius:8px;object-fit:contain;border:1px solid var(--gray-200)" onerror="this.style.display='none'"> ${icon} ${escHtml(d.name)}</div>
         <div><div class="bk-verify-score" style="color:${s>=80?'#089981':s>=60?'#f5a623':'#f23645'}">${s}</div><div class="bk-verify-score-label">안전도 / 100</div></div>
       </div>
       <div class="bk-verify-grid">
@@ -3916,29 +3906,63 @@ function bkRenderVerify(d,el){
 
 // Tab 1: Compare Table
 function bkRenderTable(){
+  const tierF=document.getElementById('bkTierFilter')?.value||'all';
   const regF=document.getElementById('bkRegFilter').value;
   const sortBy=document.getElementById('bkSortBy').value;
-  let data=[...BK_DATA];
+  let data=[...(window.BK_BROKERS||[])];
+  if(tierF!=='all')data=data.filter(b=>b.tier===+tierF);
   if(regF!=='all')data=data.filter(b=>b.regulations.includes(regF));
   if(sortBy==='safety')data.sort((a,b)=>b.safetyScore-a.safetyScore);
   else if(sortBy==='spread')data.sort((a,b)=>parseFloat(a.spread)-parseFloat(b.spread));
-  else if(sortBy==='deposit')data.sort((a,b)=>parseInt(a.minDeposit.replace(/\D/g,'')||0)-parseInt(b.minDeposit.replace(/\D/g,'')||0));
+  else if(sortBy==='deposit')data.sort((a,b)=>(a.minDeposit||0)-(b.minDeposit||0));
+  else if(sortBy==='rating')data.sort((a,b)=>b.rating-a.rating);
 
   const topRegs={CFTC:1,NFA:1,FCA:1,ASIC:1,BaFin:1,MAS:1,FINMA:1};
   const midRegs={CySEC:1,DFSA:1};
-  const spdColor={빠름:'#089981',보통:'#f5a623',느림:'#f23645'};
+  const tierBadge={1:'<span style="background:#fef3c7;color:#b45309;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px">🏆 T1</span>',2:'<span style="background:#e0e7ff;color:#4338ca;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px">🥈 T2</span>',3:'<span style="background:#fee2e2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px">⚠️ T3</span>'};
 
-  document.getElementById('bkTableWrap').innerHTML='<table class="bk-table"><thead><tr><th>브로커</th><th>안전도</th><th>규제</th><th>최소증거금</th><th>스프레드</th><th>레버리지</th><th>출금</th><th>평점</th></tr></thead><tbody>'+
+  document.getElementById('bkTableWrap').innerHTML='<table class="bk-table"><thead><tr><th>브로커</th><th>Tier</th><th>안전도</th><th>규제</th><th>증거금</th><th>스프레드</th><th>레버리지</th><th>출금</th><th>평점</th></tr></thead><tbody>'+
     data.map(b=>{
       const sc=b.safetyScore;
       const barColor=sc>=80?'#089981':sc>=60?'#f5a623':'#f23645';
-      return `<tr><td style="font-weight:700">${escHtml(b.name)}</td>
-        <td><div class="bk-safety-bar"><div class="bk-safety-fill" style="width:${sc}%;background:${barColor}"></div></div>${sc}</td>
+      const logo=b.domain?`<img src="https://logo.clearbit.com/${b.domain}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;border:.5px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
+      const spd=b.withdrawalSpeed||'—';
+      const spdC=spd.includes('1~2')||spd.includes('즉시')?'#089981':spd.includes('3~7')||spd.includes('5')?'#f23645':'#f5a623';
+      return `<tr style="cursor:pointer" onclick="bkShowDetail('${b.id}')"><td><div style="display:flex;align-items:center;gap:8px">${logo}<div><div style="font-weight:700;font-size:13px">${escHtml(b.name)}</div><div style="font-size:10px;color:var(--gray-400)">${b.flag} ${b.country}</div></div></div></td>
+        <td>${tierBadge[b.tier]||''}</td>
+        <td><div class="bk-safety-bar"><div class="bk-safety-fill" style="width:${sc}%;background:${barColor}"></div></div><span style="font-weight:700">${sc}</span></td>
         <td>${b.regulations.slice(0,2).map(r=>{const c=topRegs[r]?'top':midRegs[r]?'mid':'low';return '<span class="bk-reg-badge '+c+'">'+r+'</span>'}).join('')}</td>
-        <td>${b.minDeposit}</td><td>${b.spread}</td><td>${b.maxLeverage}</td>
-        <td style="color:${spdColor[b.withdrawalSpeed]||'#888'};font-weight:700">${b.withdrawalSpeed}</td>
+        <td>$${b.minDeposit||0}</td><td>${b.spread}</td><td>${b.maxLeverage}</td>
+        <td style="color:${spdC};font-weight:700;font-size:11px">${spd}</td>
         <td>⭐${b.rating}</td></tr>`;
     }).join('')+'</tbody></table>';
+}
+
+function bkShowDetail(id){
+  const b=(window.BK_BROKERS||[]).find(x=>x.id===id);
+  if(!b)return;
+  const sc=b.safetyScore;
+  const scColor=sc>=80?'#089981':sc>=60?'#f5a623':'#f23645';
+  const topRegs={CFTC:1,NFA:1,FCA:1,ASIC:1,BaFin:1,MAS:1,FINMA:1};
+  const midRegs={CySEC:1,DFSA:1};
+  const logo=b.domain?`<img src="https://logo.clearbit.com/${b.domain}" style="width:56px;height:56px;border-radius:10px;object-fit:contain;border:1px solid var(--gray-200)">`:'';
+  document.getElementById('bkDetailBody').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">${logo}
+      <div><div style="font-size:20px;font-weight:900;color:var(--navy)">${escHtml(b.name)}</div><div style="font-size:12px;color:var(--gray-500)">${b.flag} ${b.country} · 설립 ${b.founded}</div></div>
+      <div style="margin-left:auto;text-align:center"><div style="font-size:32px;font-weight:900;color:${scColor}">${sc}</div><div style="font-size:10px;color:var(--gray-500)">안전도</div></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px">${(b.regulations||[]).map(r=>{const c=topRegs[r]?'top':midRegs[r]?'mid':'low';return '<span class="bk-reg-badge '+c+'">'+r+'</span>'}).join('')}</div>
+    <div class="bk-verify-grid" style="margin-bottom:14px">
+      <div class="bk-verify-item"><div class="bk-verify-item-label">최소 증거금</div><div class="bk-verify-item-val">$${b.minDeposit||0}</div></div>
+      <div class="bk-verify-item"><div class="bk-verify-item-label">스프레드</div><div class="bk-verify-item-val">${b.spread}</div></div>
+      <div class="bk-verify-item"><div class="bk-verify-item-label">레버리지</div><div class="bk-verify-item-val">${b.maxLeverage}</div></div>
+      <div class="bk-verify-item"><div class="bk-verify-item-label">출금 속도</div><div class="bk-verify-item-val">${b.withdrawalSpeed}</div></div>
+    </div>
+    <div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:6px">플랫폼</div><div style="font-size:13px">${(b.platforms||[]).join(' · ')}</div></div>
+    <div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:6px">계좌 유형</div><div style="font-size:13px">${(b.accountTypes||[]).join(' · ')}</div></div>
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px">⭐ 평점: ${b.rating}/5</div>
+    <button onclick="document.getElementById('bkDetailModal').style.display='none'" style="width:100%;padding:10px;margin-top:12px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">닫기</button>`;
+  document.getElementById('bkDetailModal').style.display='flex';
 }
 
 // Tab 2: Regulators
