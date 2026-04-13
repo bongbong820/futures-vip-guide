@@ -1,18 +1,8 @@
 // Broker Verification Enhanced - WikiFX Level
 // Called after bkRenderVerify renders the basic card
 
-const BK_REG_URLS={
-  ASIC:'https://connectonline.asic.gov.au/RegistrySearch',
-  FCA:'https://register.fca.org.uk/s/search?predefined=Companies',
-  'CFTC':'https://www.nfa.futures.org/BasicNet/',
-  CySEC:'https://www.cysec.gov.cy/en-GB/entities/investment-firms/cypriot/',
-  MAS:'https://eservices.mas.gov.sg/fid/institution',
-  FINMA:'https://www.finma.ch/en/authorisation/self-regulatory-organisations-sros/',
-  BaFin:'https://www.bafin.de/EN/Supervision/SupervisedCompanies/supervised_companies_node_en.html',
-  DFSA:'https://www.dfsa.ae/public-register',
-  FSCA:'https://www.fsca.co.za/Fais/Search_FSP.htm',
-  FSA:'https://www.fsa.go.jp/menkyo/menkyoj/kasoutuka.pdf'
-};
+// BK_REG_URLS is defined in index.html, reuse it
+const BK_REG_URLS2 = window.BK_REG_URLS || {};
 
 // Enhanced verification - called with broker data + target container
 async function bkVerifyEnhanced(d, container) {
@@ -126,7 +116,7 @@ async function bkVerifyEnhanced(d, container) {
         const isMid = midRegs[l.reg];
         const stateCls = l.status === 'Active' ? 'bk-check-ok' : 'bk-check-warn';
         const stateIcon = l.status === 'Active' ? '✅ 유효' : '⚠️ 확인불가';
-        const url = BK_REG_URLS[l.reg];
+        const url = BK_REG_URLS2[l.reg];
         return `<tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:8px;font-weight:700"><span class="bk-reg-badge ${isTop ? 'top' : isMid ? 'mid' : 'low'}">${l.reg}</span></td><td class="${stateCls}" style="text-align:center">${stateIcon}</td><td style="text-align:center">${l.number || '—'} ${l.number ? '<button onclick="navigator.clipboard.writeText(\'' + l.number + '\');this.textContent=\'✓\';setTimeout(()=>this.textContent=\'📋\',1000)" style="background:none;border:none;cursor:pointer;font-size:12px" title="복사">📋</button>' : ''}</td><td style="text-align:center;font-size:11px">${l.validUntil || '—'}</td><td>${url ? '<a href="' + url + '" target="_blank" class="bk-ext-link" style="font-size:10px">공식 확인 →</a>' : ''}</td></tr>`;
       }).join('') + '</tbody></table></div>';
 
