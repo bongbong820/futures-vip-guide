@@ -3910,6 +3910,24 @@ async function bkVerify(){
 }
 
 async function bkRenderVerify(d,el){
+  // Render ONLY the enhanced hero card — no legacy card
+  el.innerHTML='<div id="bkEnhancedContainer"></div>';
+
+  // Launch hero card immediately
+  if(window.bkVerifyEnhanced){
+    window.bkVerifyEnhanced(d, document.getElementById('bkEnhancedContainer'));
+  }
+
+  // Scroll to result
+  setTimeout(()=>{
+    const target=document.getElementById('bkEnhancedContainer');
+    if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+  },200);
+
+  // Fetch Trustpilot in background (will be shown in hero card via bkVerifyEnhanced)
+  return; // Skip legacy rendering below
+
+  // === LEGACY CODE (no longer executes) ===
   const s=d.safetyScore||0;
   const cls=s>=80?'safe':s>=60?'warn':'danger';
   const icon=s>=80?'✅':s>=60?'⚠️':'🚨';
