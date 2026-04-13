@@ -2927,7 +2927,7 @@ function escHtml(s){if(!s)return '';return String(s).replace(/&/g,'&amp;').repla
 let current = 1;
 const total = 7;
 // Password stored as SHA-256 hash
-const VIP_PW_HASH = '0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c';
+const VIP_PW_HASH = '2926a2731f4b312c08982cacf8061eb14bf65c1a87cc5d70e864e079c6220731';
 async function hashPw(pw){const enc=new TextEncoder().encode(pw);const buf=await crypto.subtle.digest('SHA-256',enc);return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 
 // ===== PASSWORD GATE =====
