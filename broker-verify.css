@@ -1,0 +1,83 @@
+/* ===== BROKER VERIFY HERO ===== */
+.bkh{border:1px solid var(--gray-200);border-radius:16px;overflow:hidden;margin-bottom:16px;display:grid;grid-template-columns:280px 1fr 200px;background:var(--white)}
+.bkh-left{padding:20px;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;gap:12px}
+.bkh-logo-row{display:flex;align-items:center;gap:12px}
+.bkh-logo{width:52px;height:52px;border-radius:12px;object-fit:contain;border:1px solid var(--gray-200)}
+.bkh-logo-fallback{width:52px;height:52px;border-radius:12px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--blue)}
+.bkh-name{font-size:18px;font-weight:700;color:var(--navy)}
+.bkh-meta{font-size:11px;color:var(--gray-500)}
+.bkh-status{padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;display:inline-block}
+.bkh-status.safe{background:#d1fae5;color:#089981}
+.bkh-status.warning{background:#fef3c7;color:#d97706}
+.bkh-status.danger{background:#fee2e2;color:#f23645}
+.bkh-regs{display:flex;flex-wrap:wrap;gap:4px}
+.bkh-score{text-align:center;margin-top:auto}
+.bkh-score-num{font-size:42px;font-weight:900;color:var(--navy);line-height:1}
+.bkh-score-label{font-size:11px;color:var(--gray-500);margin-top:2px}
+.bkh-score-time{font-size:9px;color:var(--gray-400);margin-top:4px}
+.bkh-actions{display:flex;gap:6px;margin-top:8px}
+.bkh-actions a,.bkh-actions button{flex:1;padding:8px;border-radius:8px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;font-family:var(--font);text-decoration:none;border:none}
+.bkh-act-primary{background:var(--navy);color:#fff}
+.bkh-act-secondary{background:var(--white);color:var(--navy);border:1px solid var(--gray-200) !important}
+
+/* Center: Radar */
+.bkh-center{padding:20px;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;align-items:center}
+.bkh-center-title{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;align-self:flex-start}
+.bkh-radar{width:200px;height:200px}
+.bkh-legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;width:100%;margin-top:12px;font-size:11px}
+.bkh-legend-item{display:flex;justify-content:space-between;padding:2px 0}
+.bkh-legend-name{color:var(--gray-600)}
+.bkh-legend-val{font-weight:700;color:var(--navy)}
+
+/* Right: Trading Env */
+.bkh-right{padding:20px;display:flex;flex-direction:column;gap:8px}
+.bkh-right-title{font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px}
+.bkh-grade{padding:2px 8px;border-radius:6px;font-size:12px;font-weight:800}
+.bkh-grade-s{background:#d1fae5;color:#089981}
+.bkh-grade-a{background:#dbeafe;color:#3182F6}
+.bkh-grade-b{background:#fef3c7;color:#d97706}
+.bkh-grade-c{background:#fee2e2;color:#f23645}
+.bkh-env-item{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--gray-100)}
+.bkh-env-item:last-child{border-bottom:none}
+.bkh-env-label{color:var(--gray-500)}
+.bkh-env-val{font-weight:700;color:var(--navy)}
+
+/* 2-col: License + Withdrawal */
+.bkv-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+
+/* 4-col info */
+.bkv-4col{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.bkv-info-card{background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:14px}
+.bkv-info-card h4{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.bkv-info-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--gray-100)}
+.bkv-info-row:last-child{border-bottom:none}
+.bkv-info-row span:first-child{color:var(--gray-500)}
+.bkv-info-row span:last-child{font-weight:600;color:var(--navy)}
+.bkv-speed-fast{color:#089981;font-weight:700}
+.bkv-speed-mid{color:#d97706;font-weight:700}
+.bkv-speed-slow{color:#f23645;font-weight:700}
+
+/* AI summary bar */
+.bkv-ai-bar{background:#1a1d2e;border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;color:#fff}
+.bkv-ai-avatar{width:36px;height:36px;border-radius:8px;background:#3182F6;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bkv-ai-text{font-size:13px;line-height:1.6;flex:1;color:rgba(255,255,255,.85)}
+
+/* Warning banner */
+.bkv-warn-banner{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;line-height:1.5}
+.bkv-warn-red{background:#fff0f1;border:1.5px solid #f23645;color:#f23645}
+.bkv-warn-yellow{background:#fffbeb;border:1.5px solid #f5a623;color:#d97706}
+
+/* Skeleton */
+.bkv-skel{border:1px solid var(--gray-200);border-radius:16px;padding:40px;text-align:center;color:var(--gray-400)}
+.bkv-skel-shimmer{height:20px;background:linear-gradient(90deg,#f5f5f5 25%,#eee 50%,#f5f5f5 75%);background-size:200% 100%;animation:stShimmer 1.5s infinite;border-radius:6px;margin:8px 0}
+
+@media(max-width:900px){
+  .bkh{grid-template-columns:1fr}
+  .bkh-left,.bkh-center,.bkh-right{border-right:none;border-bottom:1px solid var(--gray-200)}
+  .bkh-right{border-bottom:none}
+  .bkv-2col{grid-template-columns:1fr}
+  .bkv-4col{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .bkv-4col{grid-template-columns:1fr}
+}
