@@ -424,6 +424,45 @@
 .bk-reg-badge.mid{background:#fef3c7;color:#d97706}
 .bk-reg-badge.low{background:#fee2e2;color:#f23645}
 
+/* Withdrawal Risk Gauge */
+.bk-wd-gauge{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:16px 0}
+.bk-wd-svg{width:140px;height:80px;flex-shrink:0;position:relative}
+.bk-wd-val{position:absolute;left:50%;bottom:0;transform:translateX(-50%);font-size:26px;font-weight:900}
+.bk-wd-label{text-align:center;font-size:12px;font-weight:700;margin-top:4px}
+
+/* Verification Layers */
+.bk-layer{background:var(--white);border:1px solid var(--gray-200);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.bk-layer-header{display:flex;align-items:center;gap:8px;padding:12px 16px;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer}
+.bk-layer-header:hover{background:var(--gray-50)}
+.bk-layer-body{padding:0 16px 14px;font-size:12px;color:var(--gray-600);line-height:1.7}
+.bk-layer-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-100)}
+.bk-layer-row:last-child{border-bottom:none}
+.bk-check-ok{color:#089981;font-weight:700;font-size:12px}
+.bk-check-warn{color:#f5a623;font-weight:700;font-size:12px}
+.bk-check-fail{color:#f23645;font-weight:700;font-size:12px}
+.bk-ext-link{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--blue-light);color:var(--blue);border-radius:8px;font-size:11px;font-weight:600;text-decoration:none;cursor:pointer}
+.bk-ext-link:hover{background:var(--blue);color:#fff}
+
+/* Similar Brokers */
+.bk-similar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.bk-similar-card{background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:all .15s}
+.bk-similar-card:hover{border-color:var(--blue);box-shadow:var(--shadow)}
+.bk-similar-card img{width:36px;height:36px;border-radius:8px;margin-bottom:6px;object-fit:contain;border:.5px solid var(--gray-200)}
+.bk-similar-name{font-size:13px;font-weight:700;color:var(--navy)}
+.bk-similar-score{font-size:11px;color:var(--gray-500);margin-top:2px}
+
+/* Section Info Grid */
+.bk-info-section{margin-bottom:14px}
+.bk-info-section-title{font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.bk-products{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.bk-product{padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
+.bk-product.yes{background:#d1fae5;color:#089981}
+.bk-product.no{background:var(--gray-100);color:var(--gray-400);text-decoration:line-through}
+.bk-payment-icons{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.bk-payment{padding:4px 10px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:8px;font-size:11px;font-weight:600;color:var(--gray-600)}
+
+@media(max-width:640px){.bk-similar{grid-template-columns:1fr}}
+
 /* Compare table */
 .bk-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .bk-filter-select{padding:8px 14px;border:1px solid var(--gray-200);border-radius:10px;font-size:13px;font-family:var(--font);cursor:pointer;background:var(--white)}
