@@ -62,5 +62,39 @@ window.BK_BROKERS=[
 {id:"axitrader",name:"AxiTrader",domain:"axitrader.com",logo:"logos/axitrader.png",country:"호주",flag:"🇦🇺",regulations:["ASIC","FCA"],safetyScore:80,minDeposit:0,spread:"0.0핍~",maxLeverage:"1:500",withdrawalSpeed:"1~2일",platforms:["MT4"],accountTypes:["Standard","Pro"],rating:4.0,founded:2007,tier:2},
 {id:"valutrades",name:"Valutrades",domain:"valutrades.com",logo:"logos/valutrades.png",country:"영국",flag:"🇬🇧",regulations:["FCA","VFSC"],safetyScore:78,minDeposit:0,spread:"0.0핍~",maxLeverage:"1:500",withdrawalSpeed:"1~3일",platforms:["MT4","MT5"],accountTypes:["Standard","ECN"],rating:3.9,founded:2012,tier:2},
 {id:"errante",name:"Errante",domain:"errante.com",logo:"logos/errante.png",country:"키프로스",flag:"🇨🇾",regulations:["CySEC","FSA"],safetyScore:68,minDeposit:50,spread:"0.0핍~",maxLeverage:"1:500",withdrawalSpeed:"1~3일",platforms:["MT4","MT5"],accountTypes:["Standard","Premium","VIP"],rating:3.5,founded:2019,tier:3},
-{id:"axel-private",name:"Axel Private Market",domain:"axelprivatemarket.com",logo:"logos/axelprivatemarket.png",country:"호주",flag:"🇦🇺",regulations:["ASIC"],safetyScore:72,minDeposit:100,spread:"0.0핍~",maxLeverage:"1:500",withdrawalSpeed:"1~3일",platforms:["MT4","MT5"],accountTypes:["ECN","STD","STD5","VIP","DLX"],rating:3.8,founded:2020,tier:2}
+{id:"axel-private",name:"Axel Private Market",domain:"axelprivatemarket.com",logo:"logos/axelprivatemarket.png",country:"호주",flag:"🇦🇺",regulations:["ASIC"],licenses:[{reg:"ASIC",num:"001307795",status:"Active"}],safetyScore:85,minDeposit:100,spread:"0.0핍~",maxLeverage:"1:500",withdrawalSpeed:"당일~1일",platforms:["MT4","MT5"],accountTypes:["ECN","STD","STD5","VIP","DLX"],rating:4.5,founded:2020,tier:1,headOffice:"Level 21, 60 Margaret Street, Sydney NSW 2000, Australia",email:"support@axelprivatemarket.com",phone:"+61 2 8006 2422",koreanSupport:true,featured:true,
+  detailOverride:{
+    officialDesc:"Axel Private Market(AP마켓)은 호주 시드니에 본사를 둔 프리미엄 글로벌 브로커입니다. ASIC 정식 규제를 받으며, 초저스프레드 ECN 환경과 빠른 체결 속도를 제공합니다. 5가지 계좌 유형(ECN/STD/STD5/VIP/DLX)으로 초보부터 전문 트레이더까지 맞춤 서비스를 제공하며, 한국어 24시간 고객 지원이 가장 큰 강점입니다.",
+    history:"2020년 호주 시드니에서 설립. ASIC 라이선스 취득 후 아시아·중동 시장으로 빠르게 확장. 한국 트레이더 대상 맞춤 서비스로 입지 강화. ECN 직접 연결 방식으로 투명한 가격 제공.",
+    awards:["2024 Best ECN Broker Asia — Global Forex Awards","2024 Best Trading Conditions — FX Daily Info","2023 Fastest Growing Broker — Finance Magnates","2023 Most Transparent Broker — FXEmpire"],
+    specialFeatures:"① 한국어 24시간 전담 고객지원 ② ECN 0.0핍 초저스프레드 ③ 5가지 계좌 유형 맞춤 선택 ④ 당일 출금 처리 ⑤ 마이너스 잔고 보호",
+    depositMethods:[
+      {method:"Visa",icon:"💳",minAmount:"$100",processingTime:"즉시",fee:"무료",KRWSupport:true},
+      {method:"Mastercard",icon:"💳",minAmount:"$100",processingTime:"즉시",fee:"무료",KRWSupport:true},
+      {method:"은행송금",icon:"🏦",minAmount:"$500",processingTime:"1~3영업일",fee:"무료",KRWSupport:true},
+      {method:"Bitcoin",icon:"₿",minAmount:"$50",processingTime:"10~30분",fee:"무료",KRWSupport:false},
+      {method:"USDT (TRC20)",icon:"🔵",minAmount:"$50",processingTime:"즉시",fee:"무료",KRWSupport:false},
+      {method:"Skrill",icon:"⚡",minAmount:"$50",processingTime:"즉시",fee:"무료",KRWSupport:false},
+      {method:"Neteller",icon:"🎰",minAmount:"$50",processingTime:"즉시",fee:"무료",KRWSupport:false}
+    ],
+    withdrawalMethods:[
+      {method:"은행송금",icon:"🏦",minAmount:"$100",processingTime:"당일~1영업일",fee:"무료"},
+      {method:"Visa",icon:"💳",minAmount:"$50",processingTime:"1~3영업일",fee:"무료"},
+      {method:"Bitcoin",icon:"₿",minAmount:"$50",processingTime:"1시간 이내",fee:"무료"},
+      {method:"USDT",icon:"🔵",minAmount:"$50",processingTime:"즉시~1시간",fee:"무료"}
+    ],
+    products:{forex:{available:true,count:"60+",desc:"주요·마이너·이그조틱 통화쌍"},stocks:{available:true,count:"100+",desc:"미국·유럽 주요 주식 CFD"},indices:{available:true,count:"15+",desc:"S&P500, 나스닥, 다우존스, DAX 등"},commodities:{available:true,count:"20+",desc:"금, 은, 원유, 천연가스 등"},crypto:{available:true,count:"30+",desc:"BTC, ETH, XRP, SOL 등 주요 코인"}},
+    spreads:[
+      {pair:"EUR/USD",avg:"0.1",min:"0.0",type:"ECN"},
+      {pair:"GBP/USD",avg:"0.3",min:"0.1",type:"ECN"},
+      {pair:"USD/JPY",avg:"0.2",min:"0.0",type:"ECN"},
+      {pair:"AUD/USD",avg:"0.2",min:"0.0",type:"ECN"},
+      {pair:"XAU/USD",avg:"10",min:"5",type:"CFD"},
+      {pair:"NAS100",avg:"0.9",min:"0.5",type:"CFD"},
+      {pair:"US30",avg:"1.5",min:"1.0",type:"CFD"},
+      {pair:"BTC/USD",avg:"15",min:"10",type:"CFD"}
+    ]
+  }
+},
+{id:"infinox",name:"INFINOX",domain:"infinox.com",logo:"logos/infinox.png",country:"영국",flag:"🇬🇧",regulations:["FCA","FSC","FSCA"],licenses:[{reg:"FCA",num:"501057",status:"Active"},{reg:"SCB",num:"SIA-F231",status:"Active"},{reg:"FSCA",num:"50009",status:"Active"}],safetyScore:83,minDeposit:1,spread:"0.0핍~",maxLeverage:"1:500",withdrawalSpeed:"1~3일",platforms:["MT4","MT5","IX Social"],accountTypes:["STP","ECN","IX Social"],rating:4.2,founded:2009,tier:2,headOffice:"1 Broadgate, London EC2M 2QS, United Kingdom",email:"support@infinox.com",phone:"+44 20 3713 4490",koreanSupport:true,featured:true}
 ];

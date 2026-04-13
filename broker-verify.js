@@ -172,19 +172,25 @@ async function bkvRenderCompany(d, el, ck) {
   let source = 'cache';
 
   if (!info) {
-    try {
-      info = await bkvAiCall(`FX 브로커 "${d.name}"의 회사 정보를 상세하게 JSON으로 알려줘. 한국어로. 모르면 null:\n{"officialDesc":"공식 회사 소개 200자 이내 한국어. 설립배경, 특징, 강점 포함","history":"연혁 150자. 주요 이정표 포함","awards":["수상이력. 최소 2개"],"headOffice":"정확한 본사 주소","employees":"직원 수 (예: 약 500명)","email":"공식 이메일","phone":"대표 전화번호 (국가번호 포함)","supportLanguages":["지원하는 모든 언어"],"supportHours":"운영시간 (예: 24/5)","supportChannels":["라이브챗","이메일","전화","SNS"],"koreanSupport":true,"depositMethods":"주요 입금방법 나열","tradingProducts":"거래 가능 상품 요약","specialFeatures":"이 브로커만의 특별한 기능 2~3가지"}`);
-      // Merge with hardcoded data
-      if (d.headOffice) info.headOffice = d.headOffice;
-      if (d.email) info.email = d.email;
-      if (d.phone) info.phone = d.phone;
-      if (d.koreanSupport !== undefined) info.koreanSupport = d.koreanSupport;
-      source = 'ai';
-      bkvCache(ck+'_comp', info);
-    } catch (e) {
-      info = {officialDesc:d.name+'은(는) '+d.country+'에 본사를 둔 글로벌 외환 브로커입니다. '+d.founded+'년에 설립되었으며, '+(d.regulations||[]).join(', ')+' 규제를 받고 있습니다.',koreanSupport:d.koreanSupport||false,supportLanguages:['영어'],supportChannels:['이메일'],headOffice:d.headOffice||null,email:d.email||null,phone:d.phone||null};
-      source = 'default';
+    const ov = d.detailOverride;
+    if (ov) {
+      // Use hardcoded override data (AP Market, INFINOX etc.)
+      info = {officialDesc:ov.officialDesc,history:ov.history,awards:ov.awards,headOffice:d.headOffice,employees:ov.employees,email:d.email,phone:d.phone,supportLanguages:['한국어','영어','중국어','일본어'],supportHours:'24시간 / 주 5일',supportChannels:['라이브챗','이메일','전화','텔레그램'],koreanSupport:d.koreanSupport,specialFeatures:ov.specialFeatures};
+      source = 'api';
+    } else {
+      try {
+        info = await bkvAiCall(`FX 브로커 "${d.name}"의 회사 정보를 상세하게 JSON으로 알려줘. 한국어로. 모르면 null:\n{"officialDesc":"공식 회사 소개 200자 이내 한국어. 설립배경, 특징, 강점 포함","history":"연혁 150자. 주요 이정표 포함","awards":["수상이력. 최소 2개"],"headOffice":"정확한 본사 주소","employees":"직원 수 (예: 약 500명)","email":"공식 이메일","phone":"대표 전화번호 (국가번호 포함)","supportLanguages":["지원하는 모든 언어"],"supportHours":"운영시간 (예: 24/5)","supportChannels":["라이브챗","이메일","전화","SNS"],"koreanSupport":true,"specialFeatures":"이 브로커만의 특별한 기능 2~3가지"}`);
+        if (d.headOffice) info.headOffice = d.headOffice;
+        if (d.email) info.email = d.email;
+        if (d.phone) info.phone = d.phone;
+        if (d.koreanSupport !== undefined) info.koreanSupport = d.koreanSupport;
+        source = 'ai';
+      } catch (e) {
+        info = {officialDesc:d.name+'은(는) '+d.country+'에 본사를 둔 글로벌 외환 브로커입니다. '+d.founded+'년에 설립되었으며, '+(d.regulations||[]).join(', ')+' 규제를 받고 있습니다.',koreanSupport:d.koreanSupport||false,supportLanguages:['영어'],supportChannels:['이메일'],headOffice:d.headOffice||null,email:d.email||null,phone:d.phone||null};
+        source = 'default';
+      }
     }
+    bkvCache(ck+'_comp', info);
   }
 
   const hasKo = info.koreanSupport || (info.supportLanguages||[]).some(l=>l.includes('한국'));
@@ -212,14 +218,20 @@ async function bkvRenderPayments(d, el, ck) {
   let source = 'cache';
 
   if (!info) {
-    try {
-      info = await bkvAiCall(`브로커: ${d.name}\n입출금 방법 JSON:\n{"deposit":[{"method":"Visa","icon":"💳","minAmount":"$10","processingTime":"즉시","fee":"무료","KRWSupport":false}],"withdrawal":[{"method":"Visa","icon":"💳","minAmount":"$50","processingTime":"1~3일","fee":"무료"}]}`);
-      source = 'ai';
-      bkvCache(ck+'_pay', info);
-    } catch (e) {
-      info = {deposit:[{method:'Visa',icon:'💳'},{method:'Mastercard',icon:'💳'},{method:'은행송금',icon:'🏦'},{method:'Bitcoin',icon:'₿'}],withdrawal:[{method:'Visa',icon:'💳'},{method:'은행송금',icon:'🏦'}]};
-      source = 'default';
+    const ov = d.detailOverride;
+    if (ov && ov.depositMethods) {
+      info = {deposit:ov.depositMethods,withdrawal:ov.withdrawalMethods||[]};
+      source = 'api';
+    } else {
+      try {
+        info = await bkvAiCall(`브로커: ${d.name}\n입출금 방법 JSON:\n{"deposit":[{"method":"Visa","icon":"💳","minAmount":"$10","processingTime":"즉시","fee":"무료","KRWSupport":false}],"withdrawal":[{"method":"Visa","icon":"💳","minAmount":"$50","processingTime":"1~3일","fee":"무료"}]}`);
+        source = 'ai';
+      } catch (e) {
+        info = {deposit:[{method:'Visa',icon:'💳'},{method:'Mastercard',icon:'💳'},{method:'은행송금',icon:'🏦'},{method:'Bitcoin',icon:'₿'}],withdrawal:[{method:'Visa',icon:'💳'},{method:'은행송금',icon:'🏦'}]};
+        source = 'default';
+      }
     }
+    bkvCache(ck+'_pay', info);
   }
 
   const renderMethods = (methods, isBg) => (methods||[]).map(m =>
@@ -241,14 +253,20 @@ async function bkvRenderProducts(d, el, ck) {
   let source = 'cache';
 
   if (!info) {
-    try {
-      info = await bkvAiCall(`브로커: ${d.name}\n거래 상품 JSON:\n{"forex":{"available":true,"count":"60+","desc":"주요통화쌍"},"stocks":{"available":true,"count":"1600+","desc":"미국유럽주식"},"indices":{"available":true,"count":"20+","desc":"글로벌지수"},"commodities":{"available":true,"count":"20+","desc":"금은원유"},"crypto":{"available":true,"count":"25+","desc":"BTC ETH"}}`);
-      source = 'ai';
-      bkvCache(ck+'_prod', info);
-    } catch (e) {
-      info = {forex:{available:true,count:'다수',desc:''},stocks:{available:true,count:'다수',desc:''},indices:{available:true,count:'다수',desc:''},commodities:{available:true,count:'다수',desc:''},crypto:{available:true,count:'다수',desc:''}};
-      source = 'default';
+    const ov = d.detailOverride;
+    if (ov && ov.products) {
+      info = ov.products;
+      source = 'api';
+    } else {
+      try {
+        info = await bkvAiCall(`브로커: ${d.name}\n거래 상품 JSON:\n{"forex":{"available":true,"count":"60+","desc":"주요통화쌍"},"stocks":{"available":true,"count":"1600+","desc":"미국유럽주식"},"indices":{"available":true,"count":"20+","desc":"글로벌지수"},"commodities":{"available":true,"count":"20+","desc":"금은원유"},"crypto":{"available":true,"count":"25+","desc":"BTC ETH"}}`);
+        source = 'ai';
+      } catch (e) {
+        info = {forex:{available:true,count:'다수',desc:''},stocks:{available:true,count:'다수',desc:''},indices:{available:true,count:'다수',desc:''},commodities:{available:true,count:'다수',desc:''},crypto:{available:true,count:'다수',desc:''}};
+        source = 'default';
+      }
     }
+    bkvCache(ck+'_prod', info);
   }
 
   const cats = [
@@ -274,15 +292,21 @@ async function bkvRenderSpreads(d, el, ck) {
   let source = 'cache';
 
   if (!spreads) {
-    try {
-      const res = await bkvAiCall(`브로커: ${d.name}\n주요 페어 스프레드 JSON:\n{"spreads":[{"pair":"EUR/USD","avg":"0.1","min":"0.0","type":"ECN"},{"pair":"GBP/USD","avg":"0.3","min":"0.1","type":"ECN"},{"pair":"USD/JPY","avg":"0.1","min":"0.0","type":"ECN"},{"pair":"XAU/USD","avg":"15","min":"10","type":"CFD"},{"pair":"NAS100","avg":"0.5","min":"0.3","type":"CFD"},{"pair":"BTC/USD","avg":"30","min":"20","type":"CFD"}]}`);
-      spreads = res.spreads || [];
-      source = 'ai';
-      bkvCache(ck+'_sprd', spreads);
-    } catch (e) {
-      spreads = [{pair:'EUR/USD',avg:'1.0',min:'0.5',type:'Standard'},{pair:'GBP/USD',avg:'1.5',min:'1.0',type:'Standard'},{pair:'USD/JPY',avg:'1.0',min:'0.5',type:'Standard'}];
-      source = 'default';
+    const ov = d.detailOverride;
+    if (ov && ov.spreads) {
+      spreads = ov.spreads;
+      source = 'api';
+    } else {
+      try {
+        const res = await bkvAiCall(`브로커: ${d.name}\n주요 페어 스프레드 JSON:\n{"spreads":[{"pair":"EUR/USD","avg":"0.1","min":"0.0","type":"ECN"},{"pair":"GBP/USD","avg":"0.3","min":"0.1","type":"ECN"},{"pair":"USD/JPY","avg":"0.1","min":"0.0","type":"ECN"},{"pair":"XAU/USD","avg":"15","min":"10","type":"CFD"},{"pair":"NAS100","avg":"0.5","min":"0.3","type":"CFD"},{"pair":"BTC/USD","avg":"30","min":"20","type":"CFD"}]}`);
+        spreads = res.spreads || [];
+        source = 'ai';
+      } catch (e) {
+        spreads = [{pair:'EUR/USD',avg:'1.0',min:'0.5',type:'Standard'},{pair:'GBP/USD',avg:'1.5',min:'1.0',type:'Standard'},{pair:'USD/JPY',avg:'1.0',min:'0.5',type:'Standard'}];
+        source = 'default';
+      }
     }
+    bkvCache(ck+'_sprd', spreads);
   }
 
   el.querySelector('.bk-layer-body').innerHTML = srcBadge(source) +

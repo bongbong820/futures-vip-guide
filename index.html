@@ -4090,7 +4090,8 @@ function bkRenderTable(){
       const logo=b.domain?`<img src="${b.logo||('logos/'+b.domain?.replace(/\./g,'').replace('com','').replace('org','')+'.png')}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;border:.5px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
       const spd=b.withdrawalSpeed||'—';
       const spdC=spd.includes('1~2')||spd.includes('즉시')?'#089981':spd.includes('3~7')||spd.includes('5')?'#f23645':'#f5a623';
-      return `<tr style="cursor:pointer" onclick="bkShowDetail('${b.id}')"><td><div style="display:flex;align-items:center;gap:8px">${logo}<div><div style="font-weight:700;font-size:13px">${escHtml(b.name)}</div><div style="font-size:10px;color:var(--gray-400)">${b.flag} ${b.country}</div></div></div></td>
+      const featured=b.featured?'style="background:linear-gradient(90deg,#f0f7ff,#fff);border-left:3px solid var(--blue)"':'';
+      return `<tr style="cursor:pointer" ${featured} onclick="bkShowDetail('${b.id}')"><td><div style="display:flex;align-items:center;gap:8px">${logo}<div><div style="font-weight:700;font-size:13px">${escHtml(b.name)}${b.featured?' <span style="background:var(--blue);color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;vertical-align:middle">추천</span>':''}</div><div style="font-size:10px;color:var(--gray-400)">${b.flag} ${b.country}</div></div></div></td>
         <td>${tierBadge[b.tier]||''}</td>
         <td><div class="bk-safety-bar"><div class="bk-safety-fill" style="width:${sc}%;background:${barColor}"></div></div><span style="font-weight:700">${sc}</span></td>
         <td>${b.regulations.slice(0,2).map(r=>{const c=topRegs[r]?'top':midRegs[r]?'mid':'low';return '<span class="bk-reg-badge '+c+'">'+r+'</span>'}).join('')}</td>
