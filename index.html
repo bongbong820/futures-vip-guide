@@ -3913,7 +3913,7 @@ async function bkRenderVerify(d,el){
   const icon=s>=80?'✅':s>=60?'⚠️':'🚨';
   const topRegs={CFTC:1,NFA:1,FCA:1,ASIC:1,BaFin:1,MAS:1,FINMA:1};
   const midRegs={CySEC:1,DFSA:1};
-  const logo=d.domain?`<img src="https://logo.clearbit.com/${d.domain}" style="width:48px;height:48px;border-radius:10px;object-fit:contain;border:1px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
+  const logo=d.domain?`<img src="${d.logo||('logos/'+(d.domain||'').replace(/\./g,'').replace('com','').replace('org','')+'.png')}" style="width:48px;height:48px;border-radius:10px;object-fit:contain;border:1px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
   const now=new Date();
   const timeStr=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
 
@@ -4055,7 +4055,7 @@ async function bkRenderVerify(d,el){
     .sort((a,b)=>b.safetyScore-a.safetyScore)
     .slice(0,3);
   document.getElementById('bkSimilar').innerHTML=similar.length?similar.map(b=>{
-    const logo2=b.domain?`<img src="https://logo.clearbit.com/${b.domain}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;border:.5px solid var(--gray-200)">`:'';
+    const logo2=b.domain?`<img src="${b.logo||('logos/'+b.domain?.replace(/\./g,'').replace('com','').replace('org','')+'.png')}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;border:.5px solid var(--gray-200)">`:'';
     return `<div class="bk-similar-card" onclick="document.getElementById('bkSearchInput').value='${escHtml(b.name)}';bkVerify()">${logo2}<div class="bk-similar-name">${escHtml(b.name)}</div><div class="bk-similar-score">안전도 ${b.safetyScore} · ${b.flag}</div></div>`;
   }).join(''):'<div style="grid-column:1/-1;text-align:center;color:var(--gray-400);font-size:12px">더 안전한 대안이 없습니다 (이미 최상위)</div>';
 }
@@ -4081,7 +4081,7 @@ function bkRenderTable(){
     data.map(b=>{
       const sc=b.safetyScore;
       const barColor=sc>=80?'#089981':sc>=60?'#f5a623':'#f23645';
-      const logo=b.domain?`<img src="https://logo.clearbit.com/${b.domain}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;border:.5px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
+      const logo=b.domain?`<img src="${b.logo||('logos/'+b.domain?.replace(/\./g,'').replace('com','').replace('org','')+'.png')}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;border:.5px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
       const spd=b.withdrawalSpeed||'—';
       const spdC=spd.includes('1~2')||spd.includes('즉시')?'#089981':spd.includes('3~7')||spd.includes('5')?'#f23645':'#f5a623';
       return `<tr style="cursor:pointer" onclick="bkShowDetail('${b.id}')"><td><div style="display:flex;align-items:center;gap:8px">${logo}<div><div style="font-weight:700;font-size:13px">${escHtml(b.name)}</div><div style="font-size:10px;color:var(--gray-400)">${b.flag} ${b.country}</div></div></div></td>
@@ -4101,7 +4101,7 @@ async function bkShowDetail(id){
   const scColor=sc>=80?'#089981':sc>=60?'#f5a623':'#f23645';
   const topRegs={CFTC:1,NFA:1,FCA:1,ASIC:1,BaFin:1,MAS:1,FINMA:1};
   const midRegs={CySEC:1,DFSA:1};
-  const logo=b.domain?`<img src="https://logo.clearbit.com/${b.domain}" style="width:56px;height:56px;border-radius:10px;object-fit:contain;border:1px solid var(--gray-200)">`:'';
+  const logo=b.domain?`<img src="${b.logo||('logos/'+b.domain?.replace(/\./g,'').replace('com','').replace('org','')+'.png')}" style="width:56px;height:56px;border-radius:10px;object-fit:contain;border:1px solid var(--gray-200)">`:'';
   const body=document.getElementById('bkDetailBody');
   body.innerHTML=`
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">${logo}
