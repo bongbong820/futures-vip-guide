@@ -3831,11 +3831,29 @@ const BK_REGS=[
 ];
 
 let bkInited=false;
+let bkTpCache={};
 function bkInit(){
   if(bkInited)return;bkInited=true;
   bkRenderTable();
   bkRenderRegs();
   bkLoadReports();
+  bkFetchTrustpilotBatch();
+}
+
+async function bkFetchTrustpilotBatch(){
+  const brokers=window.BK_BROKERS||[];
+  // Fetch in batches of 10
+  for(let i=0;i<brokers.length;i+=10){
+    const batch=brokers.slice(i,i+10).filter(b=>b.domain).map(b=>b.domain);
+    if(!batch.length)continue;
+    try{
+      const r=await fetch('https://futures-chat-api.vercel.app/api/broker-review?domain='+batch.join(','));
+      const data=await r.json();
+      Object.assign(bkTpCache,data);
+    }catch(e){}
+  }
+  // Re-render table with Trustpilot data
+  bkRenderTable();
 }
 
 function bkTab(btn,idx){
@@ -3934,11 +3952,11 @@ function bkRenderTable(){
         <td>${b.regulations.slice(0,2).map(r=>{const c=topRegs[r]?'top':midRegs[r]?'mid':'low';return '<span class="bk-reg-badge '+c+'">'+r+'</span>'}).join('')}</td>
         <td>$${b.minDeposit||0}</td><td>${b.spread}</td><td>${b.maxLeverage}</td>
         <td style="color:${spdC};font-weight:700;font-size:11px">${spd}</td>
-        <td>⭐${b.rating}</td></tr>`;
+        <td>${bkTpCache[b.domain]?'<div style="font-weight:700">⭐'+bkTpCache[b.domain].rating+'</div><div style="font-size:9px;color:var(--gray-400)">'+((bkTpCache[b.domain].reviewCount||0)/1000).toFixed(1)+'K</div>':'⭐'+b.rating}</td></tr>`;
     }).join('')+'</tbody></table>';
 }
 
-function bkShowDetail(id){
+async function bkShowDetail(id){
   const b=(window.BK_BROKERS||[]).find(x=>x.id===id);
   if(!b)return;
   const sc=b.safetyScore;
@@ -3946,12 +3964,16 @@ function bkShowDetail(id){
   const topRegs={CFTC:1,NFA:1,FCA:1,ASIC:1,BaFin:1,MAS:1,FINMA:1};
   const midRegs={CySEC:1,DFSA:1};
   const logo=b.domain?`<img src="https://logo.clearbit.com/${b.domain}" style="width:56px;height:56px;border-radius:10px;object-fit:contain;border:1px solid var(--gray-200)">`:'';
-  document.getElementById('bkDetailBody').innerHTML=`
+  const body=document.getElementById('bkDetailBody');
+  body.innerHTML=`
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">${logo}
       <div><div style="font-size:20px;font-weight:900;color:var(--navy)">${escHtml(b.name)}</div><div style="font-size:12px;color:var(--gray-500)">${b.flag} ${b.country} · 설립 ${b.founded}</div></div>
       <div style="margin-left:auto;text-align:center"><div style="font-size:32px;font-weight:900;color:${scColor}">${sc}</div><div style="font-size:10px;color:var(--gray-500)">안전도</div></div>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px">${(b.regulations||[]).map(r=>{const c=topRegs[r]?'top':midRegs[r]?'mid':'low';return '<span class="bk-reg-badge '+c+'">'+r+'</span>'}).join('')}</div>
+    <div id="bkTrustpilot" style="margin-bottom:14px;padding:12px;background:var(--gray-50);border-radius:10px;display:flex;align-items:center;gap:10px">
+      <div style="font-size:11px;color:var(--gray-400)">Trustpilot 평점 로딩중...</div>
+    </div>
     <div class="bk-verify-grid" style="margin-bottom:14px">
       <div class="bk-verify-item"><div class="bk-verify-item-label">최소 증거금</div><div class="bk-verify-item-val">$${b.minDeposit||0}</div></div>
       <div class="bk-verify-item"><div class="bk-verify-item-label">스프레드</div><div class="bk-verify-item-val">${b.spread}</div></div>
@@ -3960,9 +3982,50 @@ function bkShowDetail(id){
     </div>
     <div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:6px">플랫폼</div><div style="font-size:13px">${(b.platforms||[]).join(' · ')}</div></div>
     <div style="margin-bottom:10px"><div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:6px">계좌 유형</div><div style="font-size:13px">${(b.accountTypes||[]).join(' · ')}</div></div>
-    <div style="font-size:13px;font-weight:700;margin-bottom:6px">⭐ 평점: ${b.rating}/5</div>
-    <button onclick="document.getElementById('bkDetailModal').style.display='none'" style="width:100%;padding:10px;margin-top:12px;border:none;border-radius:10px;background:var(--blue);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font)">닫기</button>`;
+    <div id="bkAiDetail" style="margin-bottom:12px;padding:14px;background:var(--blue-light);border-radius:10px;font-size:12px;line-height:1.7;color:var(--gray-700)">
+      <div class="st-ai-loading">AI 상세 분석 생성 중<span class="st-dots"></span></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      ${b.domain?`<a href="https://${b.domain}" target="_blank" style="flex:1;padding:10px;border:none;border-radius:10px;background:var(--navy);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);text-align:center;text-decoration:none">🌐 공식 사이트</a>`:''}
+      <button onclick="document.getElementById('bkDetailModal').style.display='none'" style="flex:1;padding:10px;border:none;border-radius:10px;background:var(--gray-100);color:var(--gray-600);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font)">닫기</button>
+    </div>`;
   document.getElementById('bkDetailModal').style.display='flex';
+
+  // Fetch Trustpilot rating
+  if(b.domain){
+    try{
+      const r=await fetch('https://futures-chat-api.vercel.app/api/broker-review?domain='+b.domain);
+      const data=await r.json();
+      const tp=data[b.domain];
+      if(tp&&tp.rating){
+        const stars='⭐'.repeat(Math.round(tp.rating));
+        document.getElementById('bkTrustpilot').innerHTML=`
+          <div style="font-size:20px;font-weight:900;color:var(--navy)">${tp.rating}</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">${stars}</div><div style="font-size:10px;color:var(--gray-400)">${(tp.reviewCount||0).toLocaleString()}개 리뷰 · Trustpilot</div></div>
+          <a href="${tp.url}" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none">리뷰 보기 →</a>`;
+      }else{
+        document.getElementById('bkTrustpilot').innerHTML='<div style="font-size:11px;color:var(--gray-400)">Trustpilot 데이터 없음</div>';
+      }
+    }catch(e){
+      document.getElementById('bkTrustpilot').innerHTML='<div style="font-size:11px;color:var(--gray-400)">평점 로딩 실패</div>';
+    }
+  }
+
+  // AI detailed analysis
+  try{
+    const prompt=`FX 브로커 "${b.name}" 상세 분석. 아래 항목을 각 1~2문장으로 한국어로 작성:
+1. 입출금 방법 (카드/은행/PayPal/암호화폐 등)
+2. 거래 가능 상품 (FX/CFD/암호화폐/원자재 등)
+3. 주요 장점 2개
+4. 주요 단점 2개
+5. 한 줄 총평
+
+짧고 핵심만. 마크다운 없이 텍스트만.`;
+    const text=await aiCall(prompt,'너는 FX 브로커 전문 리뷰어야. 한국어로만 답변.');
+    document.getElementById('bkAiDetail').innerHTML='🤖 <strong>AI 분석</strong><br>'+escHtml(text||'분석 생성 실패').replace(/\n/g,'<br>');
+  }catch(e){
+    document.getElementById('bkAiDetail').innerHTML='<div style="color:var(--gray-400)">AI 분석 생성 실패</div>';
+  }
 }
 
 // Tab 2: Regulators
