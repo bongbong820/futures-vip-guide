@@ -15,7 +15,8 @@
 .login-form-wrap{max-width:380px;width:100%;margin:auto}
 .login-eyebrow{font-family:'DM Mono',monospace;font-size:9px;color:#4a8eff;letter-spacing:3px;margin-bottom:8px}
 .login-title{font-family:'Playfair Display',serif;font-size:28px;color:#0a1628;margin-bottom:28px;line-height:1.3}
-.login-title em{font-style:italic;font-weight:400}
+.login-title em{font-style:italic;font-weight:400;color:#1e3a6e}
+.login-subtitle{font-family:'Outfit',sans-serif;font-size:11px;color:#8a9ab0;line-height:1.7;margin-bottom:24px}
 
 .login-social{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
 .login-google-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;border:1px solid #e0e6f0;border-radius:8px;background:#fff;font-size:13px;font-weight:500;font-family:'Outfit',sans-serif;cursor:pointer;transition:all .2s;color:#0a1628}
@@ -61,13 +62,14 @@
 .login-ticker .up{color:#3a9a70}
 .login-ticker .down{color:#c05050}
 
-.login-right-bottom{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:24px;background:linear-gradient(transparent,rgba(6,16,30,.95))}
-.login-right-stats{display:flex;gap:24px;margin-bottom:14px}
-.login-right-stat-num{font-family:'Playfair Display',serif;font-size:24px;font-weight:600;color:#e8eef8}
-.login-right-stat-label{font-size:10px;color:#3a5070}
-.login-right-title{font-family:'Playfair Display',serif;font-size:19px;color:#e8eef8;line-height:1.5}
+.login-right-bottom{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:24px;background:linear-gradient(transparent,rgba(4,8,18,.97))}
+.login-features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.login-feat-pill{font-family:'DM Mono',monospace;font-size:9px;color:#3a5878;border:1px solid #1a3050;border-radius:20px;padding:4px 12px;letter-spacing:.5px}
+.login-right-title{font-family:'Playfair Display',serif;font-size:22px;color:#e8eef8;line-height:1.5;margin-bottom:16px}
 .login-right-title em{color:#8ab4e8;font-style:italic}
-.login-right-sub{font-size:11px;color:#2a4060;margin-top:6px}
+.login-right-stats{display:flex;gap:24px;padding-top:14px;border-top:1px solid #1a3050}
+.login-right-stat-num{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:#4a8eff}
+.login-right-stat-label{font-size:9px;color:#2a4060;margin-top:2px}
 
 /* Signup Modal */
 .login-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100000;display:none;align-items:center;justify-content:center}

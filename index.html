@@ -1506,16 +1506,17 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   <div class="login-left">
     <div class="login-top">
       <div class="login-logo">VIP<span>.</span>FUTURES</div>
-      <button class="login-signup-btn" onclick="loginShowSignup()">Sign up</button>
+      <button class="login-signup-btn" onclick="loginShowSignup()">회원가입</button>
     </div>
     <div class="login-form-wrap">
-      <div class="login-eyebrow">MEMBER ACCESS</div>
-      <div class="login-title">Welcome <em>back.</em></div>
+      <div class="login-eyebrow">— Member Access —</div>
+      <div class="login-title">선물 트레이더의<br><em>스마트한 선택</em></div>
+      <div class="login-subtitle">경제캘린더 · 종목분석 · FX 브로커 검증 · 매매일지<br>트레이딩에 필요한 모든 정보를 한 곳에서</div>
 
       <div class="login-social">
         <button class="login-google-btn" onclick="loginGoogle()">
-          <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-          Continue with Google
+          <svg viewBox="0 0 48 48" width="18" height="18"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          Google 계정으로 시작하기
         </button>
       </div>
 
@@ -1531,14 +1532,14 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       </div>
 
       <div class="login-options">
-        <label class="login-remember"><input type="checkbox" checked> Remember me</label>
-        <a href="#" class="login-forgot" onclick="alert('이메일로 비밀번호 재설정 링크를 보내드립니다.');return false">Forgot password?</a>
+        <label class="login-remember"><input type="checkbox" checked> 로그인 유지</label>
+        <a href="#" class="login-forgot" onclick="alert('이메일로 비밀번호 재설정 링크를 보내드립니다.');return false">비밀번호 찾기</a>
       </div>
 
-      <button class="login-submit" onclick="loginEmail()">Sign in →</button>
+      <button class="login-submit" onclick="loginEmail()">로그인 →</button>
       <div class="login-error" id="loginError"></div>
 
-      <div class="login-bottom">Not a member? <a href="#" onclick="loginShowSignup();return false">Create account</a></div>
+      <div class="login-bottom">아직 회원이 아니신가요? <a href="#" onclick="loginShowSignup();return false">회원가입하기</a></div>
     </div>
   </div>
 
@@ -1562,13 +1563,19 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
 
     <div class="login-right-bottom">
-      <div class="login-right-stats">
-        <div><div class="login-right-stat-num">500</div><div class="login-right-stat-label">억 실전 수익</div></div>
-        <div><div class="login-right-stat-num">7</div><div class="login-right-stat-label">핵심 챕터</div></div>
-        <div><div class="login-right-stat-num">35</div><div class="login-right-stat-label">검증된 원칙</div></div>
+      <div class="login-features">
+        <span class="login-feat-pill">● 경제 캘린더</span>
+        <span class="login-feat-pill">● 종목 분석</span>
+        <span class="login-feat-pill">● FX 브로커 검증</span>
+        <span class="login-feat-pill">● AI 피드백</span>
+        <span class="login-feat-pill">● 매매일지</span>
       </div>
-      <div class="login-right-title">선물로 500억을 번<br>트레이더의 <em>실전 원칙</em></div>
-      <div class="login-right-sub">기술보다 마인드, 감보다 기준 — VIP 회원 전용</div>
+      <div class="login-right-title">선물 트레이더를 위한<br><em>올인원 분석 플랫폼</em></div>
+      <div class="login-right-stats">
+        <div><div class="login-right-stat-num">10+</div><div class="login-right-stat-label">전문 분석 도구</div></div>
+        <div><div class="login-right-stat-num">실시간</div><div class="login-right-stat-label">경제지표 & 시장 데이터</div></div>
+        <div><div class="login-right-stat-num">AI</div><div class="login-right-stat-label">종목 분석 & 브로커 검증</div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1576,13 +1583,13 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
 <!-- Signup Modal -->
 <div class="login-modal-overlay" id="signupModal">
   <div class="login-modal">
-    <h3>Create Account</h3>
+    <h3>회원가입</h3>
     <div class="login-field" style="margin-bottom:12px"><label>EMAIL</label><input type="email" id="signupEmail" placeholder=" "></div>
     <div class="login-field" style="margin-bottom:12px"><label>PASSWORD</label><input type="password" id="signupPw" placeholder=" "></div>
     <div class="login-field" style="margin-bottom:12px"><label>CONFIRM PASSWORD</label><input type="password" id="signupPw2" placeholder=" "></div>
     <div class="login-error" id="signupError"></div>
-    <button class="login-submit" onclick="loginSignup()" style="margin-top:12px">Create Account →</button>
-    <div style="text-align:center;margin-top:12px;font-size:12px;color:#a0a8b8">Already a member? <a href="#" onclick="document.getElementById('signupModal').classList.remove('show');return false" style="color:#4a8eff">Sign in</a></div>
+    <button class="login-submit" onclick="loginSignup()" style="margin-top:12px">가입하기 →</button>
+    <div style="text-align:center;margin-top:12px;font-size:12px;color:#a0a8b8">이미 회원이신가요? <a href="#" onclick="document.getElementById('signupModal').classList.remove('show');return false" style="color:#4a8eff">로그인</a></div>
   </div>
 </div>
 
@@ -3069,14 +3076,14 @@ function loginInitChart(){
     const xStep=w/(points.length-1);
     const yOf=(v)=>h*0.1+h*0.7*(1-(v-mn)/(mx-mn));
 
-    // Grid
-    ctx.strokeStyle='rgba(26,48,80,0.3)';ctx.lineWidth=1;
-    for(let i=0;i<4;i++){
-      const y=h*0.1+h*0.7*i/3;
+    // Grid (5 lines)
+    ctx.strokeStyle='rgba(26,48,80,0.25)';ctx.lineWidth=0.5;
+    for(let i=0;i<5;i++){
+      const y=h*0.08+h*0.72*i/4;
       ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();
-      const val=(mx-mn)*(1-i/3)+mn;
-      ctx.fillStyle='rgba(138,180,232,0.4)';ctx.font='18px DM Mono';
-      ctx.fillText(val.toFixed(0),w-80,y-6);
+      const val=(mx-mn)*(1-i/4)+mn;
+      ctx.fillStyle='rgba(138,180,232,0.3)';ctx.font='16px DM Mono';
+      ctx.fillText(val.toFixed(0),w-70,y-4);
     }
 
     // Area fill
@@ -3100,7 +3107,7 @@ function loginInitChart(){
       ctx.bezierCurveTo((x0+x1)/2,y0,(x0+x1)/2,y1,x1,y1);
     }
     ctx.strokeStyle=isUp?'rgba(74,158,255,0.9)':'rgba(192,80,80,0.9)';
-    ctx.lineWidth=3;ctx.stroke();
+    ctx.lineWidth=3.6;ctx.stroke();
 
     // End dot + pulse
     const endX=(points.length-1)*xStep;
@@ -3112,10 +3119,23 @@ function loginInitChart(){
     ctx.beginPath();ctx.arc(endX,endY,4,0,Math.PI*2);
     ctx.fillStyle=isUp?'#4a9eff':'#c05050';ctx.fill();
 
-    // Current price label
-    ctx.fillStyle=isUp?'#3a9a70':'#c05050';
-    ctx.font='bold 20px DM Mono';
-    ctx.fillText(points[points.length-1].toFixed(1),endX-100,endY-12);
+    // Vertical dashed line
+    ctx.setLineDash([4,4]);
+    ctx.strokeStyle=isUp?'rgba(74,158,255,0.3)':'rgba(192,80,80,0.3)';
+    ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(endX,endY);ctx.lineTo(endX,h);ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Current price label with background
+    const priceText=points[points.length-1].toFixed(1);
+    ctx.font='bold 18px DM Mono';
+    const tw=ctx.measureText(priceText).width;
+    const lx=w-tw-24,ly=endY-6;
+    ctx.fillStyle='#0d1e38';
+    ctx.beginPath();ctx.roundRect(lx-8,ly-16,tw+16,24,4);ctx.fill();
+    ctx.fillStyle=isUp?'rgba(74,158,255,1)':'rgba(192,80,80,1)';
+    ctx.fillRect(lx-8,ly-16,3,24);
+    ctx.fillStyle='#e8eef8';
+    ctx.fillText(priceText,lx,ly);
 
     // Update NQ ticker
     const chg=((points[points.length-1]-points[0])/points[0]*100);
