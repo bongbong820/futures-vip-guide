@@ -4109,20 +4109,27 @@ function bkRenderTable(){
   else if(sortBy==='spread')data.sort((a,b)=>parseFloat(a.spread)-parseFloat(b.spread));
   else if(sortBy==='deposit')data.sort((a,b)=>(a.minDeposit||0)-(b.minDeposit||0));
   else if(sortBy==='rating')data.sort((a,b)=>b.rating-a.rating);
+  // Featured brokers pinned to top: AP Market #1, INFINOX #2
+  const pinned=['axel-private','infinox'];
+  const pinnedItems=pinned.map(id=>data.find(b=>b.id===id)).filter(Boolean);
+  data=data.filter(b=>!pinned.includes(b.id));
+  data=[...pinnedItems,...data];
 
   const topRegs={CFTC:1,NFA:1,FCA:1,ASIC:1,BaFin:1,MAS:1,FINMA:1};
   const midRegs={CySEC:1,DFSA:1};
   const tierBadge={1:'<span style="background:#fef3c7;color:#b45309;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px">🏆 T1</span>',2:'<span style="background:#e0e7ff;color:#4338ca;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px">🥈 T2</span>',3:'<span style="background:#fee2e2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px">⚠️ T3</span>'};
 
-  document.getElementById('bkTableWrap').innerHTML='<table class="bk-table"><thead><tr><th>브로커</th><th>Tier</th><th>안전도</th><th>규제</th><th>증거금</th><th>스프레드</th><th>레버리지</th><th>출금</th><th>평점</th></tr></thead><tbody>'+
-    data.map(b=>{
+  document.getElementById('bkTableWrap').innerHTML='<table class="bk-table"><thead><tr><th>#</th><th>브로커</th><th>Tier</th><th>안전도</th><th>규제</th><th>증거금</th><th>스프레드</th><th>레버리지</th><th>출금</th><th>평점</th></tr></thead><tbody>'+
+    data.map((b,idx)=>{
       const sc=b.safetyScore;
       const barColor=sc>=80?'#089981':sc>=60?'#f5a623':'#f23645';
       const logo=b.domain?`<img src="${b.logo||('logos/'+b.domain?.replace(/\./g,'').replace('com','').replace('org','')+'.png')}" style="width:28px;height:28px;border-radius:6px;object-fit:contain;border:.5px solid var(--gray-200)" onerror="this.style.display='none'">`:'';
       const spd=b.withdrawalSpeed||'—';
       const spdC=spd.includes('1~2')||spd.includes('즉시')?'#089981':spd.includes('3~7')||spd.includes('5')?'#f23645':'#f5a623';
       const featured=b.featured?'style="background:linear-gradient(90deg,#f0f7ff,#fff);border-left:3px solid var(--blue)"':'';
-      return `<tr style="cursor:pointer" ${featured} onclick="bkGoVerify('${escHtml(b.name)}')"><td><div style="display:flex;align-items:center;gap:8px">${logo}<div><div style="font-weight:700;font-size:13px">${escHtml(b.name)}${b.featured?' <span style="background:var(--blue);color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;vertical-align:middle">추천</span>':''} <span style="font-size:10px;color:#2962ff;opacity:0;transition:.15s" class="bk-verify-link">검증보기 →</span></div><div style="font-size:10px;color:var(--gray-400)">${b.flag} ${b.country}</div></div></div></td>
+      const rank=idx+1;
+      const medalIcon=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+      return `<tr style="cursor:pointer" ${featured} onclick="bkGoVerify('${escHtml(b.name)}')"><td style="text-align:center;font-weight:800;font-size:${rank<=3?'16px':'13px'};color:${rank<=3?'var(--navy)':'var(--gray-400)'}">${medalIcon}</td><td><div style="display:flex;align-items:center;gap:8px">${logo}<div><div style="font-weight:700;font-size:13px">${escHtml(b.name)}${b.featured?' <span style="background:var(--blue);color:#fff;font-size:9px;padding:1px 6px;border-radius:4px;vertical-align:middle">추천</span>':''} <span style="font-size:10px;color:#2962ff;opacity:0;transition:.15s" class="bk-verify-link">검증보기 →</span></div><div style="font-size:10px;color:var(--gray-400)">${b.flag} ${b.country}</div></div></div></td>
         <td>${tierBadge[b.tier]||''}</td>
         <td><div class="bk-safety-bar"><div class="bk-safety-fill" style="width:${sc}%;background:${barColor}"></div></div><span style="font-weight:700">${sc}</span></td>
         <td>${b.regulations.slice(0,2).map(r=>{const c=topRegs[r]?'top':midRegs[r]?'mid':'low';return '<span class="bk-reg-badge '+c+'">'+r+'</span>'}).join('')}</td>
