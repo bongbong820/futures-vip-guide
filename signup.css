@@ -1,77 +1,79 @@
-/* ===== SIGNUP PAGE ===== */
+/* ===== SIGNUP PAGE (enlarged) ===== */
 .signup-page{position:fixed;inset:0;width:100vw;height:100vh;z-index:100000;overflow:hidden;background:#06101e;display:none}
 .signup-page.show{display:grid;grid-template-columns:1fr 1fr}
 
-.signup-left{position:relative;z-index:2;background:rgba(244,246,250,0.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-direction:column;padding:28px 40px;overflow-y:auto}
+.signup-left{position:relative;z-index:2;background:rgba(244,246,250,0.78);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-direction:column;padding:32px 48px;overflow-y:auto;scrollbar-width:none}
+.signup-left::-webkit-scrollbar{display:none}
 .signup-left::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,#c8cdd6 0.5px,transparent 0.5px);background-size:22px 22px;opacity:.1;pointer-events:none}
 
 .signup-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;position:relative;z-index:1}
-.signup-back{display:flex;align-items:center;gap:4px;padding:6px 14px;border:1px solid #d0d6e0;border-radius:20px;background:transparent;color:#0a1628;font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.signup-back{display:flex;align-items:center;gap:4px;padding:8px 16px;border:1px solid #d0d6e0;border-radius:20px;background:transparent;color:#0a1628;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
 .signup-back:hover{border-color:#0a1628}
 
-.signup-progress{display:flex;gap:6px;justify-content:center;margin-bottom:16px;position:relative;z-index:1}
-.signup-dot{width:8px;height:8px;border-radius:50%;background:#d0d6e0;transition:background .3s}
+.signup-progress{display:flex;gap:6px;justify-content:center;margin-bottom:24px;position:relative;z-index:1}
+.signup-dot{width:24px;height:5px;border-radius:3px;background:#d0d6e0;transition:background .3s}
 .signup-dot.active{background:#4a8eff}
 
-.signup-form{max-width:440px;width:100%;margin:0 auto;position:relative;z-index:1}
-.signup-eyebrow{font-family:'DM Mono',monospace;font-size:9px;color:#4a8eff;letter-spacing:3px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.signup-form{max-width:560px;width:100%;margin:0 auto;position:relative;z-index:1}
+.signup-eyebrow{font-family:'DM Mono',monospace;font-size:11px;color:#4a8eff;letter-spacing:3px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .signup-eyebrow::before,.signup-eyebrow::after{content:'';flex:0 0 20px;height:1px;background:#d0d6e0}
-.signup-h1{font-family:'Libre Baskerville',serif;font-size:22px;color:#0a1628;margin-bottom:4px}
-.signup-sub{font-family:'Inter',sans-serif;font-size:11px;color:#8a9ab0;margin-bottom:18px}
+.signup-h1{font-family:'Libre Baskerville',serif;font-size:34px;color:#0a1628;margin-bottom:10px}
+.signup-sub{font-family:'Inter',sans-serif;font-size:14px;color:#5a6a7a;margin-bottom:20px}
 
-.signup-section-label{font-family:'DM Mono',monospace;font-size:9px;color:#a0aab8;letter-spacing:2px;text-transform:uppercase;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.signup-section-label{font-family:'DM Mono',monospace;font-size:12px;color:#a0aab8;letter-spacing:2px;text-transform:uppercase;margin-top:20px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .signup-section-label::after{content:'';flex:1;height:1px;background:#e0e6f0}
-.signup-required-pill{background:#e8eeff;color:#4a8eff;font-size:9px;font-weight:600;padding:2px 8px;border-radius:10px;font-family:'Inter',sans-serif}
+.signup-required-pill{background:#e8eeff;color:#4a8eff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;font-family:'Inter',sans-serif}
 
-.signup-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.signup-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
 .signup-row.full{grid-template-columns:1fr}
 
 .signup-field{position:relative}
-.signup-field label{display:block;font-family:'DM Mono',monospace;font-size:9px;color:#a0aab8;letter-spacing:1.5px;margin-bottom:4px}
-.signup-field input{width:100%;padding:11px 14px;border:1px solid #e0e6f0;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;background:#fff;color:#0a1628;outline:none;transition:all .2s}
+.signup-field label{display:block;font-family:'DM Mono',monospace;font-size:11px;color:#4a5a6a;font-weight:500;letter-spacing:1.5px;margin-bottom:4px}
+.signup-field input{width:100%;padding:14px 18px;border:1px solid #e0e6f0;border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;background:#fff;color:#0a1628;outline:none;transition:all .2s}
+.signup-field input::placeholder{font-size:16px;color:#b0b8c8}
 .signup-field input:focus{border-color:#0a1628;box-shadow:0 0 0 3px rgba(10,22,40,.06)}
 .signup-field input.error{border-color:#f23645}
-.signup-field .hint{font-size:10px;color:#b0b8c4;margin-top:3px;font-family:'Inter',sans-serif}
-.signup-field .field-error{font-size:10px;color:#f23645;margin-top:3px;font-family:'Inter',sans-serif;min-height:14px}
+.signup-field .hint{font-size:12px;color:#8a9ab0;margin-top:6px;font-family:'Inter',sans-serif}
+.signup-field .field-error{font-size:12px;color:#f23645;margin-top:4px;font-family:'Inter',sans-serif;min-height:16px}
 
 /* Interest Cards */
-.signup-interests{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
-.signup-int-card{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:1px solid #e0e6f0;border-radius:8px;background:#fff;cursor:pointer;transition:all .15s;position:relative;font-family:'Inter',sans-serif}
+.signup-interests{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.signup-int-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:1px solid #e0e6f0;border-radius:10px;background:#fff;cursor:pointer;transition:all .15s;position:relative;font-family:'Inter',sans-serif;min-height:80px;justify-content:center}
 .signup-int-card:hover{border-color:#aab8c8}
 .signup-int-card.selected{background:#e8eeff;border-color:#4a8eff}
-.signup-int-card .int-icon{font-size:15px}
-.signup-int-card .int-name{font-size:10px;font-weight:500;color:#0a1628}
-.signup-int-card .int-check{position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:#4a8eff;display:none;align-items:center;justify-content:center;font-size:10px;color:#fff}
+.signup-int-card .int-icon{font-size:22px}
+.signup-int-card .int-name{font-size:13px;font-weight:600;color:#0a1628;letter-spacing:.3px}
+.signup-int-card .int-check{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:#4a8eff;display:none;align-items:center;justify-content:center;font-size:10px;color:#fff}
 .signup-int-card.selected .int-check{display:flex}
-.signup-etc-input{display:none;margin-bottom:10px}
+.signup-etc-input{display:none;margin-bottom:12px}
 .signup-etc-input.show{display:block}
 
-.signup-terms{font-family:'Inter',sans-serif;font-size:10px;color:#a0aab8;line-height:1.6;margin:14px 0}
+.signup-terms{font-family:'Inter',sans-serif;font-size:13px;color:#6a7a8a;line-height:1.7;margin:16px 0}
 .signup-terms a{color:#4a8eff;text-decoration:none}
 
-.signup-submit{width:100%;padding:13px;border:none;border-radius:8px;background:#0a1628;color:#fff;font-size:14px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s}
+.signup-submit{width:100%;padding:17px;border:none;border-radius:10px;background:#0a1628;color:#fff;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;margin-bottom:14px}
 .signup-submit:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(10,22,40,.25)}
 .signup-submit:disabled{background:#a0aab8;cursor:default;transform:none;box-shadow:none}
 
-.signup-bottom{text-align:center;margin-top:14px;font-size:12px;color:#a0aab8;font-family:'Inter',sans-serif}
+.signup-bottom{text-align:center;margin-top:10px;font-size:14px;color:#4a5a6a;font-family:'Inter',sans-serif}
 .signup-bottom a{color:#4a8eff;text-decoration:none;font-weight:500}
 
 /* Right panel */
 .signup-right{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:48px}
 .signup-right .login-right-grid{position:absolute;inset:0;opacity:.3;background-image:linear-gradient(#1a3050 1px,transparent 1px),linear-gradient(90deg,#1a3050 1px,transparent 1px);background-size:40px 40px}
 .signup-right .login-orb1,.signup-right .login-orb2{position:absolute}
-.signup-right-eyebrow{font-family:'DM Mono',monospace;font-size:9px;color:#3a5878;letter-spacing:3px;margin-bottom:12px;position:relative;z-index:1}
-.signup-right-title{font-family:'Libre Baskerville',serif;font-size:20px;color:#e8eef8;line-height:1.4;margin-bottom:32px;position:relative;z-index:1}
+.signup-right-eyebrow{font-family:'DM Mono',monospace;font-size:11px;color:#3a5878;letter-spacing:3px;margin-bottom:14px;position:relative;z-index:1}
+.signup-right-title{font-family:'Libre Baskerville',serif;font-size:26px;color:#e8eef8;line-height:1.4;margin-bottom:36px;position:relative;z-index:1}
 .signup-right-title em{color:#8ab4e8;font-style:italic}
 
-.signup-steps{position:relative;z-index:1;display:flex;flex-direction:column;gap:20px}
-.signup-step{display:flex;gap:14px;align-items:flex-start}
+.signup-steps{position:relative;z-index:1;display:flex;flex-direction:column;gap:24px}
+.signup-step{display:flex;gap:16px;align-items:flex-start}
 .signup-step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
 .signup-step-num.done{background:#4a8eff}
 .signup-step-num.pending{background:#1a3050;color:#3a5878}
 .signup-step-info{flex:1}
-.signup-step-name{font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#e8eef8}
-.signup-step-desc{font-family:'Inter',sans-serif;font-size:11px;color:#3a5878;margin-top:2px}
+.signup-step-name{font-family:'Inter',sans-serif;font-size:15px;font-weight:600;color:#e8eef8}
+.signup-step-desc{font-family:'Inter',sans-serif;font-size:12px;color:#3a5878;margin-top:3px}
 
 @media(max-width:768px){
   .signup-page.show{grid-template-columns:1fr}
