@@ -3182,9 +3182,23 @@ function loginInitChart(){
     points.push(points[points.length-1]+ns+tr*0.4);
   }
 
+  // Set canvas size once, resize on window resize
+  let cw=0,ch=0;
+  function resizeCanvas(){
+    const dpr=window.devicePixelRatio||1;
+    const rect=canvas.getBoundingClientRect();
+    if(rect.width<1||rect.height<1)return;
+    cw=rect.width*dpr;ch=rect.height*dpr;
+    canvas.width=cw;canvas.height=ch;
+  }
+  resizeCanvas();
+  window.addEventListener('resize',resizeCanvas);
+  // Retry if canvas not ready yet
+  if(cw<1){setTimeout(()=>{resizeCanvas()},200)}
+
   function draw(){
-    const w=canvas.width=canvas.offsetWidth*2;
-    const h=canvas.height=canvas.offsetHeight*2;
+    if(cw<1||ch<1){resizeCanvas();if(cw<1){setTimeout(()=>{_loginChartAnim=requestAnimationFrame(draw)},100);return}}
+    const w=cw,h=ch;
     ctx.clearRect(0,0,w,h);
 
     // Add new point
