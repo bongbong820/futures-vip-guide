@@ -1,7 +1,7 @@
 {
-  "name": "해외선물 VIP 가이드",
-  "short_name": "VIP Guide",
-  "description": "500억 트레이더의 실전 매매 원칙",
+  "name": "VIP Futures",
+  "short_name": "VIP Futures",
+  "description": "선물 트레이더를 위한 올인원 분석 플랫폼",
   "start_url": "/futures-vip-guide/",
   "display": "standalone",
   "background_color": "#1B2A4A",
