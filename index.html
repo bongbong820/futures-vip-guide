@@ -1548,14 +1548,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     <div class="login-orb1"></div>
     <div class="login-orb2"></div>
 
-    <div class="login-right-top">
-      <div class="login-live"><span class="login-live-dot"></span> LIVE MARKET</div>
-      <div class="login-tickers">
-        <span class="login-ticker">NQ <span id="loginNqChg" class="up">+0.4%</span></span>
-        <span class="login-ticker">ES <span class="up">+0.2%</span></span>
-        <span class="login-ticker">BTC <span class="up">+1.1%</span></span>
-      </div>
-    </div>
+    <div class="tk-bar" id="loginTickerBar"><div class="tk-track" id="loginTkTrack"></div></div>
 
     <div class="login-chart-canvas">
       <canvas id="loginChart"></canvas>
@@ -3152,8 +3145,33 @@ function loginSignup(){
   else err.textContent='Firebase 로딩 중입니다.';
 }
 
+// Ticker Marquee
+const TK_DATA=[
+  {sym:'NQ',price:'21,340',chg:'+1.24%',up:true},{sym:'ES',price:'5,842',chg:'+0.87%',up:true},
+  {sym:'YM',price:'43,120',chg:'-0.23%',up:false},{sym:'RTY',price:'2,084',chg:'+0.54%',up:true},
+  {sym:'BTC',price:'83,420',chg:'-1.45%',up:false},{sym:'ETH',price:'3,124',chg:'-0.88%',up:false},
+  {sym:'GOLD',price:'3,142',chg:'+0.64%',up:true},{sym:'SILVER',price:'29.84',chg:'+0.31%',up:true},
+  {sym:'OIL',price:'71.24',chg:'-0.87%',up:false},{sym:'GAS',price:'1.842',chg:'+1.12%',up:true},
+  {sym:'HSI',price:'19,840',chg:'-0.34%',up:false},{sym:'EUR/USD',price:'1.0842',chg:'+0.18%',up:true},
+  {sym:'USD/JPY',price:'149.32',chg:'+0.42%',up:true},{sym:'GBP/USD',price:'1.2634',chg:'-0.12%',up:false},
+  {sym:'USD/KRW',price:'1,342',chg:'-0.08%',up:false},{sym:'DXY',price:'103.42',chg:'-0.31%',up:false},
+  {sym:'VIX',price:'18.24',chg:'+2.10%',up:true},{sym:'KOSPI',price:'2,584',chg:'+0.45%',up:true},
+  {sym:'AAPL',price:'213.49',chg:'+1.53%',up:true},{sym:'NVDA',price:'924.30',chg:'+2.84%',up:true},
+  {sym:'TSLA',price:'174.82',chg:'-0.62%',up:false},{sym:'MSFT',price:'378.20',chg:'+0.74%',up:true}
+];
+
+function initTickerMarquee(trackId){
+  const track=document.getElementById(trackId);
+  if(!track)return;
+  const html=TK_DATA.map(t=>
+    `<div class="tk-item"><span class="tk-sym">${t.sym}</span><span class="tk-price">${t.price}</span><span class="tk-chg ${t.up?'up':'down'}">${t.up?'▲':'▼'} ${t.chg}</span></div>`
+  ).join('');
+  track.innerHTML=html+html; // Duplicate for seamless loop
+}
+
 // Live Chart on login page
 function loginInitChart(){
+  initTickerMarquee('loginTkTrack');
   const canvas=document.getElementById('loginChart');
   if(!canvas)return;
   const ctx=canvas.getContext('2d');
@@ -3245,10 +3263,7 @@ function loginInitChart(){
     ctx.fillStyle='#e8eef8';
     ctx.fillText(priceText,lx,ly);
 
-    // Update NQ ticker
-    const chg=((points[points.length-1]-points[0])/points[0]*100);
-    const nqEl=document.getElementById('loginNqChg');
-    if(nqEl){nqEl.textContent=(chg>=0?'+':'')+chg.toFixed(1)+'%';nqEl.className=chg>=0?'up':'down'}
+    // NQ ticker removed — marquee handles tickers now
 
     setTimeout(()=>{_loginChartAnim=requestAnimationFrame(draw)},80);
   }
