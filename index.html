@@ -3142,7 +3142,7 @@ function loginInitChart(){
     const nqEl=document.getElementById('loginNqChg');
     if(nqEl){nqEl.textContent=(chg>=0?'+':'')+chg.toFixed(1)+'%';nqEl.className=chg>=0?'up':'down'}
 
-    _loginChartAnim=requestAnimationFrame(draw);
+    setTimeout(()=>{_loginChartAnim=requestAnimationFrame(draw)},80);
   }
   draw();
 }
