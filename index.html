@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="features.css">
 <link rel="stylesheet" href="broker-verify.css">
 <link rel="stylesheet" href="login.css">
+<link rel="stylesheet" href="signup.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="brokers.js"></script>
 <script src="broker-verify.js"></script>
@@ -1580,16 +1581,72 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
-<!-- Signup Modal -->
-<div class="login-modal-overlay" id="signupModal">
-  <div class="login-modal">
-    <h3>회원가입</h3>
-    <div class="login-field" style="margin-bottom:12px"><label>EMAIL</label><input type="email" id="signupEmail" placeholder=" "></div>
-    <div class="login-field" style="margin-bottom:12px"><label>PASSWORD</label><input type="password" id="signupPw" placeholder=" "></div>
-    <div class="login-field" style="margin-bottom:12px"><label>CONFIRM PASSWORD</label><input type="password" id="signupPw2" placeholder=" "></div>
-    <div class="login-error" id="signupError"></div>
-    <button class="login-submit" onclick="loginSignup()" style="margin-top:12px">가입하기 →</button>
-    <div style="text-align:center;margin-top:12px;font-size:12px;color:#a0a8b8">이미 회원이신가요? <a href="#" onclick="document.getElementById('signupModal').classList.remove('show');return false" style="color:#4a8eff">로그인</a></div>
+<!-- SIGNUP PAGE -->
+<div class="signup-page" id="signupPage">
+  <div class="signup-left">
+    <div class="signup-top">
+      <div class="login-logo">VIP<span>.</span>FUTURES</div>
+      <button class="signup-back" onclick="signupClose()">← 로그인으로</button>
+    </div>
+    <div class="signup-progress"><span class="signup-dot active"></span><span class="signup-dot active"></span><span class="signup-dot active"></span><span class="signup-dot"></span></div>
+    <div class="signup-form">
+      <div class="signup-eyebrow">Create Account</div>
+      <div class="signup-h1">회원가입</div>
+      <div class="signup-sub">모든 항목은 필수 입력입니다</div>
+
+      <!-- Section 1: Account -->
+      <div class="signup-section-label">계정 정보</div>
+      <div class="signup-row full">
+        <div class="signup-field"><label>ID *</label><input id="suId" placeholder="영문, 숫자 조합 6자 이상"><div class="field-error" id="suIdErr"></div></div>
+      </div>
+      <div class="signup-row">
+        <div class="signup-field"><label>PASSWORD *</label><input type="password" id="suPw" placeholder="8자 이상"><div class="hint">영문 + 숫자 + 특수문자 조합 8자 이상</div></div>
+        <div class="signup-field"><label>CONFIRM *</label><input type="password" id="suPw2" placeholder="한 번 더 입력"><div class="field-error" id="suPwErr"></div></div>
+      </div>
+
+      <!-- Section 2: Personal -->
+      <div class="signup-section-label">개인 정보</div>
+      <div class="signup-row">
+        <div class="signup-field"><label>NAME *</label><input id="suName" placeholder="홍길동"></div>
+        <div class="signup-field"><label>NICKNAME *</label><input id="suNick" placeholder="트레이더123"></div>
+      </div>
+      <div class="signup-row full">
+        <div class="signup-field"><label>PHONE *</label><input id="suPhone" placeholder="010-0000-0000" maxlength="13" oninput="suFormatPhone(this)"><div class="field-error" id="suPhoneErr"></div></div>
+      </div>
+
+      <!-- Section 3: Interests -->
+      <div class="signup-section-label">관심 종목 <span class="signup-required-pill">필수</span></div>
+      <div class="signup-interests" id="suInterests">
+        <div class="signup-int-card" data-val="미국주식" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">🇺🇸</span><span class="int-name">미국주식</span></div>
+        <div class="signup-int-card" data-val="한국주식" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">🇰🇷</span><span class="int-name">한국주식</span></div>
+        <div class="signup-int-card" data-val="골드" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">🥇</span><span class="int-name">골드</span></div>
+        <div class="signup-int-card" data-val="항셍" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">🇭🇰</span><span class="int-name">항셍</span></div>
+        <div class="signup-int-card" data-val="오일" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">🛢</span><span class="int-name">오일</span></div>
+        <div class="signup-int-card" data-val="나스닥" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">📈</span><span class="int-name">나스닥</span></div>
+        <div class="signup-int-card" data-val="비트코인" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">₿</span><span class="int-name">비트코인</span></div>
+        <div class="signup-int-card" data-val="기타" onclick="suToggleInt(this)"><div class="int-check">✓</div><span class="int-icon">✏️</span><span class="int-name">기타</span></div>
+      </div>
+      <div class="signup-etc-input" id="suEtcWrap"><div class="signup-field"><label>기타 직접 입력</label><input id="suEtc" placeholder="예: 은, 구리, 유로화 등"></div></div>
+      <div class="field-error" id="suIntErr"></div>
+
+      <div class="signup-terms">가입 시 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의하게 됩니다.<br>전화번호는 알림 발송에만 사용됩니다.</div>
+
+      <button class="signup-submit" onclick="suSubmit()">가입 완료 →</button>
+      <div class="signup-bottom">이미 회원이신가요? <a href="#" onclick="signupClose();return false">로그인하기</a></div>
+    </div>
+  </div>
+  <div class="signup-right">
+    <div class="login-right-grid"></div>
+    <div class="login-orb1"></div>
+    <div class="login-orb2"></div>
+    <div class="signup-right-eyebrow">회원가입 안내</div>
+    <div class="signup-right-title">딱 한 번만 입력하면<br><em>모든 기능을 이용할 수 있어요</em></div>
+    <div class="signup-steps">
+      <div class="signup-step"><div class="signup-step-num done">1</div><div class="signup-step-info"><div class="signup-step-name">계정 정보</div><div class="signup-step-desc">아이디 · 비밀번호</div></div></div>
+      <div class="signup-step"><div class="signup-step-num done">2</div><div class="signup-step-info"><div class="signup-step-name">개인 정보</div><div class="signup-step-desc">이름 · 닉네임 · 전화번호</div></div></div>
+      <div class="signup-step"><div class="signup-step-num done">3</div><div class="signup-step-info"><div class="signup-step-name">관심 종목 선택</div><div class="signup-step-desc">1개 이상 필수 선택</div></div></div>
+      <div class="signup-step"><div class="signup-step-num pending">4</div><div class="signup-step-info"><div class="signup-step-name">가입 완료</div><div class="signup-step-desc">즉시 이용 가능</div></div></div>
+    </div>
   </div>
 </div>
 
@@ -3012,7 +3069,59 @@ function loginShowPage(){
 }
 
 function loginShowSignup(){
-  document.getElementById('signupModal').classList.add('show');
+  document.getElementById('signupPage').classList.add('show');
+}
+function signupClose(){
+  document.getElementById('signupPage').classList.remove('show');
+}
+
+function suToggleInt(el){
+  el.classList.toggle('selected');
+  const isEtc=el.dataset.val==='기타';
+  document.getElementById('suEtcWrap').classList.toggle('show',document.querySelector('.signup-int-card[data-val="기타"].selected'));
+}
+
+function suFormatPhone(input){
+  let v=input.value.replace(/\D/g,'');
+  if(v.length>3&&v.length<=7)v=v.slice(0,3)+'-'+v.slice(3);
+  else if(v.length>7)v=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+  input.value=v;
+}
+
+async function suSubmit(){
+  // Collect
+  const id=document.getElementById('suId').value.trim();
+  const pw=document.getElementById('suPw').value;
+  const pw2=document.getElementById('suPw2').value;
+  const name=document.getElementById('suName').value.trim();
+  const nick=document.getElementById('suNick').value.trim();
+  const phone=document.getElementById('suPhone').value.trim();
+  const cards=document.querySelectorAll('.signup-int-card.selected');
+  const interests=Array.from(cards).map(c=>c.dataset.val);
+  const etc=document.getElementById('suEtc')?.value.trim()||'';
+
+  // Clear errors
+  document.querySelectorAll('.field-error').forEach(e=>e.textContent='');
+  document.querySelectorAll('.signup-field input').forEach(i=>i.classList.remove('error'));
+  let ok=true;
+
+  // Validate
+  if(!/^[a-zA-Z0-9]{6,20}$/.test(id)){document.getElementById('suIdErr').textContent='영문/숫자 6~20자로 입력하세요';document.getElementById('suId').classList.add('error');ok=false}
+  if(pw.length<8||!/[a-zA-Z]/.test(pw)||!/\d/.test(pw)){document.getElementById('suPwErr').textContent='영문+숫자+특수문자 8자 이상';document.getElementById('suPw').classList.add('error');ok=false}
+  else if(pw!==pw2){document.getElementById('suPwErr').textContent='비밀번호가 일치하지 않습니다';document.getElementById('suPw2').classList.add('error');ok=false}
+  if(!name){document.getElementById('suName').classList.add('error');ok=false}
+  if(!nick){document.getElementById('suNick').classList.add('error');ok=false}
+  if(!/^010-\d{4}-\d{4}$/.test(phone)){document.getElementById('suPhoneErr').textContent='올바른 전화번호를 입력해주세요';document.getElementById('suPhone').classList.add('error');ok=false}
+  if(!interests.length){document.getElementById('suIntErr').textContent='관심 종목을 1개 이상 선택해주세요';ok=false}
+
+  if(!ok)return;
+
+  // Firebase signup
+  if(window.signupWithEmailFull){
+    await window.signupWithEmailFull(id,pw,name,nick,phone,interests,etc);
+  }else{
+    alert('Firebase 로딩 중입니다. 잠시 후 다시 시도해주세요.');
+  }
 }
 
 // Google login (will be connected to Firebase in module script)
@@ -6518,6 +6627,39 @@ window.loginWithEmail=async function(email,pw){
     err.textContent=msg;
     document.querySelectorAll('.login-field input').forEach(i=>i.classList.add('error'));
     setTimeout(()=>document.querySelectorAll('.login-field input').forEach(i=>i.classList.remove('error')),2000);
+  }
+};
+
+window.signupWithEmailFull=async function(username,pw,realName,nickname,phone,interests,etc){
+  try{
+    const email=username+'@vipfutures.com';
+    const cred=await createUserWithEmailAndPassword(auth,email,pw);
+    // Save to Firestore
+    await setDoc(doc(db,'users',cred.user.uid),{
+      uid:cred.user.uid,
+      username:username,
+      name:realName,
+      displayName:nickname,
+      email:email,
+      phone:phone,
+      interests:interests,
+      interestEtc:etc||null,
+      level:'bronze',
+      attendance_dates:[],
+      streak_current:0,
+      streak_best:0,
+      total_days:0,
+      last_visit:null,
+      loginType:'email',
+      created_at:serverTimestamp(),
+      updated_at:serverTimestamp()
+    },{merge:true});
+    // Close signup, show main
+    document.getElementById('signupPage').classList.remove('show');
+    if(window.showToast)window.showToast(nickname+'님, 환영합니다! 🎉','',null);
+  }catch(e){
+    const msg=e.code==='auth/email-already-in-use'?'이미 사용 중인 아이디입니다':e.code==='auth/weak-password'?'비밀번호가 너무 약합니다':'가입 실패: '+e.message;
+    document.getElementById('suIdErr').textContent=msg;
   }
 };
 
