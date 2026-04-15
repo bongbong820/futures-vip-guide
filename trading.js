@@ -1,4 +1,4 @@
-// Spread Comparison Trading — DUAL CHART comparison
+// Spread Comparison Trading — DUAL CHART (fixed)
 const TSYMS=[
   {id:'NQ',name:'NQ',desc:'나스닥100',base:21340},
   {id:'ES',name:'ES',desc:'S&P500',base:5842},
@@ -8,24 +8,27 @@ const TSYMS=[
   {id:'HSI',name:'HSI',desc:'항셍',base:19840}
 ];
 const TBROKERS={
-  icm:{n:'IC Markets',c:'#4a8eff',NQ:.5,ES:.4,GOLD:.3,BTC:42,OIL:.03,HSI:12},
-  pep:{n:'Pepperstone',c:'#4a8eff',NQ:.7,ES:.5,GOLD:.4,BTC:55,OIL:.04,HSI:15},
-  tkm:{n:'Tickmill',c:'#4a8eff',NQ:.9,ES:.6,GOLD:.5,BTC:60,OIL:.05,HSI:18},
-  oan:{n:'OANDA',c:'#f5a623',NQ:1.4,ES:1.2,GOLD:.8,BTC:80,OIL:.07,HSI:25},
-  exn:{n:'Exness',c:'#f5a623',NQ:2.0,ES:1.8,GOLD:1.2,BTC:95,OIL:.09,HSI:30},
-  xm:{n:'XM',c:'#f5a623',NQ:2.5,ES:2.2,GOLD:1.5,BTC:120,OIL:.12,HSI:40}
+  icm:{n:'IC Markets',NQ:.5,ES:.4,GOLD:.3,BTC:42,OIL:.03,HSI:12},
+  pep:{n:'Pepperstone',NQ:.7,ES:.5,GOLD:.4,BTC:55,OIL:.04,HSI:15},
+  tkm:{n:'Tickmill',NQ:.9,ES:.6,GOLD:.5,BTC:60,OIL:.05,HSI:18},
+  oan:{n:'OANDA',NQ:1.4,ES:1.2,GOLD:.8,BTC:80,OIL:.07,HSI:25},
+  exn:{n:'Exness',NQ:2.0,ES:1.8,GOLD:1.2,BTC:95,OIL:.09,HSI:30},
+  xm:{n:'XM',NQ:2.5,ES:2.2,GOLD:1.5,BTC:120,OIL:.12,HSI:40}
 };
 const TPIPVAL={NQ:20,ES:12.5,GOLD:10,BTC:1,OIL:10,HSI:5};
+const MAXC=60;
 
-let T={sym:'NQ',brokerA:'icm',brokerB:'oan',mid:21340,qtyA:1,qtyB:1,positions:[],realized:0,candles:[],tick:0,anim:null,cwA:0,chA:0,cwB:0,chB:0};
+let T={sym:'NQ',brokerA:'icm',brokerB:'oan',mid:21340,qtyA:1,qtyB:1,positions:[],realized:0,candles:[],tick:0,anim:null};
 
 function trdOpen(){document.getElementById('trdPage').classList.add('show');trdInitAll()}
-function trdClose(){document.getElementById('trdPage').classList.remove('show');cancelAnimationFrame(T.anim)}
+function trdClose(){document.getElementById('trdPage').classList.remove('show');if(T.anim)cancelAnimationFrame(T.anim);T.anim=null}
 
 function trdInitAll(){
   const s=TSYMS.find(x=>x.id===T.sym);T.mid=s.base;T.candles=[];T.tick=0;
-  let p=s.base;for(let i=0;i<60;i++){const c=tMkC(p);T.candles.push(c);p=c.c}
-  T.mid=p;trdRenderSymBar();trdResizeCanvases();trdLoop();
+  let p=s.base;for(let i=0;i<MAXC;i++){T.candles.push(tMkC(p));p=T.candles[T.candles.length-1].c}
+  T.mid=p;trdRenderSymBar();
+  // Resize canvases after DOM is visible
+  requestAnimationFrame(()=>{trdResizeAll();trdLoop()});
 }
 
 function tMkC(prev){
@@ -40,134 +43,157 @@ function tBid(bk){return T.mid-tSp(bk)/2}
 
 function trdSetSym(id){
   T.sym=id;const s=TSYMS.find(x=>x.id===id);T.mid=s.base;T.candles=[];T.tick=0;
-  let p=s.base;for(let i=0;i<60;i++){const c=tMkC(p);T.candles.push(c);p=c.c}
-  T.mid=p;trdRenderSymBar();
+  let p=s.base;for(let i=0;i<MAXC;i++){T.candles.push(tMkC(p));p=T.candles[T.candles.length-1].c}
+  T.mid=p;trdRenderSymBar();trdRenderSpreadCompare();
 }
-function trdSetBrokerA(v){T.brokerA=v}
-function trdSetBrokerB(v){T.brokerB=v}
+function trdSetBrokerA(v){T.brokerA=v;trdRenderSpreadCompare()}
+function trdSetBrokerB(v){T.brokerB=v;trdRenderSpreadCompare()}
 
-function trdResizeCanvases(){
+function trdResizeAll(){
   ['trdCanvasA','trdCanvasB'].forEach(id=>{
     const c=document.getElementById(id);if(!c)return;
     const dpr=window.devicePixelRatio||1;
     const r=c.getBoundingClientRect();
     if(r.width<1)return;
-    c.width=r.width*dpr;c.height=r.height*dpr;
-    if(id==='trdCanvasA'){T.cwA=c.width;T.chA=c.height}
-    else{T.cwB=c.width;T.chB=c.height}
+    c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr);
   });
 }
-window.addEventListener('resize',trdResizeCanvases);
+window.addEventListener('resize',trdResizeAll);
 
+// === MAIN LOOP ===
 function trdLoop(){
+  if(!document.getElementById('trdPage')?.classList.contains('show'))return;
   T.mid+=(Math.random()-.49)*T.mid*.0004+Math.sin(Date.now()*.0002)*.3;
   T.tick++;
   const last=T.candles[T.candles.length-1];
   last.c=T.mid;last.h=Math.max(last.h,T.mid);last.l=Math.min(last.l,T.mid);
-  if(T.tick%40===0){T.candles.push({o:T.mid,h:T.mid,l:T.mid,c:T.mid});if(T.candles.length>60)T.candles.shift()}
-  trdDrawPanel('trdCanvasA',T.cwA,T.chA,T.brokerA);
-  trdDrawPanel('trdCanvasB',T.cwB,T.chB,T.brokerB);
+  if(T.tick%40===0){T.candles.push({o:T.mid,h:T.mid,l:T.mid,c:T.mid});if(T.candles.length>MAXC)T.candles.shift()}
+
+  trdDraw('trdCanvasA',T.brokerA);
+  trdDraw('trdCanvasB',T.brokerB);
   trdUpdateUI();
   setTimeout(()=>{T.anim=requestAnimationFrame(trdLoop)},80);
 }
 
-function trdDrawPanel(canvasId,W,H,bk){
+// === DRAW CHART ===
+function trdDraw(canvasId,bk){
   const canvas=document.getElementById(canvasId);
-  if(!canvas||W<1||H<1)return;
-  if(canvas.width!==W){trdResizeCanvases();return}
+  if(!canvas)return;
+  const W=canvas.width,H=canvas.height;
+  if(W<10||H<10)return;
   const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,W,H);
+
   const cds=T.candles,n=cds.length;if(!n)return;
-  const sp=tSp(bk),d=tDec();
-  const allP=cds.flatMap(c=>[c.h+sp,c.l-sp]);
-  const mn=Math.min(...allP)-(T.mid*.001),mx=Math.max(...allP)+(T.mid*.001);
-  const range=mx-mn||1,pad=30;
-  const yOf=v=>pad+(H-pad*2)*(1-(v-mn)/range);
-  const cw=Math.max(3,(W-60)/n),gap=Math.max(1,cw*.15);
-  const dpr=window.devicePixelRatio||1;
+  const d=tDec(),sp=tSp(bk),dpr=window.devicePixelRatio||1;
 
-  // Grid
-  ctx.strokeStyle='#1a1d26';ctx.lineWidth=1;
-  ctx.font=(8*dpr)+'px Courier New';ctx.fillStyle='#3a4a5a';
-  for(let i=0;i<5;i++){const y=pad+(H-pad*2)*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
-    ctx.fillText((mx-range*i/4).toFixed(d),W-55*dpr,y-3)}
+  // Padding
+  const PL=10,PR=60*dpr,PT=20,PB=20;
+  const chartW=W-PL-PR,chartH=H-PT-PB;
 
-  // Candles (with spread applied: ask candle tops, bid candle bottoms)
-  for(let i=0;i<n;i++){
-    const c=cds[i],x=30+i*(cw+gap),up=c.c>=c.o;
-    ctx.fillStyle=up?'#3ab87a':'#e05050';ctx.strokeStyle=up?'#3ab87a':'#e05050';ctx.lineWidth=1;
-    const xc=x+cw/2;
-    ctx.beginPath();ctx.moveTo(xc,yOf(c.h));ctx.lineTo(xc,yOf(c.l));ctx.stroke();
-    const top=yOf(Math.max(c.o,c.c)),bot=yOf(Math.min(c.o,c.c));
-    ctx.fillRect(x,top,cw,Math.max(1,bot-top));
+  // Y range — computed fresh every frame from current candles
+  const allH=cds.map(c=>c.h);
+  const allL=cds.map(c=>c.l);
+  const mn=Math.min(...allL)-Math.abs(T.mid)*0.003;
+  const mx=Math.max(...allH)+Math.abs(T.mid)*0.003;
+  const range=mx-mn||1;
+  const ty=v=>PT+(mx-v)/range*chartH;
+
+  // Candle width — fills full chart width
+  const cw=chartW/MAXC;
+
+  // Grid (5 lines)
+  ctx.strokeStyle='#1e2130';ctx.lineWidth=1;
+  ctx.font=Math.round(8*dpr)+'px Courier New';ctx.fillStyle='#3a4a5a';
+  for(let i=0;i<5;i++){
+    const val=mx-range*i/4;
+    const y=ty(val);
+    ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(W-PR+10,y);ctx.stroke();
+    ctx.fillText(val.toFixed(d),W-PR+14,y+3);
   }
 
-  // Spread band (ASK line + BID line)
-  const askY=yOf(T.mid+sp/2),bidY=yOf(T.mid-sp/2);
+  // Candles — left-aligned, fill full width
+  for(let i=0;i<n;i++){
+    const c=cds[i],up=c.c>=c.o;
+    const x=PL+i*cw;
+    const xc=x+cw/2;
+    const bodyW=Math.max(2,cw*0.7);
+    const bx=xc-bodyW/2;
+
+    ctx.strokeStyle=up?'#3ab87a':'#e05050';ctx.lineWidth=Math.max(1,dpr);
+    ctx.beginPath();ctx.moveTo(xc,ty(c.h));ctx.lineTo(xc,ty(c.l));ctx.stroke();
+
+    ctx.fillStyle=up?'#3ab87a':'#e05050';
+    const top=ty(Math.max(c.o,c.c)),bot=ty(Math.min(c.o,c.c));
+    ctx.fillRect(bx,top,bodyW,Math.max(1,bot-top));
+  }
+
+  // Spread band
+  const askY=ty(T.mid+sp/2),bidY=ty(T.mid-sp/2);
   ctx.fillStyle='rgba(74,158,255,0.06)';
-  ctx.fillRect(0,askY,W,bidY-askY);
-  ctx.setLineDash([3,3]);
-  ctx.strokeStyle='rgba(58,184,122,.5)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(0,askY);ctx.lineTo(W,askY);ctx.stroke();
-  ctx.strokeStyle='rgba(224,80,80,.5)';
-  ctx.beginPath();ctx.moveTo(0,bidY);ctx.lineTo(W,bidY);ctx.stroke();
+  ctx.fillRect(PL,askY,chartW,bidY-askY);
+  ctx.setLineDash([3,3]);ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(58,184,122,.4)';ctx.beginPath();ctx.moveTo(PL,askY);ctx.lineTo(PL+chartW,askY);ctx.stroke();
+  ctx.strokeStyle='rgba(224,80,80,.4)';ctx.beginPath();ctx.moveTo(PL,bidY);ctx.lineTo(PL+chartW,bidY);ctx.stroke();
   ctx.setLineDash([]);
+  // Spread label
+  ctx.fillStyle='#4a8eff';ctx.font='bold '+Math.round(9*dpr)+'px Courier New';
+  ctx.fillText('SP '+sp,(PL+chartW)/2,((askY+bidY)/2)+4);
 
-  // Spread label in band
-  ctx.fillStyle='rgba(74,158,255,0.2)';
-  const bandMid=(askY+bidY)/2;
-  ctx.font='bold '+(9*dpr)+'px Courier New';
-  ctx.fillStyle='#4a8eff';
-  ctx.fillText('SPREAD '+sp,W/2-30*dpr,bandMid+3);
-
-  // Position lines
+  // Position entry lines — same ty() function
   T.positions.filter(p=>p.sym===T.sym&&p.broker===bk).forEach(pos=>{
-    const y=yOf(pos.entry);
+    const y=ty(pos.entry);
     ctx.setLineDash([6,4]);ctx.strokeStyle=pos.side==='buy'?'rgba(58,184,122,.8)':'rgba(224,80,80,.8)';
-    ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();ctx.setLineDash([]);
-    const pnl=pos.side==='buy'?(tBid(bk)-pos.entry)*TPIPVAL[T.sym]*pos.qty:(pos.entry-tAsk(bk))*TPIPVAL[T.sym]*pos.qty;
-    // Entry tag
+    ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+chartW,y);ctx.stroke();ctx.setLineDash([]);
+    // Entry tag (left)
+    const pnl=pos.side==='buy'?(tBid(bk)-pos.entry)*(TPIPVAL[T.sym]||1)*pos.qty:(pos.entry-tAsk(bk))*(TPIPVAL[T.sym]||1)*pos.qty;
     ctx.fillStyle=pos.side==='buy'?'#1a4a2a':'#5a1a1a';
-    ctx.fillRect(4,y-9,80*dpr/2,18);ctx.fillStyle='#fff';ctx.font=(8*dpr)+'px Courier New';
-    ctx.fillText((pos.side==='buy'?'▲BUY ':'▼SELL ')+pos.entry.toFixed(d),8,y+3);
-    // PnL tag
+    const tw=75*dpr/2;
+    ctx.fillRect(PL,y-9,tw,18);
+    ctx.fillStyle='#fff';ctx.font=Math.round(8*dpr)+'px Courier New';
+    ctx.fillText((pos.side==='buy'?'▲BUY ':'▼SELL ')+pos.entry.toFixed(d),PL+4,y+3);
+    // PnL tag (right)
     ctx.fillStyle=pnl>=0?'#1a4a2a':'#5a1a1a';
-    ctx.fillRect(W-55*dpr/2,y-9,55*dpr/2,18);
-    ctx.fillStyle=pnl>=0?'#3ab87a':'#e05050';ctx.font='bold '+(9*dpr)+'px Courier New';
-    ctx.fillText((pnl>=0?'+':'')+pnl.toFixed(1),W-52*dpr/2,y+3);
+    const pw=50*dpr/2;
+    ctx.fillRect(PL+chartW-pw,y-9,pw,18);
+    ctx.fillStyle=pnl>=0?'#3ab87a':'#e05050';ctx.font='bold '+Math.round(9*dpr)+'px Courier New';
+    ctx.fillText((pnl>=0?'+':'')+pnl.toFixed(1),PL+chartW-pw+3,y+3);
   });
 
-  // Current price
-  const curY=yOf(T.mid);
+  // Current price line — same ty()
+  const curY=ty(T.mid);
   ctx.strokeStyle='#4a6a8a';ctx.lineWidth=1;ctx.setLineDash([2,2]);
-  ctx.beginPath();ctx.moveTo(0,curY);ctx.lineTo(W,curY);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle='#1a2a3a';ctx.fillRect(W-48*dpr/2,curY-9,48*dpr/2,18);
-  ctx.fillStyle='#c8d4e0';ctx.font='bold '+(8*dpr)+'px Courier New';
-  ctx.fillText(T.mid.toFixed(d),W-45*dpr/2,curY+3);
+  ctx.beginPath();ctx.moveTo(PL,curY);ctx.lineTo(PL+chartW,curY);ctx.stroke();ctx.setLineDash([]);
+  // Price label (right)
+  const plw=48*dpr/2;
+  ctx.fillStyle=T.candles[0]&&T.mid>=T.candles[0].o?'#1a4a2a':'#5a1a1a';
+  ctx.fillRect(W-PR+10,curY-9,plw,18);
+  ctx.fillStyle='#fff';ctx.font='bold '+Math.round(9*dpr)+'px Courier New';
+  ctx.fillText(T.mid.toFixed(d),W-PR+14,curY+3);
 }
 
+// === UI UPDATE ===
 function trdUpdateUI(){
   const d=tDec();
   ['A','B'].forEach(side=>{
     const bk=side==='A'?T.brokerA:T.brokerB;
-    const br=TBROKERS[bk];const sp=tSp(bk);
-    const ask=tAsk(bk),bid=tBid(bk);
-    const el=document.getElementById('trdPanel'+side);if(!el)return;
-    // Broker name + spread
-    const spEl=el.querySelector('.trd-panel-spread');
-    if(spEl)spEl.innerHTML=`<span class="trd-panel-spread-val">SP ${sp}</span><span class="trd-panel-spread-cost">$${(sp*TPIPVAL[T.sym]).toFixed(1)}/계약</span>`;
-    // Bid/Ask
-    const ba=el.querySelector('.trd-panel-bidask');
+    const br=TBROKERS[bk];if(!br)return;
+    const sp=tSp(bk),ask=tAsk(bk),bid=tBid(bk);
+    const panel=document.getElementById('trdPanel'+side);if(!panel)return;
+    // Spread info
+    const spEl=panel.querySelector('.trd-panel-spread');
+    if(spEl)spEl.innerHTML=`<span class="trd-panel-spread-val">SP ${sp}</span><span class="trd-panel-spread-cost">$${(sp*(TPIPVAL[T.sym]||1)).toFixed(1)}/계약</span>`;
+    // Bid/Ask overlay
+    const ba=panel.querySelector('.trd-panel-bidask');
     if(ba)ba.innerHTML=`<div style="color:#3ab87a;font-weight:700">${ask.toFixed(d)}</div><div style="color:#4a6a8a;font-size:9px">SP ${sp}</div><div style="color:#e05050;font-weight:700">${bid.toFixed(d)}</div>`;
-    // Buttons
-    const buyP=el.querySelector('.trd-buy-price');if(buyP)buyP.textContent=ask.toFixed(d);
-    const sellP=el.querySelector('.trd-sell-price');if(sellP)sellP.textContent=bid.toFixed(d);
+    // Button prices
+    panel.querySelectorAll('.trd-buy-price').forEach(e=>e.textContent=ask.toFixed(d));
+    panel.querySelectorAll('.trd-sell-price').forEach(e=>e.textContent=bid.toFixed(d));
   });
-  // Positions
+  // Positions PnL
   let totalPnl=0;
   T.positions.forEach(p=>{
-    const pv=TPIPVAL[p.sym]||1;
-    p.pnl=p.side==='buy'?(tBid(p.broker)-p.entry)*pv*p.qty:(p.entry-tAsk(p.broker))*pv*p.qty;
+    p.pnl=p.side==='buy'?(tBid(p.broker)-p.entry)*(TPIPVAL[p.sym]||1)*p.qty:(p.entry-tAsk(p.broker))*(TPIPVAL[p.sym]||1)*p.qty;
     totalPnl+=p.pnl;
   });
   trdRenderPositions();
@@ -177,37 +203,56 @@ function trdUpdateUI(){
   const rE=document.getElementById('trdRPnl');if(rE){rE.textContent=(T.realized>=0?'+':'')+T.realized.toFixed(2);rE.style.color=T.realized>=0?'#3ab87a':'#e05050'}
 }
 
-function trdBuy(bk){
-  const qty=bk===T.brokerA?T.qtyA:T.qtyB;
-  T.positions.push({sym:T.sym,side:'buy',entry:tAsk(bk),qty,broker:bk,pnl:0});
-}
-function trdSell(bk){
-  const qty=bk===T.brokerA?T.qtyA:T.qtyB;
-  T.positions.push({sym:T.sym,side:'sell',entry:tBid(bk),qty,broker:bk,pnl:0});
-}
-function trdClosePos(i){
-  if(i>=0&&i<T.positions.length){T.realized+=T.positions[i].pnl;T.positions.splice(i,1)}
-}
+// === ORDERS ===
+function trdBuy(bk){T.positions.push({sym:T.sym,side:'buy',entry:tAsk(bk),qty:bk===T.brokerA?T.qtyA:T.qtyB,broker:bk,pnl:0})}
+function trdSell(bk){T.positions.push({sym:T.sym,side:'sell',entry:tBid(bk),qty:bk===T.brokerA?T.qtyA:T.qtyB,broker:bk,pnl:0})}
+function trdClosePos(i){if(i>=0&&i<T.positions.length){T.realized+=T.positions[i].pnl;T.positions.splice(i,1)}}
 function trdQtyA(d){T.qtyA=Math.max(0.1,Math.round((T.qtyA+d)*10)/10);const e=document.getElementById('trdQtyA');if(e)e.value=T.qtyA}
 function trdQtyB(d){T.qtyB=Math.max(0.1,Math.round((T.qtyB+d)*10)/10);const e=document.getElementById('trdQtyB');if(e)e.value=T.qtyB}
 
+// === POSITIONS RENDER ===
 function trdRenderPositions(){
   const el=document.getElementById('trdPosList');if(!el)return;
-  if(!T.positions.length){el.innerHTML='<div class="trd-pos-empty">BUY / SELL 클릭으로 두 브로커의 스프레드 차이를 비교해보세요</div>';return}
+  if(!T.positions.length){el.innerHTML='<div class="trd-pos-empty">BUY / SELL로 두 브로커의 스프레드 차이를 비교해보세요</div>';return}
   el.innerHTML=T.positions.map((p,i)=>{
     const c=p.pnl>=0?'#3ab87a':'#e05050';
     const br=TBROKERS[p.broker];
-    return`<div class="trd-pos-card ${p.side}"><div class="trd-pos-top"><span class="trd-pos-sym">${p.sym} <span class="trd-pos-side ${p.side}">${p.side==='buy'?'매수':'매도'}</span></span><span class="trd-pos-pnl" style="color:${c}">${p.pnl>=0?'+':''}$${p.pnl.toFixed(2)}</span></div><div class="trd-pos-detail">${br?.n||p.broker} · ${p.qty}계약 · ${p.entry.toFixed(tDec())}</div><button class="trd-pos-close" onclick="trdClosePos(${i})">✕ 청산</button></div>`;
+    return`<div class="trd-pos-card ${p.side}"><div class="trd-pos-top"><span class="trd-pos-sym">${p.sym} <span class="trd-pos-side ${p.side}">${p.side==='buy'?'매수':'매도'}</span></span><span class="trd-pos-pnl" style="color:${c}">${p.pnl>=0?'+':''}$${p.pnl.toFixed(2)}</span></div><div class="trd-pos-detail">${br?.n||''} · ${p.qty}계약 · ${p.entry.toFixed(tDec())}</div><button class="trd-pos-close" onclick="trdClosePos(${i})">✕ 청산</button></div>`;
   }).join('');
 }
 
+// === SPREAD COMPARE ===
+function trdRenderSpreadCompare(){
+  const el=document.getElementById('trdSpList');if(!el)return;
+  const sym=T.sym;const pv=TPIPVAL[sym]||1;
+  const list=Object.entries(TBROKERS).map(([k,b])=>({k,n:b.n,sp:b[sym]||0,cost:(b[sym]||0)*pv})).sort((a,b)=>a.sp-b.sp);
+  const maxSp=list[list.length-1]?.sp||1;
+  const colors=['#3ab87a','#4a8eff','#6ab87a','#f5a623','#e08050','#e05050'];
+  el.innerHTML=list.map((b,i)=>{
+    const pct=Math.round(b.sp/maxSp*100);
+    const isA=b.k===T.brokerA,isB=b.k===T.brokerB;
+    const tag=isA?'<span style="color:#4a8eff;font-size:8px;margin-left:3px">A</span>':isB?'<span style="color:#f5a623;font-size:8px;margin-left:3px">B</span>':'';
+    return`<div class="trd-sp-item"><span class="trd-sp-name">${b.n}${tag}</span><div class="trd-sp-bar-wrap"><div class="trd-sp-bar" style="width:${pct}%;background:${colors[i]}"></div></div><span class="trd-sp-val" style="color:${colors[i]}">${b.sp}p</span><span class="trd-sp-cost">-$${b.cost.toFixed(0)}</span>${i===0?'<span class="trd-sp-best">최저</span>':''}</div>`;
+  }).join('');
+}
+
+function trdRightTab(t){
+  document.getElementById('trdPosPanel').style.display=t===0?'':'none';
+  document.getElementById('trdSpPanel').style.display=t===1?'':'none';
+  document.querySelectorAll('.trd-right-tab').forEach((el,i)=>el.classList.toggle('active',i===t));
+  if(t===1)trdRenderSpreadCompare();
+}
+
+// === SYM BAR ===
 function trdRenderSymBar(){
   const bar=document.getElementById('trdSymBar');if(!bar)return;
   bar.innerHTML=TSYMS.map(s=>`<button class="trd-sym-btn ${s.id===T.sym?'active':''}" onclick="trdSetSym('${s.id}')">${s.name}</button>`).join('');
+  trdRenderSpreadCompare();
 }
 
 // Globals
 window.trdOpen=trdOpen;window.trdClose=trdClose;window.trdSetSym=trdSetSym;
 window.trdSetBrokerA=trdSetBrokerA;window.trdSetBrokerB=trdSetBrokerB;
 window.trdBuy=trdBuy;window.trdSell=trdSell;window.trdClosePos=trdClosePos;
-window.trdQtyA=trdQtyA;window.trdQtyB=trdQtyB;
+window.trdQtyA=trdQtyA;window.trdQtyB=trdQtyB;window.trdRightTab=trdRightTab;
+window.trdRenderSpreadCompare=trdRenderSpreadCompare;window.T=T;
