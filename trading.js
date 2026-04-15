@@ -36,7 +36,7 @@ const TB={
   xm:{n:'XM',s:'XM',col:'#aaaaaa',NQ:2.5,ES:2.2,GOLD:1.5,BTC:120,OIL:.12,HSI:40}
 };
 const TPV={NQ:20,ES:12.5,GOLD:10,BTC:1,OIL:10,HSI:5};
-const MC=60;
+const MC=30;
 
 let T={sym:'NQ',sel:['icm','pep'],mid:21340,qty:1,pos:[],real:0,cds:[],tk:0,anim:null,cw:0,ch:0,bkSearch:''};
 
@@ -60,7 +60,7 @@ function tLoop(){
   const sv=(TSYMS.find(x=>x.id===T.sym)?.vol||.0004);
   T.mid+=(Math.random()-.49)*T.mid*sv+Math.sin(Date.now()*.0002)*.2;
   T.tk++;const last=T.cds[T.cds.length-1];last.c=T.mid;last.h=Math.max(last.h,T.mid);last.l=Math.min(last.l,T.mid);
-  if(T.tk%40===0){T.cds.push({o:T.mid,h:T.mid,l:T.mid,c:T.mid});if(T.cds.length>MC)T.cds.shift()}
+  if(T.tk%80===0){T.cds.push({o:T.mid,h:T.mid,l:T.mid,c:T.mid});if(T.cds.length>MC)T.cds.shift()}
   tDraw();tUpdateUI();
   setTimeout(()=>{T.anim=requestAnimationFrame(tLoop)},80);
 }
@@ -79,8 +79,8 @@ function tDraw(){
   for(let i=0;i<5;i++){const v=mx-rng*i/4,y=ty(v);ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(W-PR+10,y);ctx.stroke();ctx.fillText(v.toFixed(d),W-PR+14,y+3)}
 
   for(let i=0;i<n;i++){
-    const c=T.cds[i],up=c.c>=c.o,x=PL+i*cw,xc=x+cw/2,bw=Math.max(2,cw*.7),bx=xc-bw/2;
-    ctx.strokeStyle=up?'rgba(58,184,122,.85)':'rgba(224,80,80,.85)';ctx.lineWidth=Math.max(1,dpr);
+    const c=T.cds[i],up=c.c>=c.o,xc=PL+i*cw+cw/2,bw=cw*.65,bx=xc-bw/2;
+    ctx.strokeStyle=up?'rgba(58,184,122,.85)':'rgba(224,80,80,.85)';ctx.lineWidth=1.5*dpr;
     ctx.beginPath();ctx.moveTo(xc,ty(c.h));ctx.lineTo(xc,ty(c.l));ctx.stroke();
     ctx.fillStyle=up?'rgba(58,184,122,.85)':'rgba(224,80,80,.85)';
     const top=ty(Math.max(c.o,c.c)),bot=ty(Math.min(c.o,c.c));ctx.fillRect(bx,top,bw,Math.max(1,bot-top));
@@ -92,21 +92,20 @@ function tDraw(){
   posBySym.forEach((pos,idx)=>{
     const bk=TB[pos.bk];if(!bk)return;
     const k=pos.entry.toFixed(d);const gi=priceGroups[k].indexOf(idx);
-    const y=ty(pos.entry)+gi*4*dpr;
+    const y=ty(pos.entry)+gi*6*dpr;
     const sp=pos.realSp||bk[T.sym]||1;
-    // PnL based on visual entry (amplified spread) for chart movement effect
     pos.pnl=pos.dir==='buy'?(T.mid-pos.entry)*(TPV[T.sym]||1)*pos.qty:(pos.entry-T.mid)*(TPV[T.sym]||1)*pos.qty;
-    ctx.setLineDash([5,4]);ctx.strokeStyle=bk.col;ctx.lineWidth=1.5;
+    ctx.setLineDash([5,4]);ctx.strokeStyle=bk.col;ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.setLineDash([]);
-    // Left tag
-    ctx.fillStyle=bk.col+'33';const tw=50*dpr/2;ctx.fillRect(PL,y-10,tw,20);
-    ctx.fillStyle=bk.col;ctx.font=Math.round(9*dpr)+'px Courier New';
-    ctx.fillText((pos.dir==='buy'?'▲':'▼')+' '+bk.s,PL+3,y+3);
-    // Right PnL tag (bigger)
-    const pnl=pos.pnl;ctx.fillStyle=pnl>=0?bk.col+'44':bk.col+'22';const pw=55*dpr/2;
-    ctx.fillRect(PL+cW-pw,y-10,pw,20);
-    ctx.fillStyle=pnl>=0?bk.col:'#e05050';ctx.font='bold '+Math.round(10*dpr)+'px Courier New';
-    ctx.fillText((pnl>=0?'+':'')+pnl.toFixed(1),PL+cW-pw+3,y+4);
+    // Left tag (90px)
+    const tw=45*dpr;ctx.fillStyle=bk.col+'33';ctx.fillRect(PL,y-11,tw,22);
+    ctx.fillStyle=bk.col;ctx.font='bold '+Math.round(9*dpr)+'px Courier New';
+    ctx.fillText((pos.dir==='buy'?'▲':'▼')+' '+bk.s,PL+4,y+4);
+    // Right PnL tag (11px, padded)
+    const pnl=pos.pnl;const pw=60*dpr;ctx.fillStyle=pnl>=0?bk.col+'44':bk.col+'22';
+    ctx.fillRect(PL+cW-pw,y-12,pw,24);
+    ctx.fillStyle=pnl>=0?bk.col:'#e05050';ctx.font='bold '+Math.round(11*dpr)+'px Courier New';
+    ctx.fillText((pnl>=0?'+':'')+pnl.toFixed(1),PL+cW-pw+4,y+5);
   });
 
   // Spread bands — visual amplifier so spread differences are clearly visible
