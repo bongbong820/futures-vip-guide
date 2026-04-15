@@ -2425,7 +2425,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       </div>
     </div>
     <div class="ec4-card">
-      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">CPI 소비자물가</span></div>
+      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">소비자물가지수 (CPI)</span></div>
       <div class="ec4-card-val">—</div>
       <div class="ec4-card-time">—</div>
       <div class="ec4-card-meta">
@@ -2437,7 +2437,7 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       </div>
     </div>
     <div class="ec4-card">
-      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">NFP 비농업고용</span></div>
+      <div class="ec4-card-top"><span class="ec4-dot"></span><span class="ec4-card-name">비농업 고용 (NFP)</span></div>
       <div class="ec4-card-val">—</div>
       <div class="ec4-card-time">—</div>
       <div class="ec4-card-meta">
@@ -2460,8 +2460,8 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
         <button class="ec4-fb" data-range="week" onclick="ec4SetRange(this)">이번주</button>
       </div>
       <div class="ec4-fg" id="ec4ImpF">
-        <button class="ec4-fb active" data-imp="all" onclick="ec4SetImp(this)">전체</button>
-        <button class="ec4-fb" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
+        <button class="ec4-fb" data-imp="all" onclick="ec4SetImp(this)">전체</button>
+        <button class="ec4-fb active" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
         <button class="ec4-fb" data-imp="2" onclick="ec4SetImp(this)">★★☆</button>
         <button class="ec4-fb" data-imp="1" onclick="ec4SetImp(this)">★☆☆</button>
       </div>
@@ -5933,7 +5933,40 @@ function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleStri
 
 // ===== NEWS =====
 let _ec4Timer;
-let ec4Events=[];let ec4Range='today';let ec4Imp='all';
+let ec4Events=[];let ec4Range='today';let ec4Imp='3';
+
+// Korean translation map for economic events
+const EC4_KO={
+'Non-Farm Payrolls':'비농업 고용 (NFP)','NFP':'비농업 고용 (NFP)','Nonfarm Payrolls':'비농업 고용 (NFP)',
+'CPI':'소비자물가지수 (CPI)','CPI YoY':'소비자물가 전년비','CPI MoM':'소비자물가 전월비',
+'Core CPI YoY':'근원 CPI 전년비','Core CPI MoM':'근원 CPI 전월비',
+'PPI YoY':'생산자물가 전년비','PPI MoM':'생산자물가 전월비','Core PPI YoY':'근원 PPI 전년비',
+'Fed Interest Rate Decision':'연준 금리 결정','FOMC Meeting':'FOMC 회의','FOMC Statement':'FOMC 성명',
+'Fed Chair Powell Speech':'파월 의장 연설','Federal Reserve Press Conference':'연준 기자회견',
+'GDP Growth Rate QoQ':'GDP 성장률 (분기)','GDP Growth Rate YoY':'GDP 성장률 (전년비)','GDP QoQ':'GDP 분기 성장률','GDP YoY':'GDP 전년비',
+'Retail Sales MoM':'소매판매 전월비','Retail Sales YoY':'소매판매 전년비','Core Retail Sales MoM':'근원 소매판매 전월비',
+'Unemployment Rate':'실업률','Initial Jobless Claims':'신규 실업수당 청구','Continuing Jobless Claims':'연속 실업수당 청구',
+'ADP Nonfarm Employment Change':'ADP 민간 고용','ADP Employment Change':'ADP 민간 고용',
+'ISM Manufacturing PMI':'ISM 제조업 PMI','ISM Services PMI':'ISM 서비스업 PMI','ISM N-Mfg PMI':'ISM 서비스업 PMI',
+'Building Permits':'건축 허가','Housing Starts':'신규 주택 착공','Existing Home Sales':'기존 주택 판매','New Home Sales':'신규 주택 판매',
+'PCE Price Index YoY':'PCE 물가지수 전년비','Core PCE Price Index YoY':'근원 PCE 물가지수 전년비','Core PCE Price Index MoM':'근원 PCE 물가지수 전월비',
+'Trade Balance':'무역수지','Industrial Production MoM':'산업생산 전월비','Durable Goods Orders MoM':'내구재 주문 전월비',
+'Consumer Confidence':'소비자 신뢰지수','Michigan Consumer Sentiment':'미시간대 소비자심리',
+'JOLTS Job Openings':'JOLTS 구인건수','Crude Oil Inventories':'원유 재고','Natural Gas Storage':'천연가스 재고',
+'ECB Interest Rate Decision':'ECB 금리 결정','ECB Press Conference':'ECB 기자회견',
+'Bank of England Interest Rate Decision':'영란은행 금리 결정','BoE Interest Rate Decision':'영란은행 금리 결정',
+'Bank of Japan Interest Rate Decision':'일본은행 금리 결정','BoJ Interest Rate Decision':'일본은행 금리 결정',
+'RBA Interest Rate Decision':'호주 중앙은행 금리 결정','BoC Interest Rate Decision':'캐나다 중앙은행 금리 결정',
+'Inflation Rate YoY':'인플레이션 전년비','Inflation Rate MoM':'인플레이션 전월비',
+'Core Inflation Rate YoY':'근원 인플레이션 전년비','Manufacturing PMI':'제조업 PMI','Services PMI':'서비스업 PMI','Composite PMI':'종합 PMI',
+'President Trump Speaks':'트럼프 대통령 연설','OPEC-JMMC Meetings':'OPEC-JMMC 회의','Bank Holiday':'은행 휴일'
+};
+function ec4Translate(name){
+  if(!name)return name;
+  if(EC4_KO[name])return EC4_KO[name];
+  for(const[en,ko]of Object.entries(EC4_KO)){if(name.toLowerCase().includes(en.toLowerCase()))return ko}
+  return name;
+}
 
 function initEconCalendar(){
   clearInterval(_ec4Timer);
@@ -5998,7 +6031,7 @@ function ec4Render(){
           else resColor='#888';
         }else resColor='#888';
       }
-      h+='<tr class="'+cls+'"><td class="ec4-time">'+hh+':'+mm+'</td><td><div class="ec4-country"><span class="ec4-flag">'+ci.f+'</span><span class="ec4-cc">'+ci.c+'</span></div></td><td class="ec4-event">'+escHtml(ev.event)+'</td><td class="r"><span class="ec4-stars">'+ec4Stars(ev.impact)+'</span></td><td class="r" style="color:var(--gray-500)">'+(ev.estimate||'—')+'</td><td class="r" style="color:var(--gray-500)">'+(ev.previous||'—')+'</td><td class="r" style="color:'+resColor+';font-weight:'+resWeight+'">'+(ev.actual||'—')+'</td></tr>';
+      h+='<tr class="'+cls+'"><td class="ec4-time">'+hh+':'+mm+'</td><td><div class="ec4-country"><span class="ec4-flag">'+ci.f+'</span><span class="ec4-cc">'+ci.c+'</span></div></td><td class="ec4-event">'+escHtml(ec4Translate(ev.event))+'</td><td class="r"><span class="ec4-stars">'+ec4Stars(ev.impact)+'</span></td><td class="r" style="color:var(--gray-500)">'+(ev.estimate||'—')+'</td><td class="r" style="color:var(--gray-500)">'+(ev.previous||'—')+'</td><td class="r" style="color:'+resColor+';font-weight:'+resWeight+'">'+(ev.actual||'—')+'</td></tr>';
     });
   });
   h+='</tbody></table>';
