@@ -154,7 +154,10 @@ function tUpdateUI(){
       const pct=c.cost<=cheapest?'':'<span style="color:#4a6a8a;font-size:8px"> +'+Math.round((c.cost-cheapest)/cheapest*100)+'%</span>';
       return`<div class="trd-cost-row"><span class="trd-cost-dot" style="background:${c.col}"></span><span class="trd-cost-name">${c.n}</span><span class="trd-cost-val">-$${c.cost.toFixed(0)}${pct}</span></div>`}).join('');
   }
-  let total=0;T.pos.forEach(p=>total+=p.pnl||0);tRenderPos();
+  let total=0;T.pos.forEach(p=>total+=p.pnl||0);
+  // Only full re-render when position count changes; otherwise just update PnL text
+  if(T._lastPosLen!==T.pos.length){T._lastPosLen=T.pos.length;tRenderPos()}
+  else{T.pos.forEach((p,i)=>{const pE=document.getElementById('trdPnl_'+i);if(pE){const c=p.pnl>=0?'#3ab87a':'#e05050';pE.style.color=c;pE.textContent=(p.pnl>=0?'+':'')+'$'+(p.pnl||0).toFixed(2)}})};
   const bal=10000+T.real+total;
   const bE=document.getElementById('trdBal');if(bE)bE.textContent='$'+bal.toFixed(2);
   const eE=document.getElementById('trdEPnl');if(eE){eE.textContent=(total>=0?'+':'')+total.toFixed(2);eE.style.color=total>=0?'#3ab87a':'#e05050'}
@@ -191,7 +194,7 @@ window.trdToggleBk=function(k){const i=T.sel.indexOf(k);if(i>=0)T.sel.splice(i,1
 window.trdBkSearch=function(v){T.bkSearch=v;tRenderBkList()};
 window.trdAllBuy=function(){T.sel.forEach(k=>{const sp=TB[k][T.sym]||0;T.pos.push({sym:T.sym,dir:'buy',entry:T.mid+sp*3,qty:T.qty,bk:k,pnl:0,realSp:sp})})};
 window.trdAllSell=function(){T.sel.forEach(k=>{const sp=TB[k][T.sym]||0;T.pos.push({sym:T.sym,dir:'sell',entry:T.mid-sp*3,qty:T.qty,bk:k,pnl:0,realSp:sp})})};
-window.trdClosePos=function(i){if(i>=0&&i<T.pos.length){T.real+=T.pos[i].pnl||0;T.pos.splice(i,1)}};
+window.trdClosePos=function(i){if(i>=0&&i<T.pos.length){T.real+=T.pos[i].pnl||0;T.pos.splice(i,1);T._lastPosLen=-1;tRenderPos()}};
 window.trdQtyAdj=function(d){T.qty=Math.max(.1,Math.round((T.qty+d)*10)/10);const e=document.getElementById('trdQtyIn');if(e)e.value=T.qty};
 window.trdRightTab=function(t){document.getElementById('trdPosPanel').style.display=t===0?'':'none';document.getElementById('trdSpPanel').style.display=t===1?'':'none';document.querySelectorAll('.trd-right-tab').forEach((e,i)=>e.classList.toggle('active',i===t));if(t===1)tRenderSpCmp()};
 
@@ -199,7 +202,7 @@ function tRenderPos(){
   const el=document.getElementById('trdPosList');if(!el)return;
   if(!T.pos.length){el.innerHTML='<div class="trd-pos-empty">브로커를 선택하고<br>ALL BUY / ALL SELL로<br>동시 진입하세요</div>';return}
   el.innerHTML=T.pos.map((p,i)=>{const b=TB[p.bk];const c=p.pnl>=0?'#3ab87a':'#e05050';
-    return`<div class="trd-pos-item" style="border-left-color:${b?.col||'#4a8eff'}"><div class="trd-pos-top"><span class="trd-pos-sym">${p.sym} <span class="trd-pos-side ${p.dir}">${p.dir==='buy'?'매수':'매도'}</span></span><span class="trd-pos-pnl" style="color:${c}">${p.pnl>=0?'+':''}$${(p.pnl||0).toFixed(2)}</span></div><div class="trd-pos-detail">${b?.n||''} · SP ${b?.[T.sym]||0} · ${p.qty}계약 · ${p.entry.toFixed(tD())}</div><button class="trd-pos-close" onclick="trdClosePos(${i})">✕ 청산</button></div>`}).join('');
+    return`<div class="trd-pos-item" style="border-left-color:${b?.col||'#4a8eff'}"><div class="trd-pos-top"><span class="trd-pos-sym">${p.sym} <span class="trd-pos-side ${p.dir}">${p.dir==='buy'?'매수':'매도'}</span></span><span id="trdPnl_${i}" class="trd-pos-pnl" style="color:${c}">${p.pnl>=0?'+':''}$${(p.pnl||0).toFixed(2)}</span></div><div class="trd-pos-detail">${b?.n||''} · SP ${b?.[T.sym]||0} · ${p.qty}계약 · ${p.entry.toFixed(tD())}</div><button class="trd-pos-close" onclick="trdClosePos(${i})">✕ 청산</button></div>`}).join('');
 }
 
 function tRenderSpCmp(){
