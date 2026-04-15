@@ -2461,9 +2461,9 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
       </div>
       <div class="ec4-fg" id="ec4ImpF">
         <button class="ec4-fb" data-imp="all" onclick="ec4SetImp(this)">전체</button>
-        <button class="ec4-fb active" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
+        <button class="ec4-fb active" data-imp="major" onclick="ec4SetImp(this)">주요국가</button>
+        <button class="ec4-fb" data-imp="3" onclick="ec4SetImp(this)">★★★</button>
         <button class="ec4-fb" data-imp="2" onclick="ec4SetImp(this)">★★☆</button>
-        <button class="ec4-fb" data-imp="1" onclick="ec4SetImp(this)">★☆☆</button>
       </div>
     </div>
     <div class="ec4-divider"></div>
@@ -5933,7 +5933,18 @@ function toKST(dateStr){const d=new Date(dateStr);return new Date(d.toLocaleStri
 
 // ===== NEWS =====
 let _ec4Timer;
-let ec4Events=[];let ec4Range='today';let ec4Imp='3';
+let ec4Events=[];let ec4Range='today';let ec4Imp='major';
+
+const EC4_MAJOR=['USD','EUR','GBP','JPY','CNY','CAD','AUD','CHF','KRW','NZD','All'];
+const EC4_CPRI={USD:1,EUR:2,GBP:3,JPY:4,CNY:5,CAD:6,AUD:7,CHF:8,KRW:9,NZD:10};
+function ec4IsMajor(c){return EC4_MAJOR.includes(c)}
+function ec4ShouldShow(ev){
+  const imp=ec4ImpN(ev.impact);const c=ev.currency||'';
+  if(imp>=3)return true;
+  if(c==='USD'&&imp>=1)return true;
+  if(ec4IsMajor(c)&&imp>=2)return true;
+  return false;
+}
 
 // Korean translation map for economic events
 const EC4_KO={
@@ -6051,15 +6062,26 @@ function ec4ImpN(imp){return imp==='High'?3:imp==='Medium'?2:1}
 
 function ec4Filter(){
   const td=ec4DateStr(0),wr=ec4WeekRange();
-  return ec4Events.filter(ev=>{
+  let result=ec4Events.filter(ev=>{
     const d=ev.date.slice(0,10);
     if(ec4Range==='today'&&d!==td)return false;
     if(ec4Range==='yesterday'&&d!==ec4DateStr(-1))return false;
     if(ec4Range==='tomorrow'&&d!==ec4DateStr(1))return false;
     if(ec4Range==='week'&&(d<wr.start||d>wr.end))return false;
+    // Importance filter
+    if(ec4Imp==='major')return ec4ShouldShow(ev);
     if(ec4Imp!=='all'&&ec4ImpN(ev.impact)!==+ec4Imp)return false;
     return true;
   });
+  // Sort: time → country priority → importance
+  result.sort((a,b)=>{
+    const ta=a.date||'',tb=b.date||'';
+    if(ta!==tb)return ta.localeCompare(tb);
+    const pa=EC4_CPRI[a.currency]||99,pb=EC4_CPRI[b.currency]||99;
+    if(pa!==pb)return pa-pb;
+    return ec4ImpN(b.impact)-ec4ImpN(a.impact);
+  });
+  return result;
 }
 
 function ec4Render(){
