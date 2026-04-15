@@ -93,8 +93,9 @@ function tDraw(){
     const bk=TB[pos.bk];if(!bk)return;
     const k=pos.entry.toFixed(d);const gi=priceGroups[k].indexOf(idx);
     const y=ty(pos.entry)+gi*4*dpr;
-    const sp=bk[T.sym]||1;
-    pos.pnl=pos.dir==='buy'?(T.mid-sp/2-pos.entry)*(TPV[T.sym]||1)*pos.qty:(pos.entry-(T.mid+sp/2))*(TPV[T.sym]||1)*pos.qty;
+    const sp=pos.realSp||bk[T.sym]||1;
+    // PnL based on visual entry (amplified spread) for chart movement effect
+    pos.pnl=pos.dir==='buy'?(T.mid-pos.entry)*(TPV[T.sym]||1)*pos.qty:(pos.entry-T.mid)*(TPV[T.sym]||1)*pos.qty;
     ctx.setLineDash([5,4]);ctx.strokeStyle=bk.col;ctx.lineWidth=1.5;
     ctx.beginPath();ctx.moveTo(PL,y);ctx.lineTo(PL+cW,y);ctx.stroke();ctx.setLineDash([]);
     // Left tag
@@ -107,6 +108,27 @@ function tDraw(){
     ctx.fillStyle=pnl>=0?bk.col:'#e05050';ctx.font='bold '+Math.round(10*dpr)+'px Courier New';
     ctx.fillText((pnl>=0?'+':'')+pnl.toFixed(1),PL+cW-pw+3,y+4);
   });
+
+  // Spread bands — visual amplifier so spread differences are clearly visible
+  // Map the spread to a minimum pixel height so even tiny spreads look wide
+  const spAmp=v=>{const minPx=6*dpr;const px=Math.abs(ty(T.mid-v)-ty(T.mid));return Math.max(minPx,px*25)};
+  if(T.sel.length){
+    const sorted=[...T.sel].sort((a,b)=>(TB[b][T.sym]||0)-(TB[a][T.sym]||0));
+    const curY0=ty(T.mid);
+    sorted.forEach(k=>{
+      const bk=TB[k];const sp=bk[T.sym]||0;const halfH=spAmp(sp)/2;
+      ctx.fillStyle=bk.col+'18';
+      ctx.fillRect(PL,curY0-halfH,cW,halfH*2);
+      // top/bottom border lines
+      ctx.strokeStyle=bk.col+'55';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(PL,curY0-halfH);ctx.lineTo(PL+cW,curY0-halfH);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(PL,curY0+halfH);ctx.lineTo(PL+cW,curY0+halfH);ctx.stroke();
+      ctx.setLineDash([]);
+      // label on right side
+      ctx.fillStyle=bk.col;ctx.font=Math.round(8*dpr)+'px Courier New';
+      ctx.fillText(bk.s+' '+sp+'p',PL+cW+4,curY0-halfH+10);
+    });
+  }
 
   // Current price
   const curY=ty(T.mid);const up=T.cds[0]&&T.mid>=T.cds[0].o;
@@ -167,8 +189,8 @@ window.trdSetSym=function(id){T.sym=id;const s=TSYMS.find(x=>x.id===id);T.mid=s.
   let p=s.base;for(let i=0;i<MC;i++){T.cds.push(tMkC(p));p=T.cds[T.cds.length-1].c}T.mid=p;tRenderLeft();tRenderBadges();tRenderSpCmp()};
 window.trdToggleBk=function(k){const i=T.sel.indexOf(k);if(i>=0)T.sel.splice(i,1);else T.sel.push(k);tRenderBkList();tRenderBadges()};
 window.trdBkSearch=function(v){T.bkSearch=v;tRenderBkList()};
-window.trdAllBuy=function(){T.sel.forEach(k=>{const sp=TB[k][T.sym]||0;T.pos.push({sym:T.sym,dir:'buy',entry:T.mid+sp/2,qty:T.qty,bk:k,pnl:0})})};
-window.trdAllSell=function(){T.sel.forEach(k=>{const sp=TB[k][T.sym]||0;T.pos.push({sym:T.sym,dir:'sell',entry:T.mid-sp/2,qty:T.qty,bk:k,pnl:0})})};
+window.trdAllBuy=function(){T.sel.forEach(k=>{const sp=TB[k][T.sym]||0;T.pos.push({sym:T.sym,dir:'buy',entry:T.mid+sp*3,qty:T.qty,bk:k,pnl:0,realSp:sp})})};
+window.trdAllSell=function(){T.sel.forEach(k=>{const sp=TB[k][T.sym]||0;T.pos.push({sym:T.sym,dir:'sell',entry:T.mid-sp*3,qty:T.qty,bk:k,pnl:0,realSp:sp})})};
 window.trdClosePos=function(i){if(i>=0&&i<T.pos.length){T.real+=T.pos[i].pnl||0;T.pos.splice(i,1)}};
 window.trdQtyAdj=function(d){T.qty=Math.max(.1,Math.round((T.qty+d)*10)/10);const e=document.getElementById('trdQtyIn');if(e)e.value=T.qty};
 window.trdRightTab=function(t){document.getElementById('trdPosPanel').style.display=t===0?'':'none';document.getElementById('trdSpPanel').style.display=t===1?'':'none';document.querySelectorAll('.trd-right-tab').forEach((e,i)=>e.classList.toggle('active',i===t));if(t===1)tRenderSpCmp()};
