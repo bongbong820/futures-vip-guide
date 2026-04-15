@@ -3896,10 +3896,14 @@ function taAnalyze(trades){
 const GROQ_KEY='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';
 const GROQ_URL='https://api.groq.com/openai/v1/chat/completions';
 const GROQ_MODEL='llama-3.3-70b-versatile';
+const AI_SYSTEM_BASE='오직 한국어와 영어만 사용할 것. 한자(漢字), 중국어 간체자, 일본어 한자를 절대 사용하지 마. 숫자와 영문 약어(GDP, CPI 등)는 허용.\n\n';
+
+function removeHanja(t){if(!t)return t;return t.replace(/[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF\u2E80-\u2EFF\u31C0-\u31EF]/g,'').replace(/\s+/g,' ').trim()}
 
 async function aiCall(prompt,systemPrompt){
   const messages=[];
-  if(systemPrompt)messages.push({role:'system',content:systemPrompt});
+  const sys=AI_SYSTEM_BASE+(systemPrompt||'');
+  messages.push({role:'system',content:sys});
   messages.push({role:'user',content:prompt});
   const resp=await fetch(GROQ_URL,{
     method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
@@ -3907,7 +3911,7 @@ async function aiCall(prompt,systemPrompt){
   });
   if(!resp.ok){const e=await resp.text();throw new Error('Groq API '+resp.status+': '+e)}
   const data=await resp.json();
-  return data.choices?.[0]?.message?.content||'';
+  return removeHanja(data.choices?.[0]?.message?.content||'');
 }
 
 async function taGetAiFeedback(stats){
@@ -6560,7 +6564,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 
 <script>
 // ===== AI CHAT WIDGET =====
-const AI_SYSTEM_PROMPT='너는 선물·주식·외환 트레이딩 전문 AI 어시스턴트야. 사용자는 한국인 트레이더들이야. 반드시 한국어로만 대답해. 전문적이지만 쉽고 친근하게 설명해줘. 답변 마지막엔 항상 리스크 주의사항도 함께 알려줘. 투자 권유는 절대 하지 말고 정보 제공 목적으로만 답변해. 모르는 건 모른다고 솔직하게 말해.';
+const AI_SYSTEM_PROMPT=AI_SYSTEM_BASE+'너는 선물·주식·외환 트레이딩 전문 AI 어시스턴트야. 사용자는 한국인 트레이더들이야. 반드시 한국어로만 대답해. 전문적이지만 쉽고 친근하게 설명해줘. 답변 마지막엔 항상 리스크 주의사항도 함께 알려줘. 투자 권유는 절대 하지 말고 정보 제공 목적으로만 답변해. 모르는 건 모른다고 솔직하게 말해.';
 const AI_STORE_KEY = 'aiChatData';
 const AI_MAX_RPM = 10;
 
@@ -6699,7 +6703,7 @@ async function aiSend(){
     if(!res.ok){const e=await res.text();throw new Error('API '+res.status)}
 
     const data=await res.json();
-    const fullText=data.choices?.[0]?.message?.content||'응답을 생성하지 못했습니다.';
+    const fullText=removeHanja(data.choices?.[0]?.message?.content||'응답을 생성하지 못했습니다.');
 
     aiRemoveTyping();
 
