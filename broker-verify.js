@@ -8,8 +8,8 @@ function bkvGet(k){try{const v=JSON.parse(sessionStorage.getItem('bkv2_'+k)||'nu
 
 async function bkvAi(prompt){
   const r=await fetch(GROQ_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GROQ_KEY},
-    body:JSON.stringify({model:GROQ_MODEL,messages:[{role:'system',content:'FX 브로커 전문가. 유효한 JSON만 출력.'},{role:'user',content:prompt}],max_tokens:2500,temperature:0.1})});
-  const d=await r.json();const t=d.choices?.[0]?.message?.content||'';
+    body:JSON.stringify({model:GROQ_MODEL,messages:[{role:'system',content:AI_SYSTEM_BASE+'FX 브로커 전문가. 유효한 JSON만 출력. 모든 텍스트 값은 순수 한국어+영어만.'},{role:'user',content:prompt}],max_tokens:2500,temperature:0.1})});
+  const d=await r.json();let t=removeHanja(d.choices?.[0]?.message?.content||'');
   const s=t.indexOf('{'),e=t.lastIndexOf('}');if(s<0)throw new Error('No JSON');
   return JSON.parse(t.substring(s,e+1));
 }
