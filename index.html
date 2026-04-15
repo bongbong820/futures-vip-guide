@@ -1643,11 +1643,11 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
   </div>
 </div>
 
-<!-- TRADING PAGE -->
+<!-- TRADING PAGE — DUAL COMPARE -->
 <div class="trd-page" id="trdPage">
   <div class="trd-top">
     <span class="trd-logo">VIP·FX</span>
-    <span class="trd-tab active">스프레드 비교 트레이딩</span>
+    <span style="color:#4a6a8a;font-size:10px">스프레드 비교 트레이딩</span>
     <div class="trd-top-right">
       <span><span class="trd-top-lbl">잔고</span><span class="trd-top-val" id="trdBal">$10,000.00</span></span>
       <span><span class="trd-top-lbl">평가</span><span class="trd-top-val" id="trdEPnl">+0.00</span></span>
@@ -1656,75 +1656,55 @@ body.dark .header-logo-icon{background:linear-gradient(135deg,var(--orange),#5B8
     </div>
   </div>
 
-  <div class="trd-watch">
-    <div class="trd-watch-hdr">WATCHLIST</div>
-    <div id="trdWatchList"></div>
-  </div>
+  <div class="trd-sym-bar" id="trdSymBar"></div>
 
-  <div class="trd-center">
-    <div class="trd-chart-hdr">
-      <span class="trd-chart-sym" id="trdHdrSym">NQ 나스닥100</span>
-      <span class="trd-chart-price" id="trdHdrPrice">21,340.0</span>
-      <div class="trd-chart-broker">
-        <select onchange="trdSetBroker(this.value)">
+  <div class="trd-main">
+    <!-- Panel A -->
+    <div class="trd-panel" id="trdPanelA">
+      <div class="trd-panel-hdr">
+        <span class="trd-panel-broker a">A</span>
+        <div class="trd-panel-select"><select onchange="trdSetBrokerA(this.value)">
           <option value="icm">IC Markets</option><option value="pep">Pepperstone</option>
           <option value="tkm">Tickmill</option><option value="oan">OANDA</option>
           <option value="exn">Exness</option><option value="xm">XM</option>
-        </select>
+        </select></div>
+        <div class="trd-panel-spread"></div>
+      </div>
+      <div class="trd-panel-canvas"><canvas id="trdCanvasA"></canvas><div class="trd-panel-bidask"></div></div>
+      <div class="trd-panel-order">
+        <button class="trd-btn trd-btn-sell" onclick="trdSell(T.brokerA)"><span class="trd-btn-label">SELL</span><span class="trd-btn-price trd-sell-price">—</span></button>
+        <div class="trd-panel-qty"><button onclick="trdQtyA(-0.1)">−</button><input id="trdQtyA" value="1" oninput="T.qtyA=Math.max(0.1,parseFloat(this.value)||0.1)"><button onclick="trdQtyA(0.1)">+</button></div>
+        <button class="trd-btn trd-btn-buy" onclick="trdBuy(T.brokerA)"><span class="trd-btn-label">BUY</span><span class="trd-btn-price trd-buy-price">—</span></button>
       </div>
     </div>
-    <div class="trd-canvas-wrap">
-      <canvas id="trdCanvas"></canvas>
-      <div class="trd-bidask" id="trdBidAsk"></div>
-    </div>
-    <div class="trd-order">
-      <button class="trd-btn-sell" onclick="trdSell()">
-        <span class="trd-btn-label">SELL</span>
-        <span class="trd-btn-price" id="trdSellPrice">—</span>
-        <span class="trd-btn-sub" id="trdSellSub">BID</span>
-      </button>
-      <div class="trd-qty">
-        <button onclick="trdQtyAdj(0.1)">+</button>
-        <input id="trdQtyInput" value="1" oninput="trdQtySet(this.value)">
-        <button onclick="trdQtyAdj(-0.1)">−</button>
+
+    <!-- Panel B -->
+    <div class="trd-panel" id="trdPanelB">
+      <div class="trd-panel-hdr">
+        <span class="trd-panel-broker b">B</span>
+        <div class="trd-panel-select"><select onchange="trdSetBrokerB(this.value)">
+          <option value="icm">IC Markets</option><option value="pep">Pepperstone</option>
+          <option value="tkm">Tickmill</option><option value="oan" selected>OANDA</option>
+          <option value="exn">Exness</option><option value="xm">XM</option>
+        </select></div>
+        <div class="trd-panel-spread"></div>
       </div>
-      <div class="trd-cost">
-        <div class="trd-cost-lbl">진입비용</div>
-        <div class="trd-cost-val" id="trdCost">-$10</div>
-        <div class="trd-cost-broker" id="trdCostBroker">IC Markets</div>
+      <div class="trd-panel-canvas"><canvas id="trdCanvasB"></canvas><div class="trd-panel-bidask"></div></div>
+      <div class="trd-panel-order">
+        <button class="trd-btn trd-btn-sell" onclick="trdSell(T.brokerB)"><span class="trd-btn-label">SELL</span><span class="trd-btn-price trd-sell-price">—</span></button>
+        <div class="trd-panel-qty"><button onclick="trdQtyB(-0.1)">−</button><input id="trdQtyB" value="1" oninput="T.qtyB=Math.max(0.1,parseFloat(this.value)||0.1)"><button onclick="trdQtyB(0.1)">+</button></div>
+        <button class="trd-btn trd-btn-buy" onclick="trdBuy(T.brokerB)"><span class="trd-btn-label">BUY</span><span class="trd-btn-price trd-buy-price">—</span></button>
       </div>
-      <button class="trd-btn-buy" onclick="trdBuy()">
-        <span class="trd-btn-label">BUY</span>
-        <span class="trd-btn-price" id="trdBuyPrice">—</span>
-        <span class="trd-btn-sub" id="trdBuySub">ASK</span>
-      </button>
     </div>
   </div>
 
-  <div class="trd-right">
-    <div class="trd-right-tabs">
-      <div class="trd-right-tab active" onclick="trdRightTab(0)">포지션</div>
-      <div class="trd-right-tab" onclick="trdRightTab(1)">스프레드</div>
+  <div class="trd-bottom-wrap">
+    <div class="trd-bottom-hdr">
+      <span>잔고 <strong id="trdBBal2">$10,000</strong></span>
+      <span>포지션 <strong>${T.positions?.length||0}</strong></span>
+      <span style="margin-left:auto;font-size:9px;color:#3a4a5a">같은 가격에서 브로커별 스프레드 차이를 직접 비교해보세요</span>
     </div>
-    <div class="trd-right-body" id="trdPosPanel">
-      <div id="trdPosList"></div>
-    </div>
-    <div class="trd-right-body" id="trdSpPanel" style="display:none">
-      <select class="trd-sp-select" id="trdSpSym" onchange="trdRenderSpreadCompare()">
-        <option value="NQ">NQ 나스닥</option><option value="ES">ES S&P</option>
-        <option value="GOLD">GOLD 금</option><option value="BTC">BTC 비트코인</option>
-        <option value="OIL">OIL 원유</option><option value="HSI">HSI 항셍</option>
-      </select>
-      <div id="trdSpList"></div>
-      <div class="trd-sp-note">1계약 기준 진입 즉시 청산 시 비용<br>낮을수록 유리한 거래 조건</div>
-    </div>
-  </div>
-
-  <div class="trd-bottom">
-    <span>잔고 <strong id="trdBBal">$10,000</strong></span>
-    <span>포지션 <strong id="trdBPos">0</strong></span>
-    <span>브로커 <strong id="trdBBr">IC Markets</strong></span>
-    <span>스프레드 <strong id="trdBSp">0.5</strong></span>
+    <div class="trd-pos-scroll" id="trdPosList"></div>
   </div>
 </div>
 
