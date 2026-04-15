@@ -5959,12 +5959,42 @@ const EC4_KO={
 'RBA Interest Rate Decision':'호주 중앙은행 금리 결정','BoC Interest Rate Decision':'캐나다 중앙은행 금리 결정',
 'Inflation Rate YoY':'인플레이션 전년비','Inflation Rate MoM':'인플레이션 전월비',
 'Core Inflation Rate YoY':'근원 인플레이션 전년비','Manufacturing PMI':'제조업 PMI','Services PMI':'서비스업 PMI','Composite PMI':'종합 PMI',
-'President Trump Speaks':'트럼프 대통령 연설','OPEC-JMMC Meetings':'OPEC-JMMC 회의','Bank Holiday':'은행 휴일'
+'President Trump Speaks':'트럼프 대통령 연설','OPEC-JMMC Meetings':'OPEC-JMMC 회의','Bank Holiday':'은행 휴일',
+'Fed Funds Rate':'연준 기준금리','Interest Rate Decision':'금리 결정','Interest Rate':'기준금리','Balance of Trade':'무역수지','Current Account':'경상수지','Budget Balance':'재정수지','Money Supply M2':'통화량 M2',
+'Factory Orders MoM':'공장 주문 전월비','Wholesale Inventories MoM':'도매 재고 전월비','Business Inventories MoM':'기업 재고 전월비',
+'Empire State Manufacturing Index':'엠파이어스테이트 제조업지수','Philadelphia Fed Manufacturing Index':'필라델피아 연은 제조업지수','Chicago PMI':'시카고 PMI',
+'CB Consumer Confidence':'CB 소비자신뢰지수','Conference Board Consumer Confidence':'CB 소비자신뢰지수',
+'Michigan Consumer Sentiment Prel':'미시간대 소비자심리 예비치','Michigan Consumer Sentiment Final':'미시간대 소비자심리 확정치',
+'Pending Home Sales MoM':'주택 계약 판매 전월비','Average Hourly Earnings MoM':'평균 시간당 임금 전월비','Average Hourly Earnings YoY':'평균 시간당 임금 전년비',
+'Labor Force Participation Rate':'노동참가율','Goods Trade Balance':'상품 무역수지','Redbook':'레드북 소매판매',
+'API Crude Oil Stock Change':'API 원유재고 변화','EIA Crude Oil Stocks Change':'EIA 원유재고 변화','Baker Hughes Oil Rig Count':'베이커휴즈 원유 굴착기수',
+'ECB Monetary Policy Meeting Accounts':'ECB 통화정책 의사록','ECB President Lagarde Speech':'라가르드 총재 연설',
+'German Retail Sales MoM':'독일 소매판매 전월비','German Factory Orders MoM':'독일 공장 주문 전월비','German Industrial Production MoM':'독일 산업생산 전월비','German Trade Balance':'독일 무역수지',
+'German Ifo Business Climate':'독일 IFO 기업환경지수','German ZEW Economic Sentiment':'독일 ZEW 경기기대지수',
+'Euro Area Consumer Confidence':'유로존 소비자 신뢰지수','Euro Area Economic Sentiment':'유로존 경제 심리지수','Euro Area Industrial Production MoM':'유로존 산업생산 전월비',
+'BoE Governor Bailey Speech':'베일리 영란은행 총재 연설','UK Retail Sales MoM':'영국 소매판매 전월비','UK Industrial Production MoM':'영국 산업생산 전월비','UK Trade Balance':'영국 무역수지','UK Claimant Count Change':'영국 실업급여 청구 변화',
+'BoJ Summary of Opinions':'일본은행 의견 요약','Japan Industrial Production MoM':'일본 산업생산 전월비','Japan Retail Sales MoM':'일본 소매판매 전월비','Japan Trade Balance':'일본 무역수지','Japan Unemployment Rate':'일본 실업률',
+'China CPI MoM':'중국 CPI 전월비','China PPI YoY':'중국 PPI 전년비','China Industrial Production YoY':'중국 산업생산 전년비','China Retail Sales YoY':'중국 소매판매 전년비','China Caixin Services PMI':'중국 차이신 서비스업 PMI','China Foreign Exchange Reserves':'중국 외환보유고',
+'RBA Rate Statement':'호주 중앙은행 성명','Australia GDP QoQ':'호주 GDP 성장률','Australia Trade Balance':'호주 무역수지','Australia Retail Sales MoM':'호주 소매판매 전월비',
+'BoC Rate Statement':'캐나다 중앙은행 성명','Canada Retail Sales MoM':'캐나다 소매판매 전월비','Canada Trade Balance':'캐나다 무역수지','Canada Employment Change':'캐나다 고용 변화',
+'Flash Manufacturing PMI':'제조업 PMI 속보치','Flash Services PMI':'서비스업 PMI 속보치','Flash Composite PMI':'종합 PMI 속보치',
+'Retail Sales':'소매판매','Industrial Production':'산업생산','Consumer Price Index':'소비자물가지수','Producer Price Index':'생산자물가지수','House Price Index':'주택가격지수',
+'Spanish Unemployment Change':'스페인 실업 변동','French Bank Holiday':'프랑스 은행 휴일','German Bank Holiday':'독일 은행 휴일','Italian Bank Holiday':'이탈리아 은행 휴일',
+'Building Permits YoY':'건축 허가 전년비','Building Permits MoM':'건축 허가 전월비','Private House Approvals MoM':'주택 승인 전월비',
+'Capacity Utilization Rate':'설비 가동률','Nonfarm Productivity QoQ':'비농업 생산성 (분기)','Unit Labor Costs QoQ':'단위 노동비용 (분기)',
+'ISM N-Mfg Price Paid Idx':'ISM 서비스업 가격지수','ISM N-Mfg New Orders Idx':'ISM 서비스업 신규주문','ISM N-Mfg Employment Idx':'ISM 서비스업 고용','ISM N-Mfg Bus Act':'ISM 서비스업 경기활동',
+'All Household Spending MM':'가계 지출 전월비','All Household Spending YY':'가계 지출 전년비','Leading Indicator':'경기선행지수','Coincident Index':'경기동행지수',
+'Exports':'수출','Imports':'수입','Foreign Exchange Reserve':'외환보유고','Reserves':'외환보유고','Foreign Reserves USD':'외환보유고 (달러)','Forex Reserves USD':'외환보유고','Central Bank FX Reserves':'중앙은행 외환보유고',
+'Mon Policy Rate':'기준금리','Copper Exports':'구리 수출','Wholesale Prices NSA MM':'도매물가 전월비','Wholesale Prices NSA YY':'도매물가 전년비',
+'Sentix Index':'센틱스 투자자 심리지수','Foreign Exchange Reserve':'외환보유고'
 };
+const _ec4SortedKeys=Object.keys(EC4_KO).sort((a,b)=>b.length-a.length);
 function ec4Translate(name){
   if(!name)return name;
   if(EC4_KO[name])return EC4_KO[name];
-  for(const[en,ko]of Object.entries(EC4_KO)){if(name.toLowerCase().includes(en.toLowerCase()))return ko}
+  const ln=name.toLowerCase();
+  for(const en of _ec4SortedKeys){if(ln===en.toLowerCase())return EC4_KO[en]}
+  for(const en of _ec4SortedKeys){if(ln.includes(en.toLowerCase()))return EC4_KO[en]}
   return name;
 }
 
@@ -5987,7 +6017,7 @@ function ec4DateLabel(ds){
   if(ds===td)return+mo+'월 '+(+dy)+'일 (오늘)';if(ds===yd)return+mo+'월 '+(+dy)+'일 (어제)';if(ds===tm)return+mo+'월 '+(+dy)+'일 (내일)';
   const dn=['일','월','화','수','목','금','토'];return+mo+'월 '+(+dy)+'일 ('+dn[new Date(ds+'T00:00:00Z').getUTCDay()]+')';
 }
-const EC4C={USD:{f:'🇺🇸',c:'US'},EUR:{f:'🇪🇺',c:'EU'},JPY:{f:'🇯🇵',c:'JP'},GBP:{f:'🇬🇧',c:'GB'},KRW:{f:'🇰🇷',c:'KR'},CNY:{f:'🇨🇳',c:'CN'},CAD:{f:'🇨🇦',c:'CA'},AUD:{f:'🇦🇺',c:'AU'},CHF:{f:'🇨🇭',c:'CH'}};
+const EC4C={USD:{f:'🇺🇸',c:'미국'},EUR:{f:'🇪🇺',c:'유럽'},JPY:{f:'🇯🇵',c:'일본'},GBP:{f:'🇬🇧',c:'영국'},KRW:{f:'🇰🇷',c:'한국'},CNY:{f:'🇨🇳',c:'중국'},CAD:{f:'🇨🇦',c:'캐나다'},AUD:{f:'🇦🇺',c:'호주'},CHF:{f:'🇨🇭',c:'스위스'},NZD:{f:'🇳🇿',c:'뉴질랜드'},SEK:{f:'🇸🇪',c:'스웨덴'},NOK:{f:'🇳🇴',c:'노르웨이'},MXN:{f:'🇲🇽',c:'멕시코'},BRL:{f:'🇧🇷',c:'브라질'},INR:{f:'🇮🇳',c:'인도'},ZAR:{f:'🇿🇦',c:'남아공'},TRY:{f:'🇹🇷',c:'터키'},PLN:{f:'🇵🇱',c:'폴란드'},HKD:{f:'🇭🇰',c:'홍콩'},SGD:{f:'🇸🇬',c:'싱가포르'},TWD:{f:'🇹🇼',c:'대만'},RUB:{f:'🇷🇺',c:'러시아'},All:{f:'🌐',c:'글로벌'}};
 function ec4Stars(imp){const n=imp==='High'?3:imp==='Medium'?2:1;return '★'.repeat(n)+'<span class="empty">'+'★'.repeat(3-n)+'<\/span>'}
 function ec4ImpN(imp){return imp==='High'?3:imp==='Medium'?2:1}
 
