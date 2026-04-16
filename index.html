@@ -5769,8 +5769,7 @@ function ec4IsMajor(c){return EC4_MAJOR.includes(c)}
 function ec4ShouldShow(ev){
   const imp=ec4ImpN(ev.impact);const c=ev.currency||'';
   if(imp>=3)return true;
-  if(c==='USD'&&imp>=1)return true;
-  if(ec4IsMajor(c)&&imp>=2)return true;
+  if(c==='USD'&&imp>=2)return true;
   return false;
 }
 
